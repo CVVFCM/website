@@ -1,0 +1,32 @@
+{% set navigation_context_name = 'main' %}
+{% set navigation_max_depth = 3 %}
+
+{% set navigation_root = sulu_navigation_root_tree(navigation_context_name, navigation_max_depth, true) %}
+
+<nav>
+    <ul>
+        <li>
+            <a href="{{ sulu_content_root_path() }}">Homepage</a>
+        </li>
+
+        {% if navigation_root %}
+            {{ _self.display_navigation_nodes(navigation_root|first) }}
+        {% endif %}
+    </ul>
+</nav>
+
+{% macro display_navigation_nodes(root) %}
+    {% for item in root.children %}
+        <li>
+            <a href="{{ sulu_content_path(item.url, item.webspaceKey) }}" title="{{ item.title }}">
+                {{ item.title }}
+            </a>
+
+            {% if item.children is not empty %}
+                <ul>
+                    {{ _self.display_navigation_nodes(item) }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endfor %}
+{% endmacro %}

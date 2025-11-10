@@ -1,0 +1,32 @@
+<section class="HomepageSocial">
+    <h2 class="HomepageSocial__title">{{ block.title }}</h2>
+    <div class="HomepageSocial__description">{{ block.description|raw }}</div>
+    <ul class="HomepageSocial__socialLinks">
+        <li><a href="https://www.facebook.com/cvvfcm/">Facebook</a></li>
+        <li><a href="https://www.instagram.com/cvvfcm/">Instagram</a></li>
+        <li><a href="https://www.youtube.com/channel/UCfPmr-DQD8X4nqJebVIGRIQ">YouTube</a></li>
+    </ul>
+
+    <ul class="HomepageSocial__facebookPosts">
+        {% for post in facebook_page_feed(3) %}
+            <li>
+                {% if post.picture %}
+                    <img src="{{ post.picture }}" />
+                {% endif %}
+                <time datetime="{{ post.createdAt.format('c') }}">{{ post.createdAt|format_date }}</time>
+                <div class="HomepageFacebookPost">{{ post.message|nl2br }}</div>
+                <a href="{{ post.permalinkUrl }}" target="_blank">Voir sur Facebook</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <ul class="HomepageSocial__instagramPosts">
+        {% for post in instagram_feed()|slice(0, 3) %}
+            <li>
+                <img src="{{ post.mediaUrl }}" alt="{{ post.caption }}" />
+                <div class="HomepageInstagramPost">{{ post.caption|nl2br }}</div>
+                <a href="{{ post.permalink }}" target="_blank">Voir sur Instagram</a>
+            </li>
+        {% endfor %}
+    </ul>
+</section>

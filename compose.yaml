@@ -1,0 +1,46 @@
+services:
+    php:
+        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/php}:${IMAGE_TAG:-latest}
+        depends_on: [ rtsp-to-web ]
+        build:
+            target: php
+            args:
+                EXTERNAL_USER_ID: ${EXTERNAL_USER_ID:-33}
+        environment:
+            SERVER_NAME: ${SERVER_NAME:-localhost}
+            APP_SECRET: ${APP_SECRET:-!ChangeMe!}
+            MAILER_DSN: ${MAILER_DSN:-smtp://smtp:1025}
+            DATABASE_URL: ${DATABASE_URL:-mysql://${MYSQL_USER:-cvvfcm}:${MYSQL_PASSWORD:-cvvfcm}@database:3306/${MYSQL_DATABASE:-cvvfcm}?serverVersion=9.5&charset=utf8mb4}
+            SULU_ADMIN_EMAIL: ${SULU_ADMIN_EMAIL:-"CVVFCM <contact@cvvfcm.fr>"}
+            APP_ENV: ${APP_ENV:-prod}
+            FACEBOOK_APP_ID: ${FACEBOOK_APP_ID:-}
+            FACEBOOK_APP_SECRET: ${FACEBOOK_APP_SECRET:-}
+            FACEBOOK_PAGE_ID: ${FACEBOOK_PAGE_ID:-}
+        volumes:
+            - caddy_data:/data
+            - caddy_config:/config
+            - search_indexes:/app/var/indexes
+        ports:
+            -   target: 80
+                published: ${HTTP_PORT:-80}
+                protocol: tcp
+            -   target: 443
+                published: ${HTTPS_PORT:-443}
+                protocol: tcp
+            -   target: 443
+                published: ${HTTP3_PORT:-443}
+                protocol: udp
+
+    rtsp-to-web:
+        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/rtsp-to-web}:${IMAGE_TAG:-latest}
+        build:
+            context: infra/docker/rtsp-to-web
+            target: rtsp-to-web
+        environment:
+            HTTP_LOGIN: '${RTSP_TO_WEB_HTTP_LOGIN:-admin}'
+            HTTP_PASSWORD: '${RTSP_TO_WEB_HTTP_PASSWORD:-!ChangeMe!}'
+
+volumes:
+    caddy_data:
+    caddy_config:
+    search_indexes:

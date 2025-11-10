@@ -1,0 +1,18 @@
+sulu_admin:
+    email: "%env(SULU_ADMIN_EMAIL)%"
+    forms:
+        directories:
+            - "%kernel.project_dir%/config/forms"
+    lists:
+        directories:
+            - "%kernel.project_dir%/config/lists"
+    resources:
+        facebook_tokens:
+            routes:
+                list: app.get_facebook_tokens
+
+sulu_core:
+    locales:
+        fr: Français
+    translations:
+        - fr

@@ -1,0 +1,95 @@
+name: CD
+
+on:
+    release:
+        types: [published]
+    push:
+        branches: [main]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        name: Build prod images
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+            - name: 'Login to GitHub Container Registry'
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{github.actor}}
+                  password: ${{secrets.GITHUB_TOKEN}}
+            - name: Build Lateset Docker images
+              uses: docker/bake-action@v6
+              if: github.event_name == 'release'
+              env:
+                  EXTERNAL_USER_ID: 1001
+                  IMAGE_TAG: latest
+              with:
+                  pull: true
+                  load: true
+                  push: true
+                  files: compose.yaml
+                  set: |
+                      *.cache-from=type=gha,scope=${{github.ref}}
+                      *.cache-from=type=gha,scope=refs/heads/main
+                      *.cache-to=type=gha,scope=${{github.ref}},mode=max
+            - name: Build Branch-tagged Docker images
+              uses: docker/bake-action@v6
+              env:
+                  EXTERNAL_USER_ID: 1001
+                  IMAGE_TAG: ${{ github.ref_name }}
+              with:
+                  pull: true
+                  load: true
+                  push: true
+                  files: compose.yaml
+                  set: |
+                      *.cache-from=type=gha,scope=${{github.ref}}
+                      *.cache-from=type=gha,scope=refs/heads/main
+                      *.cache-to=type=gha,scope=${{github.ref}},mode=max
+
+    deploy-preprod:
+        name: Deploy to staging
+        runs-on: ubuntu-latest
+        needs: [ build ]
+        environment: PREPROD
+        if: github.event_name == 'release'
+        env:
+            DOCKER_HOST: 'ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}'
+            APP_ENV: ${{ vars.APP_ENV }}
+            APP_SECRET: ${{ secrets.APP_SECRET }}
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            SERVER_NAME: ${{ vars.SERVER_NAME }}
+            MAILER_DSN: ${{ secrets.MAILER_DSN }}
+            SULU_ADMIN_EMAIL: ${{ vars.SULU_ADMIN_EMAIL }}
+            FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
+            FACEBOOK_APP_SECRET: ${{ secrets.FACEBOOK_APP_SECRET }}
+            FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+            IMAGE_TAG: ${{ github.ref_name }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Set up Docker Compose
+              uses: docker/setup-compose-action@v1
+              with:
+                  version: latest
+            - name: Set up private key
+              run: mkdir -p ~/.ssh && echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+            - name: Trust remote host
+              run: ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+            - name: Docker login
+              run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            - name: Deploy to staging
+              run: docker compose -f compose.yaml up -d --pull always --wait php --force-recreate --no-build --remove-orphans || (docker compose logs && exit 1)
+            - name: Prune server
+              run: docker system prune -f --all --volumes

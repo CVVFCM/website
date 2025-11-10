@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<list xmlns="http://schemas.sulu.io/list-builder/list">
+    <key>facebook_tokens</key>
+
+    <properties>
+        <property name="id" visibility="no" translation="sulu_admin.id">
+            <field-name>id</field-name>
+            <entity-name>App\Entity\FacebookToken</entity-name>
+        </property>
+
+        <property name="pageName" visibility="always" searchability="no" translation="Nom de la page">
+            <field-name>pageName</field-name>
+            <entity-name>App\Entity\FacebookToken</entity-name>
+        </property>
+
+        <property name="createdAt" visibility="yes" translation="CrÃ©ation le" type="datetime">
+            <field-name>createdAt</field-name>
+            <entity-name>App\Entity\FacebookToken</entity-name>
+        </property>
+
+        <property name="expiresAt" visibility="yes" translation="Expire le" type="datetime">
+            <field-name>expiresAt</field-name>
+            <entity-name>App\Entity\FacebookToken</entity-name>
+        </property>
+    </properties>
+</list>

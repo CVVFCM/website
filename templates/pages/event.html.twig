@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+
+    <header>
+        <h1>{{ content.title }}</h1>
+        <h2>
+            Le {{ content.begin_date|format_date }}
+        </h2>
+
+        {% if content.main_media %}
+            <div>
+
+                <img
+                    src="{{ content.main_media.formats['sulu-400x400.webp'] }}"
+                    alt="{{ content.main_media.title }}"
+                    title="{{ content.main_media.description|default(content.main_media.title) }}"/>
+            </div>
+        {% endif %}
+
+        <div>{{ content.description|raw }}</div>
+    </header>
+
+    {% if content.location %}
+        <div>
+            <twig:Map
+                latitude="{{ content.location.lat }}"
+                longitude="{{ content.location.long }}"
+                title="{{ content.location.title }}"
+                zoom="{{ content.location.zoom }}"
+            />
+        </div>
+    {% endif %}
+
+    {% if content.series or content.services or content.regatta_informations %}
+        {% if content.series %}
+            <ul>
+                {% for series_with_rank in content.series %}
+                    <li>
+                        <strong>{{ series_with_rank.series }}</strong> : {{ series_with_rank.rank }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if content.services %}
+            <ul>
+                {% for service in content.services %}
+                    <li>
+                        <strong>{{ service.name }}</strong> : {{ service.availability ? 'Oui' : 'Non' }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if content.regatta_informations %}
+            <div>
+
+                {{ content.regatta_informations|raw }}
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% set parent = sulu_page_load(resource.parent.uuid) %}
+    <a href="{{ parent.content.url }}">{{ parent.content.title }}</a>
+
+    {% if content.media %}
+        <section>
+            <ul>
+                {% for media in content.media %}
+                    <li>
+                        <img
+                            src="{{ media.formats['sulu-400x400.webp'] }}"
+                            alt="{{ media.title }}"
+                            title="{{ media.description|default(media.title) }}"/>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    {% if content.links %}
+        <h2>Liens utiles</h2>
+        <ul>
+            {% for link in content.links %}
+                <li>
+                    <a href="{{ link.url }}" title="{{ link.title }}"{{ link.target_blank ? ' target="_blank"' }}>
+                        {{ link.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if content.contact %}
+        <h2>Contacts</h2>
+        <ul>
+            {% for contact in content.contact %}
+                <li>
+                    {{ contact.fullName }} <br/>
+                    {{ contact.positionName }}<br/>
+                    {{ contact.contactDetails.emails[0].email }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}

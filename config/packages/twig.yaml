@@ -1,0 +1,11 @@
+twig:
+    file_name_pattern: '*.twig'
+    globals:
+        facebook_app_id: '%facebook_app_id%'
+
+twig_extra:
+    intl: ~
+
+when@test:
+    twig:
+        strict_variables: true

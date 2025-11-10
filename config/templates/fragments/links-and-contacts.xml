@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<section name="links" xmlns="http://schemas.sulu.io/template/template"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
+    <meta>
+        <title lang="fr">Liens et contacts</title>
+    </meta>
+
+    <properties>
+        <block name="links" default-type="link" minOccurs="0">
+            <meta>
+                <title lang="fr">Liens</title>
+            </meta>
+
+            <types>
+                <type name="link">
+                    <meta>
+                        <title lang="fr">Lien</title>
+                    </meta>
+
+                    <properties>
+                        <property name="title" type="text_line" mandatory="true">
+                            <meta>
+                                <title lang="fr">Intitulé</title>
+                            </meta>
+                        </property>
+                        <property name="url" type="url" mandatory="true">
+                            <meta>
+                                <title lang="fr">URL</title>
+                            </meta>
+                        </property>
+                        <property name="target_blank" type="checkbox">
+                            <meta>
+                                <title lang="fr">Ouvrir dans un nouvel onglet</title>
+                            </meta>
+                        </property>
+                    </properties>
+                </type>
+            </types>
+        </block>
+
+        <property name="contact" type="contact_account_selection">
+            <meta>
+                <title lang="fr">Contact</title>
+            </meta>
+        </property>
+    </properties>
+</section>

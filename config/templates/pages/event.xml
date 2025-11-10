@@ -1,0 +1,221 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xi="http://www.w3.org/2001/XInclude"
+          xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
+
+    <key>event</key>
+
+    <view>pages/event</view>
+    <controller>Sulu\Content\UserInterface\Controller\Website\ContentController::indexAction</controller>
+    <cacheLifetime>604800</cacheLifetime>
+
+    <meta>
+        <title lang="fr">Événement</title>
+    </meta>
+
+    <properties>
+        <section name="general">
+            <meta>
+                <title lang="fr">Général</title>
+            </meta>
+
+            <properties>
+                <property name="title" type="text_line" mandatory="true">
+                    <meta>
+                        <title lang="fr">Titre</title>
+                    </meta>
+                    <params>
+                        <param name="headline" value="true"/>
+                    </params>
+
+                    <tag name="sulu.rlp.part"/>
+                    <tag name="sulu.search.field" role="title" />
+                </property>
+
+                <property name="url" type="route" mandatory="true">
+                    <meta>
+                        <title lang="fr">URL</title>
+                    </meta>
+
+                    <tag name="sulu.rlp"/>
+                </property>
+
+                <property name="description" type="text_editor" mandatory="true">
+                    <meta>
+                        <title lang="fr">Description</title>
+                    </meta>
+
+                    <tag name="sulu.search.field" role="description" />
+                </property>
+
+                <property name="event_type" mandatory="false" type="single_select">
+                    <meta>
+                        <title lang="fr">Type d'événement</title>
+                    </meta>
+                    <params>
+                        <param name="default_value" value="default" />
+                        <param name="values" type="collection">
+                            <param name="default"><meta><title lang="fr">Événement</title></meta></param>
+                            <param name="regatta"><meta><title lang="fr">Régate</title></meta></param>
+                            <param name="sea_trip"><meta><title lang="fr">Sortie en mer</title></meta></param>
+                        </param>
+                    </params>
+                </property>
+            </properties>
+        </section>
+
+        <section name="dates">
+            <meta>
+                <title lang="fr">Dates et lieu</title>
+            </meta>
+
+            <properties>
+                <property name="begin_date" type="datetime" mandatory="true">
+                    <meta>
+                        <title lang="fr">Date de début</title>
+                    </meta>
+                </property>
+
+                <property name="end_date" type="datetime">
+                    <meta>
+                        <title lang="fr">Date de fin</title>
+                    </meta>
+                </property>
+
+                <property name="location" type="location">
+                    <meta>
+                        <title lang="fr">Lieux</title>
+                    </meta>
+                </property>
+            </properties>
+        </section>
+
+        <section name="regatta" visibleCondition="'regatta' == event_type">
+            <meta>
+                <title lang="fr">Régate</title>
+            </meta>
+
+            <properties>
+                <block name="series">
+                    <types>
+                        <type name="series_with_rank">
+                            <meta>
+                                <title lang="fr">Série avec grade</title>
+                            </meta>
+
+                            <properties>
+                                <property name="series" type="text_line" mandatory="true">
+                                    <meta>
+                                        <title lang="fr">Série</title>
+                                    </meta>
+                                </property>
+
+                                <property name="rank" type="single_select" mandatory="true">
+                                    <meta>
+                                        <title lang="fr">Grade</title>
+                                    </meta>
+
+                                    <params>
+                                        <param name="values" type="collection">
+                                            <param name="5C"><meta><title lang="fr">5C</title></meta></param>
+                                            <param name="5B"><meta><title lang="fr">5B</title></meta></param>
+                                            <param name="5A"><meta><title lang="fr">5A</title></meta></param>
+                                            <param name="4"><meta><title lang="fr">4</title></meta></param>
+                                            <param name="3"><meta><title lang="fr">3</title></meta></param>
+                                        </param>
+                                    </params>
+                                </property>
+                            </properties>
+                        </type>
+                    </types>
+                </block>
+
+                <property name="regatta_informations" type="text_editor">
+                    <meta>
+                        <title lang="fr">Informations sur la régate</title>
+                    </meta>
+                </property>
+
+                <block name="services">
+                    <meta>
+                        <title lang="fr">Services</title>
+                    </meta>
+                    <types>
+                        <type name="service">
+                            <properties>
+                                <property name="name" type="text_line" mandatory="true">
+                                    <meta>
+                                        <title lang="fr">Nom</title>
+                                    </meta>
+                                </property>
+
+                                <property name="availability" type="checkbox">
+                                    <meta>
+                                        <title lang="fr">Disponibilité</title>
+                                    </meta>
+                                </property>
+                            </properties>
+                        </type>
+                    </types>
+                </block>
+            </properties>
+        </section>
+
+        <section name="sea_trip" visibleCondition="'sea_trip' == event_type">
+            <meta>
+                <title lang="fr">Sortie en mer</title>
+            </meta>
+
+            <properties>
+                <block name="boats">
+                    <types>
+                        <type name="boat">
+                            <meta>
+                                <title lang="fr">Bateau</title>
+                            </meta>
+
+                            <properties>
+                                <property name="boat_type" type="text_line" mandatory="true">
+                                    <meta>
+                                        <title lang="fr">Type de bateau</title>
+                                    </meta>
+                                </property>
+
+                                <property name="captain" type="contact_selection" mandatory="true">
+                                    <meta>
+                                        <title lang="fr">Nom</title>
+                                    </meta>
+                                </property>
+                            </properties>
+                        </type>
+                    </types>
+                </block>
+            </properties>
+        </section>
+
+        <section name="media">
+            <meta>
+                <title lang="fr">Médias</title>
+            </meta>
+
+            <properties>
+                <property name="main_media" type="single_media_selection">
+                    <meta>
+                        <title lang="fr">Média principal</title>
+                    </meta>
+
+                    <tag name="sulu.search.field" role="image" />
+                </property>
+
+                <property name="media" type="media_selection">
+                    <meta>
+                        <title lang="fr">Médias additionnels</title>
+                    </meta>
+                </property>
+            </properties>
+        </section>
+
+        <xi:include href="../fragments/links-and-contacts.xml"/>
+    </properties>
+</template>

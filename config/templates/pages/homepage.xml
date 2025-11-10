@@ -1,0 +1,235 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xi="http://www.w3.org/2001/XInclude"
+          xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
+
+    <key>homepage</key>
+
+    <view>pages/homepage</view>
+    <controller>Sulu\Content\UserInterface\Controller\Website\ContentController::indexAction</controller>
+    <cacheLifetime>86400</cacheLifetime>
+
+    <meta>
+        <title lang="fr">Accueil</title>
+    </meta>
+
+    <properties>
+        <section name="general">
+            <meta>
+                <title lang="fr">Général</title>
+            </meta>
+
+            <properties>
+                <property name="title" type="text_line" mandatory="true">
+                    <meta>
+                        <title lang="fr">Titre</title>
+                    </meta>
+                    <params>
+                        <param name="headline" value="true"/>
+                    </params>
+
+                    <tag name="sulu.rlp.part"/>
+                </property>
+
+                <property name="url" type="route" mandatory="true">
+                    <meta>
+                        <title lang="fr">URL</title>
+                    </meta>
+
+                    <tag name="sulu.rlp"/>
+                </property>
+            </properties>
+        </section>
+
+        <block name="content">
+            <types>
+                <type name="header">
+                    <meta>
+                        <title lang="fr">En-tête</title>
+                    </meta>
+
+                    <properties>
+                        <property type="single_media_selection" name="header_media" mandatory="true">
+                            <meta>
+                                <title lang="fr">Média</title>
+                            </meta>
+                        </property>
+
+                        <block name="header_ctas" default-type="cta">
+                            <meta>
+                                <title lang="fr">Call To Actions</title>
+                            </meta>
+
+                            <types>
+                                <type name="cta">
+                                    <meta>
+                                        <title lang="fr">Call To Action</title>
+                                    </meta>
+
+                                    <properties>
+                                        <property name="title" type="text_line" mandatory="true">
+                                            <meta>
+                                                <title lang="fr">Titre</title>
+                                            </meta>
+                                        </property>
+                                        <property name="url" type="url" mandatory="true">
+                                            <meta>
+                                                <title lang="fr">URL</title>
+                                            </meta>
+                                        </property>
+                                    </properties>
+                                </type>
+                            </types>
+                        </block>
+                    </properties>
+                </type>
+                <type name="calendar">
+                    <meta>
+                        <title lang="fr">Calendrier</title>
+                    </meta>
+
+                    <properties>
+                        <xi:include href="../fragments/title.xml" />
+                        <xi:include href="../fragments/description.xml" />
+
+                        <property name="link_text" type="text_line" mandatory="true">
+                            <meta>
+                                <title lang="fr">Texte du lien</title>
+                            </meta>
+                        </property>
+
+                        <property name="link_target" type="single_page_selection" mandatory="true">
+                            <meta>
+                                <title lang="fr">Cible du lien</title>
+                            </meta>
+                        </property>
+
+                        <property name="events" type="smart_content" mandatory="true">
+                            <meta>
+                                <title lang="fr">Événements</title>
+                            </meta>
+
+                            <params>
+                                <param name="provider" value="future_event" />
+                                <param name="page_parameter" value="page" />
+                                <param name="properties" type="collection">
+                                    <param name="title" value="title" />
+                                    <param name="url" value="url" />
+                                    <param name="begin_date" value="begin_date" />
+                                    <param name="description" value="description" />
+                                </param>
+                            </params>
+                        </property>
+                    </properties>
+                </type>
+
+                <type name="live">
+                    <meta>
+                        <title lang="fr">En direct (météo / webcam)</title>
+                    </meta>
+
+                    <properties>
+                        <xi:include href="../fragments/title.xml" />
+                        <xi:include href="../fragments/description.xml" />
+
+                        <section name="webcam">
+                            <meta>
+                                <title lang="fr">Webcam</title>
+                            </meta>
+
+                            <properties>
+                                <property name="webcam_stream_url" type="url">
+                                    <meta>
+                                        <title lang="fr">URL du flux</title>
+                                    </meta>
+                                </property>
+                            </properties>
+                        </section>
+
+                        <section name="links">
+                            <meta>
+                                <title lang="fr">Liens</title>
+                            </meta>
+
+                            <properties>
+                                <block name="links">
+                                    <types>
+                                        <type name="link">
+                                            <meta>
+                                                <title lang="fr">Lien (bouton)</title>
+                                            </meta>
+
+                                            <properties>
+                                                <property name="link_text" type="text_line">
+                                                    <meta>
+                                                        <title lang="fr">Texte du lien</title>
+                                                    </meta>
+                                                </property>
+
+                                                <property name="link_target" type="single_page_selection">
+                                                    <meta>
+                                                        <title lang="fr">Cible du lien</title>
+                                                    </meta>
+                                                </property>
+                                            </properties>
+                                        </type>
+                                    </types>
+                                </block>
+                            </properties>
+                        </section>
+                    </properties>
+                </type>
+
+                <type name="social">
+                    <meta>
+                        <title lang="fr">Réseaux sociaux</title>
+                    </meta>
+
+                    <xi:include href="../fragments/title-and-description.xml" />
+                </type>
+
+                <type name="partners">
+                    <meta>
+                        <title lang="fr">Partenaires</title>
+                    </meta>
+
+                    <properties>
+                        <xi:include href="../fragments/title.xml" />
+                        <xi:include href="../fragments/description.xml" />
+
+                        <block name="partners">
+                            <types>
+                                <type name="partner">
+                                    <meta>
+                                        <title lang="fr">Partenaire</title>
+                                    </meta>
+
+                                    <properties>
+                                        <property name="name" type="text_line" mandatory="true">
+                                            <meta>
+                                                <title lang="fr">Nom</title>
+                                            </meta>
+                                        </property>
+
+                                        <property name="media" type="single_media_selection" mandatory="true">
+                                            <meta>
+                                                <title lang="fr">Média</title>
+                                            </meta>
+                                        </property>
+
+                                        <property name="url" type="url">
+                                            <meta>
+                                                <title lang="fr">URL</title>
+                                            </meta>
+                                        </property>
+                                    </properties>
+                                </type>
+                            </types>
+                        </block>
+                    </properties>
+                </type>
+            </types>
+        </block>
+    </properties>
+</template>

@@ -1,0 +1,11 @@
+<header class="Header">
+    <h1>{{ content.title }}</h1>
+
+    <img src="{{ block.header_media.formats['sulu-400x400.webp'] }}" alt="En-tête">
+
+    <div class="Ctas">
+        {% for cta in block.header_ctas %}
+            <a href="{{ cta.url }}" class="Ctas__ctaLink">{{ cta.title }}</a>
+        {% endfor %}
+    </div>
+</header>

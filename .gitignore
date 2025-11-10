@@ -1,0 +1,52 @@
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+
+# web
+/public/bundles
+/public/uploads
+/public/build
+
+# composer
+/composer.phar
+
+# npm
+node_modules
+.yarn
+
+# phpcs
+.php_cs.cache
+.php_cs
+
+# IDEs
+/.idea
+*.iml
+*~
+.web-server-pid
+
+# System files
+.DS_Store
+
+.configured
+
+# certs
+infra/tls
+
+# build
+build/
+
+###> symfony/asset-mapper ###
+/public/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+.twig-cs-fixer.cache

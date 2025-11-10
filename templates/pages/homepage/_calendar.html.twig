@@ -1,0 +1,27 @@
+<section class="HomepageCalendar">
+    <div class="HomepageCalendar__titleAndLink">
+        <h2 class="HomepageCalendar__title">{{ block.title }}</h2>
+        <div class="HomepageCalendar__description">
+            {{ block.description|raw }}
+        </div>
+        <sulu-link href="{{ block.link_target.url }}">{{ block.link_text }}</sulu-link>
+    </div>
+    <ul class="HomepageCalendar__events">
+        {% for event in block.events %}
+            <li>
+                <div class="HomepageCalendar__event">
+                    <div class="HomepageCalendar__eventDate">
+                        {{ event.begin_date|format_date }}
+                    </div>
+                    <div class="HomepageCalendar__eventTitle">
+                        {{ event.title }}
+                    </div>
+                    <div class="HomepageCalendar__eventDescription">
+                        {{ event.description|raw }}
+                    </div>
+                    <a href="{{ event.url }}">Plus d'informations</a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</section>
