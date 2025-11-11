@@ -1,0 +1,58 @@
+{% types liveWeather: 'App\\DTO\\LiveWeather' %}
+{% set liveWeather = this.liveWeather %}
+
+<section {{ attributes.defaults({class: 'WeatherLive'}) }}>
+    <dl class="WeatherLive__humidity">
+        <dt>Humidité</dt>
+        <dd>{{ liveWeather.humidity|format_number(style: 'percent') }}</dd>
+        <dt>Humidité min</dt>
+        <dd>{{ liveWeather.humidityMin|format_number(style: 'percent') }}</dd>
+        <dt>Humidité max</dt>
+        <dd>{{ liveWeather.humidityMax|format_number(style: 'percent') }}</dd>
+    </dl>
+
+    <dl class="WeatherLive__pressure">
+        <dt>Pression atmosphérique</dt>
+        <dd>{{ liveWeather.pressure|format_number }} hPa</dd>
+        <dt>Pression atmosphérique min</dt>
+        <dd>{{ liveWeather.pressureMin|format_number }} hPa</dd>
+        <dt>Pression atmosphérique max</dt>
+        <dd>{{ liveWeather.pressureMax|format_number }} hPa</dd>
+    </dl>
+
+    <dl class="WeatherLive__temperature">
+        <dt>Température</dt>
+        <dd>{{ liveWeather.temperature|format_number }} °C</dd>
+        <dt>Température min</dt>
+        <dd>{{ liveWeather.temperatureMin|format_number }} °C</dd>
+        <dt>Température max</dt>
+        <dd>{{ liveWeather.temperatureMax|format_number }} °C</dd>
+    </dl>
+
+    <dl class="WeatherLive__rain">
+        <dt>Rythme pluie</dt>
+        <dd>{{ liveWeather.rainRate|format_number }} mm/h</dd>
+        <dt>Total pluie Aujourd'hui</dt>
+        <dd>{{ liveWeather.rainTotal|format_number }} mm</dd>
+    </dl>
+
+    <dl class="WeatherLive__currentWind">
+        <dt>Direction du vent</dt>
+        <dd>{{ liveWeather.windDirectionAsCardinal.value }}</dd>
+        <dt>Vitesse du vent</dt>
+        <dd>{{ liveWeather.windSpeed|round|format_number }} nds</dd>
+        <dt>Vitesse des rafales</dt>
+        <dd>{{ liveWeather.windGusts|round|format_number }} nds</dd>
+    </dl>
+
+    <dl class="WeatherLive__averageWind">
+        <dt>Direction du vent moyen</dt>
+        <dd>{{ liveWeather.windDirectionAverageAsCardinal.value }}</dd>
+        <dt>Vitesse du vent moyen</dt>
+        <dd>{{ liveWeather.windSpeedAverage|round|format_number }} nds</dd>
+        <dt>Vitesse du vent min</dt>
+        <dd>{{ liveWeather.windSpeedMax|round|format_number }} nds</dd>
+        <dt>Vitesse du vent max</dt>
+        <dd>{{ liveWeather.windSpeedMax|round|format_number }} nds</dd>
+    </dl>
+</section>

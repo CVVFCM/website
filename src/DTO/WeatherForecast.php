@@ -2,19 +2,10 @@
 
 namespace App\DTO;
 
+use App\Weather\CardinalDirection;
+
 final readonly class WeatherForecast
 {
-    private const array CARDINALS = [
-        0 => 'Nord',
-        45 => 'Nord-Est',
-        90 => 'Est',
-        135 => 'Sud-Est',
-        180 => 'Sud',
-        225 => 'Sud-Ouest',
-        270 => 'Ouest',
-        315 => 'Nord-Ouest',
-    ];
-
     public const array HOURS = [
         '10' => 'Matin',
         '13' => 'Midi',
@@ -38,18 +29,8 @@ final readonly class WeatherForecast
         return self::HOURS[$hour] ?? 'En ce moment';
     }
 
-    public function getWindCardinalDirection(): string
+    public function getWindCardinalDirection(): CardinalDirection
     {
-        foreach (self::CARDINALS as $direction => $cardinal) {
-            $direction = (float) $direction;
-            $lowerDirection = fmod($direction - 22.5 + 360., 360.);
-            $upperDirection = fmod($direction + 22.5, 360.);
-
-            if ($this->windDirection > $lowerDirection && $this->windDirection <= $upperDirection) {
-                return $cardinal;
-            }
-        }
-
-        return 'Variable';
+        return CardinalDirection::fromDirection($this->windDirection);
     }
 }

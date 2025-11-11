@@ -1,3 +1,2 @@
-
 {# The map must have a defined height #}
-{{ ux_map(this.map, {style: 'height: 600px;'}) }}
+{{ ux_map(this.map, attributes.defaults({style: 'height: 600px;'}).all()) }}

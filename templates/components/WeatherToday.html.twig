@@ -1,4 +1,4 @@
-<section class="WeatherToday">
+<section {{ attributes.defaults({class: 'WeatherToday'}) }}>
     <div>
         <h4>Aujourd'hui</h4>
 
@@ -20,7 +20,7 @@
                     <strong>{{ forecast.label }}</strong>
                     <span>{{ forecast.temperature|round }}°C</span>
                     <span>{{ forecast.windSpeed|round }}nds</span>
-                    <span>{{ forecast.windCardinalDirection }}</span>
+                    <span>{{ forecast.windCardinalDirection.value }}</span>
                 </li>
             {% endfor %}
         </ul>
