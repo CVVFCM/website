@@ -26,7 +26,12 @@ export default class extends Controller {
     }
 
     start() {
-        this.webrtc = new RTCPeerConnection();
+        this.webrtc = new RTCPeerConnection({
+            iceServers: [{
+                urls: ['stun:stun.l.google.com:19302'],
+            }],
+            sdpSemantics: 'unified-plan',
+        });
 
         this.webrtc.ontrack = event => {
             this.element.srcObject = event.streams[0];
