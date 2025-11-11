@@ -2,6 +2,10 @@
 {% set liveWeather = this.liveWeather %}
 
 <section {{ attributes.defaults({class: 'WeatherLive'}) }}>
+    <time datetime="{{ liveWeather.updatedAt.format('c') }}">
+        Mis à jour le {{ liveWeather.updatedAt.format('d/m/Y à H:i:s') }}
+    </time>
+
     <dl class="WeatherLive__humidity">
         <dt>Humidité</dt>
         <dd>{{ liveWeather.humidity|format_number(style: 'percent') }}</dd>
