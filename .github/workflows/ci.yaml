@@ -65,7 +65,9 @@ jobs:
                 with:
                     version: latest
             -   name: Composer install
-                run: docker compose run --rm php composer install
+                run: |
+                    mkdir -p var/cache/dev var/cache/test var/log
+                    docker compose run --rm php composer install
             -   name: Admin NPM install
                 run: |
                     docker run --rm -v ${PWD}:/app -w /app/assets/admin node:22-bookworm-slim npm install
