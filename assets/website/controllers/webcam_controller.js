@@ -5,10 +5,19 @@ export default class extends Controller {
         url: String,
     };
 
+    mseStreamingStarted = false;
+
     /**
-     * @type {RTCPeerConnection|null}
+     * @type {MediaSource}
      */
-    webrtc;
+    mse;
+
+    /**
+     * @type {SourceBuffer}
+     */
+    mseSourceBuffer = null;
+
+    mseQueue = [];
 
     connect() {
         if (!this.element instanceof HTMLVideoElement) {
@@ -18,46 +27,62 @@ export default class extends Controller {
         this.start();
     }
 
-    disconnect() {
-        if (this.webrtc) {
-            this.webrtc.close();
-            this.webrtc = null;
+    start() {
+        this.mse = new MediaSource();
+        this.element.src = window.URL.createObjectURL(this.mse)
+
+        this.mse.addEventListener('sourceopen', () => {
+            const ws = new WebSocket(this.urlValue);
+
+            ws.binaryType = 'arraybuffer';
+            ws.onopen = () => { console.log('Connected to ws'); };
+            ws.onmessage = (event) => {
+                const data = new Uint8Array(event.data);
+                if (data[0] === 9) {
+                    let mimeCodec;
+                    const decodedArr = data.slice(1);
+
+                    if (window.TextDecoder) {
+                        mimeCodec = new TextDecoder('utf-8').decode(decodedArr);
+                    } else {
+                        mimeCodec = Utf8ArrayToStr(decodedArr);
+                    }
+
+                    this.mseSourceBuffer = this.mse.addSourceBuffer('video/mp4; codecs="' + mimeCodec + '"');
+                    this.mseSourceBuffer.mode = 'segments';
+                    this.mseSourceBuffer.addEventListener('updateend', this.pushPacket.bind(this));
+                } else {
+                    this.readPacket(event.data);
+                }
+            }
+        }, false);
+    }
+
+    pushPacket() {
+        let packet;
+
+        if (!this.mseSourceBuffer.updating) {
+            if (this.mseQueue.length > 0) {
+                packet = this.mseQueue.shift();
+
+                this.mseSourceBuffer.appendBuffer(packet);
+            } else {
+                this.mseStreamingStarted = false;
+            }
         }
     }
 
-    start() {
-        this.webrtc = new RTCPeerConnection({
-            iceServers: [{
-                urls: ['stun:stun.l.google.com:19302'],
-            }],
-            sdpSemantics: 'unified-plan',
-        });
+    readPacket (packet) {
+        if (!this.mseStreamingStarted) {
+            this.mseSourceBuffer.appendBuffer(packet);
+            this.mseStreamingStarted = true;
 
-        this.webrtc.ontrack = event => {
-            this.element.srcObject = event.streams[0];
-            this.element.play();
+            return;
         }
 
-        this.webrtc.addTransceiver('video', { direction: 'sendrecv' });
-
-        this.webrtc.onnegotiationneeded = async () => {
-            const offer = await this.webrtc.createOffer();
-            await this.webrtc.setLocalDescription(offer);
-
-            const res = await fetch(this.urlValue, {
-                method: 'POST',
-                body: new URLSearchParams({ data: btoa(this.webrtc.localDescription.sdp) }),
-            });
-            const data = await res.text();
-            try {
-                await this.webrtc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: atob(data) }));
-            } catch (e) {
-                console.warn(e);
-            }
-        };
-
-        const webrtcSendChannel = this.webrtc.createDataChannel('rtsptowebSendChannel')
-        webrtcSendChannel.onopen = () => webrtcSendChannel.send('ping');
-        webrtcSendChannel.onclose = (_event) => this.start(this.element, this.urlValue);
+        this.mseQueue.push(packet);
+        if (!this.mseSourceBuffer.updating) {
+            this.pushPacket();
+        }
     }
 }

@@ -77,7 +77,7 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                         'type' => 'live',
                         'title' => 'En direct',
                         'description' => '<p>Avant de vous jeter à l\'eau, retrouvez les conditions météo sur le lac !</p>',
-                        'webcam_stream_url' => 'http://'.$this->serverName.':8083/stream/mouillages/channel/0/webrtc',
+                        'webcam_stream_url' => 'https://'.$this->serverName.'/stream/mouillages/channel/0/mse',
                         'links' => [
                             [
                                 'type' => 'link',
