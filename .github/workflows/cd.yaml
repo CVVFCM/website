@@ -71,9 +71,7 @@ jobs:
             SERVER_NAME: ${{ vars.SERVER_NAME }}
             MAILER_DSN: ${{ secrets.MAILER_DSN }}
             SULU_ADMIN_EMAIL: ${{ vars.SULU_ADMIN_EMAIL }}
-            FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
-            FACEBOOK_APP_SECRET: ${{ secrets.FACEBOOK_APP_SECRET }}
-            FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+            SYMFONY_DECRYPTION_SECRET: ${{ secrets.SYMFONY_DECRYPTION_SECRET }}
             IMAGE_TAG: ${{ github.ref_name }}
             S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
             S3_KEY: ${{ secrets.S3_KEY }}
@@ -112,10 +110,13 @@ jobs:
             SERVER_NAME: ${{ vars.SERVER_NAME }}
             MAILER_DSN: ${{ secrets.MAILER_DSN }}
             SULU_ADMIN_EMAIL: ${{ vars.SULU_ADMIN_EMAIL }}
-            FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
-            FACEBOOK_APP_SECRET: ${{ secrets.FACEBOOK_APP_SECRET }}
-            FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+            SYMFONY_DECRYPTION_SECRET: ${{ secrets.SYMFONY_DECRYPTION_SECRET }}
             IMAGE_TAG: ${{ github.ref_name }}
+            S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+            S3_KEY: ${{ secrets.S3_KEY }}
+            S3_SECRET: ${{ secrets.S3_SECRET }}
+            S3_BUCKET: ${{ secrets.S3_BUCKET }}
+            S3_REGION: ${{ secrets.S3_REGION }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4

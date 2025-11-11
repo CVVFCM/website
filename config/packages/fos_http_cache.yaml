@@ -1,7 +1,15 @@
+parameters:
+    env(CLOUDFLARE_API_TOKEN): ''
+    env(CLOUDFLARE_ZONE_ID): ''
+
 fos_http_cache:
     proxy_client:
-        symfony:
-            use_kernel_dispatcher: true
+        cloudflare:
+            zone_identifier: '%env(CLOUDFLARE_ZONE_ID)%'
+            authentication_token: '%env(CLOUDFLARE_API_TOKEN)%'
+            http:
+                servers:
+                    - 'https://api.cloudflare.com'
 
 # activate the following for user context based caching
 # also activate the route in config/routes/fos_http_cache.yaml and subscriber in src/Kernel.php

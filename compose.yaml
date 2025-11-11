@@ -13,9 +13,7 @@ services:
             DATABASE_URL: ${DATABASE_URL:-pgsql://${POSTGRES_USER:-cvvfcm}:${POSTGRES_PASSWORD:-cvvfcm}@database:5432/${POSTGRES_DB:-cvvfcm}?serverVersion=18&charset=utf8}
             SULU_ADMIN_EMAIL: ${SULU_ADMIN_EMAIL:-"CVVFCM <contact@cvvfcm.fr>"}
             APP_ENV: ${APP_ENV:-prod}
-            FACEBOOK_APP_ID: ${FACEBOOK_APP_ID:-}
-            FACEBOOK_APP_SECRET: ${FACEBOOK_APP_SECRET:-}
-            FACEBOOK_PAGE_ID: ${FACEBOOK_PAGE_ID:-}
+            SYMFONY_DECRYPTION_SECRET: ${SYMFONY_DECRYPTION_SECRET:-}
             S3_KEY: ${S3_KEY:-}
             S3_SECRET: ${S3_SECRET:-}
             S3_ENDPOINT: ${S3_ENDPOINT:-}
