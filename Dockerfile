@@ -2,9 +2,10 @@
 
 ARG FRANKENPHP_VERSION=1.9
 ARG PHP_VERSION=8.4
+ARG NODE_VERSION=22
 ARG DEBIAN_VERSION=trixie
 
-FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-${DEBIAN_VERSION} AS php
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-${DEBIAN_VERSION} AS base
 
 LABEL org.opencontainers.image.source=https://github.com/CVVFCM/website
 LABEL org.opencontainers.image.licenses=GPL-3.0-or-later
@@ -59,8 +60,20 @@ RUN set -eux; \
     composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress; \
     composer clear-cache
 
-COPY --chown=www-data:www-data .env ./
 COPY --chown=www-data:www-data assets assets/
+
+FROM node:${NODE_VERSION}-${DEBIAN_VERSION} AS node
+
+COPY --from=base /app /app
+WORKDIR /app/assets/admin
+
+RUN set -eux; \
+    npm install; \
+    npm run build
+
+FROM base AS php
+
+COPY --chown=www-data:www-data .env ./
 COPY --chown=www-data:www-data bin bin/
 COPY --chown=www-data:www-data config config/
 COPY --chown=www-data:www-data migrations migrations/
@@ -69,13 +82,17 @@ COPY --chown=www-data:www-data src src/
 COPY --chown=www-data:www-data templates templates/
 COPY --chown=www-data:www-data translations translations/
 
+COPY --from=node --chown=www-data:www-data /app/public/build public/build
+
 RUN set -eux; \
     mkdir -p var/cache var/log; \
     composer install --prefer-dist --no-dev --no-progress; \
     composer dump-autoload --optimize --no-dev --classmap-authoritative; \
+    chmod +x bin/console; \
     php bin/console cache:clear; \
     php bin/console cache:warmup -eprod; \
-    chmod +x bin/console; \
+    php bin/console importmap:install; \
+    php bin/console asset-map:compile; \
     sync
 
 HEALTHCHECK CMD curl -f http://localhost:2019/metrics || exit 1
