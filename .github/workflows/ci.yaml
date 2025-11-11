@@ -75,6 +75,7 @@ jobs:
             -   name: Start services
                 env:
                     CADDY_SERVER_EXTRA_DIRECTIVES: ' '
+                    CADDY_EXTRA_CONFIG: ' '
                 run: docker compose up --wait --no-build || (docker compose logs && exit 1)
             -   name: Create test database
                 run: docker compose exec -T php composer reset-test
