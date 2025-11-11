@@ -29,6 +29,7 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
 
         $homepage = $this->pageRepository->findOneBy(['depth' => 0, 'webspaceKey' => 'cvvfcm']);
         $events = $this->getReference('events', Page::class);
+        $live = $this->getReference('live', Page::class);
         foreach ($homepage->getDimensionContents() as $homepageDimensionContent) {
             /** @var PageDimensionContent $homepageDimensionContent */
             if (!$homepageDimensionContent->getTitle()) {
@@ -78,6 +79,7 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                         'title' => 'En direct',
                         'description' => '<p>Avant de vous jeter à l\'eau, retrouvez les conditions météo sur le lac !</p>',
                         'webcam_stream_url' => 'https://'.$this->serverName.'/stream/mouillages/channel/0/mse',
+                        'webcam_stream_page_link' => $live->getUuid(),
                         'links' => [
                             [
                                 'type' => 'link',
@@ -109,8 +111,9 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
     public function getDependencies(): array
     {
         return [
-            MediaFixtures::class,
             EventsFixtures::class,
+            LiveFixtures::class,
+            MediaFixtures::class,
         ];
     }
 }

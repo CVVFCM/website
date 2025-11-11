@@ -1,1 +1,7 @@
-<video autoplay muted playsinline controls {{ attributes.defaults(stimulus_controller('webcam', {url: url})) }}></video>
+{% if link is defined and link %}
+    <a href="{{ link.url }}" title="{{ link.title }}">
+        <video autoplay muted playsinline {{ attributes.defaults(stimulus_controller('webcam', {url: url})) }}></video>
+    </a>
+{% else %}
+    <video autoplay muted playsinline {{ attributes.defaults(stimulus_controller('webcam', {url: url})) }}></video>
+{% endif %}

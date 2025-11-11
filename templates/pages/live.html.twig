@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <article>
+        <header>
+            <h1>{{ content.title }}</h1>
+            {% if content.media %}
+                <div>
+
+                    <img
+                        src="{{ content.media.formats['sulu-400x400.webp'] }}"
+                        alt="{{ content.media.title }}"
+                        title="{{ content.media.description|default(content.media.title) }}"/>
+                </div>
+            {% endif %}
+
+            <div>{{ content.description|raw }}</div>
+        </header>
+
+        <section>
+            <twig:Webcam url="{{ content.webcam_stream_url }}" />
+        </section>
+    </article>
+{% endblock %}

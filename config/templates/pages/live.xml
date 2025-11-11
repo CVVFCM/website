@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
+
+    <key>live</key>
+
+    <view>pages/live</view>
+    <controller>Sulu\Content\UserInterface\Controller\Website\ContentController::indexAction</controller>
+    <cacheLifetime>604800</cacheLifetime>
+
+    <meta>
+        <title lang="fr">Direct</title>
+    </meta>
+
+    <properties>
+        <property name="title" type="text_line" mandatory="true">
+            <meta>
+                <title lang="fr">Titre</title>
+            </meta>
+            <params>
+                <param name="headline" value="true"/>
+            </params>
+
+            <tag name="sulu.rlp.part"/>
+        </property>
+
+        <property name="url" type="route" mandatory="true">
+            <meta>
+                <title lang="fr">URL</title>
+            </meta>
+
+            <tag name="sulu.rlp"/>
+        </property>
+
+        <property name="description" type="text_editor" mandatory="true">
+            <meta>
+                <title lang="fr">Description</title>
+            </meta>
+            <params>
+                <param name="headline" value="true"/>
+            </params>
+        </property>
+
+        <property name="media" type="single_media_selection" mandatory="true">
+            <meta>
+                <title lang="fr">Média</title>
+            </meta>
+        </property>
+
+        <section name="webcam">
+            <meta>
+                <title lang="fr">Webcam</title>
+            </meta>
+
+            <properties>
+                <property name="webcam_stream_url" type="url">
+                    <meta>
+                        <title lang="fr">URL du flux</title>
+                    </meta>
+                </property>
+            </properties>
+        </section>
+    </properties>
+</template>

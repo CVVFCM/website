@@ -144,6 +144,12 @@
                                         <title lang="fr">URL du flux</title>
                                     </meta>
                                 </property>
+
+                                <property name="webcam_stream_page_link" type="single_page_selection" mandatory="false">
+                                    <meta>
+                                        <title lang="fr">Lien vers la page webcam</title>
+                                    </meta>
+                                </property>
                             </properties>
                         </section>
 

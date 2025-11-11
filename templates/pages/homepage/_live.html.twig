@@ -2,14 +2,14 @@
     <h2 class="HomepageLive__title">{{ block.title }}</h2>
     <div class="HomepageLive__description">{{ block.description|raw }}</div>
 
-    <twig:Webcam url="{{ block.webcam_stream_url }}" />
+    <twig:Webcam url="{{ block.webcam_stream_url }}" link="{{ block.webcam_stream_page_link }}" />
     <twig:WeatherToday />
 
     {% if block.links %}
         <ul>
             {% for link in block.links %}
                 <li>
-                    <sulu-link href="{{ link.link_target.url }}">{{ link.link_text }}</sulu-link>
+                    <a href="{{ link.link_target.url }}">{{ link.link_text }}</a>
                 </li>
             {% endfor %}
         </ul>
