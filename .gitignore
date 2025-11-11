@@ -50,3 +50,4 @@ build/
 ###< friendsofphp/php-cs-fixer ###
 
 .twig-cs-fixer.cache
+.phpunit.result.cache
