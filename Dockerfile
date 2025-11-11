@@ -82,6 +82,8 @@ COPY --chown=www-data:www-data src src/
 COPY --chown=www-data:www-data templates templates/
 COPY --chown=www-data:www-data translations translations/
 
+COPY --chown=www-data:www-data importmap.php ./
+
 COPY --from=node --chown=www-data:www-data /app/public/build public/build
 
 RUN set -eux; \
