@@ -9,19 +9,10 @@ services:
             FRANKENPHP_WORKER_CONFIG: watch
             APP_ENV: ${APP_ENV:-dev}
             S3_ENDPOINT: http://localstack:4566
-            CADDY_EXTRA_CONFIG: >
-                :8443 { 
-                    reverse_proxy * http://localstack:4566
-                    tls /app/infra/tls/cert.pem /app/infra/tls/key.pem
-                }
         extra_hosts:
             - host.docker.internal:host-gateway
         tty: true
         command: [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--watch" ]
-        ports:
-            -   target: 8443
-                published: ${S3_PORT:-8443}
-                protocol: tcp
 
     mailer:
         image: axllent/mailpit
