@@ -10,16 +10,22 @@ services:
             SERVER_NAME: ${SERVER_NAME:-localhost}
             APP_SECRET: ${APP_SECRET:-!ChangeMe!}
             MAILER_DSN: ${MAILER_DSN:-smtp://smtp:1025}
-            DATABASE_URL: ${DATABASE_URL:-mysql://${MYSQL_USER:-cvvfcm}:${MYSQL_PASSWORD:-cvvfcm}@database:3306/${MYSQL_DATABASE:-cvvfcm}?serverVersion=9.5&charset=utf8mb4}
+            DATABASE_URL: ${DATABASE_URL:-pgsql://${POSTGRES_USER:-cvvfcm}:${POSTGRES_PASSWORD:-cvvfcm}@database:5432/${POSTGRES_DB:-cvvfcm}?serverVersion=18&charset=utf8}
             SULU_ADMIN_EMAIL: ${SULU_ADMIN_EMAIL:-"CVVFCM <contact@cvvfcm.fr>"}
             APP_ENV: ${APP_ENV:-prod}
             FACEBOOK_APP_ID: ${FACEBOOK_APP_ID:-}
             FACEBOOK_APP_SECRET: ${FACEBOOK_APP_SECRET:-}
             FACEBOOK_PAGE_ID: ${FACEBOOK_PAGE_ID:-}
+            S3_KEY: ${S3_KEY:-}
+            S3_SECRET: ${S3_SECRET:-}
+            S3_ENDPOINT: ${S3_ENDPOINT:-}
+            S3_REGION: ${S3_REGION:-eu-west-3}
+            S3_BUCKET: ${S3_BUCKET:-cvvfcm}
         volumes:
             - caddy_data:/data
             - caddy_config:/config
             - search_indexes:/app/var/indexes
+            - thumbnails:/app/public/uploads
         ports:
             -   target: 80
                 published: ${HTTP_PORT:-80}
@@ -44,3 +50,4 @@ volumes:
     caddy_data:
     caddy_config:
     search_indexes:
+    thumbnails:

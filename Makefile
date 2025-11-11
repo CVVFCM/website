@@ -9,7 +9,7 @@ clean_admin_assets:
 
 clean: clean_admin_assets
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
-	@rm -rf .configured assets/admin/node_modules infra/tls public/assets public/build vendor var/cache var/log
+	@rm -rf .configured assets/admin/node_modules infra/tls public/assets public/build public/uploads vendor var/cache var/log
 
 ps:
 	@$(DOCKER_COMPOSE) ps

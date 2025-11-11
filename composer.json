@@ -13,6 +13,8 @@
         "doctrine/doctrine-fixtures-bundle": "^4.3.0",
         "doctrine/doctrine-migrations-bundle": "*",
         "friendsofsymfony/http-cache-bundle": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.30",
+        "league/flysystem-bundle": "^3.3",
         "runtime/frankenphp-symfony": "^0.2.0",
         "scheb/2fa-bundle": "^7.11.0",
         "scheb/2fa-email": "^7.11.0",

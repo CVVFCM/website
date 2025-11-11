@@ -30,15 +30,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN set -eux; \
     sed -i -r s/"(www-data:x:)([[:digit:]]+):([[:digit:]]+):"/\\1${EXTERNAL_USER_ID}:${EXTERNAL_USER_ID}:/g /etc/passwd; \
     sed -i -r s/"(www-data:x:)([[:digit:]]+):"/\\1${EXTERNAL_USER_ID}:/g /etc/group; \
-    mkdir -p /var/run/php /data /config /app/var/cache /app/var/log /app/var/indexes /app/var/uploads; \
-    chown -R www-data:www-data /app /var/www /usr/local/etc/php /var/run/php /data /config /app/var/cache /app/var/log /app/var/indexes /app/var/uploads
+    mkdir -p /var/run/php /data /config /app/var/indexes /app/public/uploads; \
+    chown -R www-data:www-data /app /var/www /usr/local/etc/php /var/run/php /data /config /app/var/indexes /app/public/uploads
 
 VOLUME /config
 VOLUME /data
-VOLUME /app/var/log
-VOLUME /app/var/cache
 VOLUME /app/var/indexes
-VOLUME /app/var/uploads
+VOLUME /app/public/uploads
 
 COPY --chown=www-data:www-data infra/docker/php/Caddyfile /etc/caddy/Caddyfile
 COPY --chown=www-data:www-data infra/docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
