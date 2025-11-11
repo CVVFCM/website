@@ -40,7 +40,7 @@ final readonly class FutureEventSmartContentProvider extends PageSmartContentPro
                 public function addOrderBySelects(QueryBuilder $queryBuilder): void
                 {
                     $queryBuilder
-                        ->addSelect('JSON_GET_TEXT(filterDimensionContent.templateData, \'"begin_date"\') AS HIDDEN begin_date')
+                        ->addSelect('JSON_GET_TEXT(filterDimensionContent.templateData, \'begin_date\') AS HIDDEN begin_date')
                         ->addOrderBy('begin_date', 'ASC');
                 }
             },
@@ -75,7 +75,7 @@ final readonly class FutureEventSmartContentProvider extends PageSmartContentPro
     {
         $queryBuilder
             ->andWhere('filterDimensionContent.templateKey = :template_key')
-            ->andWhere('JSON_GET_TEXT(filterDimensionContent.templateData, \'"begin_date"\') >= :current_date')
+            ->andWhere('JSON_GET_TEXT(filterDimensionContent.templateData, \'begin_date\') >= :current_date')
             ->setParameter('current_date', now()->format('Y-m-d'))
             ->setParameter('template_key', 'event');
 

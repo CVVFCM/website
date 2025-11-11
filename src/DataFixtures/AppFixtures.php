@@ -10,9 +10,9 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 final class AppFixtures extends Fixture
 {
     public function __construct(
-        #[Autowire('env(FACEBOOK_DEFAULT_TOKEN)%')]
+        #[Autowire('%env(FACEBOOK_DEFAULT_TOKEN)%')]
         private readonly string $facebookDefaultToken,
-        #[Autowire('env(FACEBOOK_PAGE_TOKEN)%')]
+        #[Autowire('%env(FACEBOOK_PAGE_TOKEN)%')]
         private readonly string $facebookPageToken,
     ) {
     }
