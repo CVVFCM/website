@@ -35,7 +35,6 @@ export default class extends Controller {
             const ws = new WebSocket(this.urlValue);
 
             ws.binaryType = 'arraybuffer';
-            ws.onopen = () => { console.log('Connected to ws'); };
             ws.onmessage = (event) => {
                 const data = new Uint8Array(event.data);
                 if (data[0] === 9) {
