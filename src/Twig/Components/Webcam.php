@@ -7,7 +7,10 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 final class Webcam
 {
-    public string $url;
+    public ?string $url = null;
 
-    public mixed $link;
+    /**
+     * @var array{url: string, title: string, description: string}|null
+     */
+    public ?array $link = null;
 }

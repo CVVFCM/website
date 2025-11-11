@@ -2,6 +2,7 @@
 
 $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__)
+    ->exclude('config/secrets')
     ->exclude('var')
 ;
 

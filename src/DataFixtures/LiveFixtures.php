@@ -24,14 +24,13 @@ final class LiveFixtures extends Fixture implements DependentFixtureInterface
     private MessageBusInterface $messageBus;
 
     public function __construct(
-        private readonly PageRepositoryInterface  $pageRepository,
+        private readonly PageRepositoryInterface $pageRepository,
         private readonly ContentWorkflowInterface $contentWorkflow,
         private readonly MediaRepositoryInterface $mediaRepository,
-        MessageBusInterface                       $messageBus,
+        MessageBusInterface $messageBus,
         #[Autowire('%env(SERVER_NAME)%')]
-        private readonly string                   $serverName,
-    )
-    {
+        private readonly string $serverName,
+    ) {
         $this->messageBus = $messageBus;
     }
 
@@ -61,13 +60,13 @@ final class LiveFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($live);
 
         foreach ($live->getDimensionContents() as $liveDimensionContent) {
-            /** @var PageDimensionContent $liveDimensionContent */
+            /* @var PageDimensionContent $liveDimensionContent */
             $liveDimensionContent->setTemplateData([
                 'title' => 'Direct',
                 'url' => '/direct',
                 'description' => '<p>Retrouvez le direct du lac</p>',
                 'media' => ['id' => $medias[array_rand($medias)]->getId()],
-                'webcam_stream_url' => 'https://' . $this->serverName . '/stream/mouillages/channel/1/mse',
+                'webcam_stream_url' => 'https://'.$this->serverName.'/stream/mouillages/channel/1/mse',
             ]);
         }
 
