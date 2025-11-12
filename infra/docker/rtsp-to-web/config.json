@@ -11,7 +11,7 @@
             "channels": {
                 "0": {
                     "name": "SD",
-                    "url": "rtsp://portail:portail@yohang.duckdns.org:554/stream2",
+                    "url": "rtsp://CVVFCM:VFSailing08@cvvfcm.bounceme.net:554/stream2",
                     "on_demand": true,
                     "debug": false,
                     "audio": false,
@@ -19,7 +19,7 @@
                 },
                 "1": {
                     "name": "HD",
-                    "url": "rtsp://portail:portail@yohang.duckdns.org:554/stream1",
+                    "url": "rtsp://CVVFCM:VFSailing08@cvvfcm.bounceme.net:554/stream1",
                     "on_demand": true,
                     "debug": false,
                     "audio": false,
