@@ -30,7 +30,7 @@ cli:
 	test -f $@ || make first_run
 	@touch $@
 
-first_run: infra/tls/cert.pem build vendor/ up reset public/build/admin/manifest.json
+first_run: infra/tls/cert.pem build var/ vendor/ up reset public/build/admin/manifest.json
 
 reset:
 	@$(DOCKER_COMPOSE) exec php composer reset
@@ -57,6 +57,9 @@ psalm: ## Run static analysis
 
 psalm_strict: ## Run static analysis (strict mode)
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/psalm --show-info=true --no-diff
+
+var/:
+	@mkdir -p var/cache var/indexes var/log
 
 vendor/:
 	@$(DOCKER_COMPOSE) run --rm php composer install
