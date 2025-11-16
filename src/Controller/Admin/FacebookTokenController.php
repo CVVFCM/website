@@ -53,7 +53,7 @@ final readonly class FacebookTokenController
         $listRepresentation = new PaginatedRepresentation(
             $listBuilder->execute(),
             FacebookToken::RESOURCE_KEY,
-            $listBuilder->getCurrentPage(),
+            intval($listBuilder->getCurrentPage()),
             (int) $listBuilder->getLimit(),
             $listBuilder->count()
         );
