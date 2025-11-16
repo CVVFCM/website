@@ -10,7 +10,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * @psalm-type WeatherCloudData = array{
+ * @psalm-type WeatherCloudData = null|array{
  *   last_update: int,
  *   hum_current: array{0: int, 1: float},
  *   hum_day_min: array{0: int, 1: float},
@@ -76,7 +76,7 @@ final readonly class WeatherCloudProvider implements LiveWeatherProvider
     /**
      * @param WeatherCloudData $data
      */
-    private function hydrateDTO(array $data): LiveWeather
+    private function hydrateDTO(?array $data): LiveWeather
     {
         if (!$data) {
             throw new \InvalidArgumentException('Empty data received from Weathercloud');

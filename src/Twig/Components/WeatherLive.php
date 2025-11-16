@@ -13,8 +13,7 @@ final class WeatherLive
     public function __construct(
         private readonly LiveWeatherProvider $weatherProvider,
         private readonly LoggerInterface $logger,
-    )
-    {
+    ) {
     }
 
     public function getLiveWeather(): ?LiveWeather
