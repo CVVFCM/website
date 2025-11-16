@@ -4,17 +4,27 @@ namespace App\Twig\Components;
 
 use App\DTO\LiveWeather;
 use App\Weather\LiveWeatherProvider;
+use Psr\Log\LoggerInterface;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent]
 final class WeatherLive
 {
-    public function __construct(private readonly LiveWeatherProvider $weatherProvider)
+    public function __construct(
+        private readonly LiveWeatherProvider $weatherProvider,
+        private readonly LoggerInterface $logger,
+    )
     {
     }
 
-    public function getLiveWeather(): LiveWeather
+    public function getLiveWeather(): ?LiveWeather
     {
-        return $this->weatherProvider->get();
+        try {
+            return $this->weatherProvider->get();
+        } catch (\Exception $e) {
+            $this->logger->error('Error when fetching live weather', ['error' => $e->getMessage()]);
+
+            return null;
+        }
     }
 }

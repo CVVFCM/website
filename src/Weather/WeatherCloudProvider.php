@@ -78,6 +78,10 @@ final readonly class WeatherCloudProvider implements LiveWeatherProvider
      */
     private function hydrateDTO(array $data): LiveWeather
     {
+        if (!$data) {
+            throw new \InvalidArgumentException('Empty data received from Weathercloud');
+        }
+
         $updatedAt = \DateTimeImmutable::createFromFormat('U', (string) $data['last_update'], new \DateTimeZone('UTC'));
         assert(false !== $updatedAt);
 

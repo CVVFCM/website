@@ -6,7 +6,7 @@
 parameters:
     default_locale: fr
 
-    env(WEATHER_CLOUD_DEVICE_CODE): '3547932345'
+    env(WEATHER_CLOUD_DEVICE_CODE): '9707513599'
 
     env(FACEBOOK_APP_ID): ''
     env(FACEBOOK_APP_SECRET): ''
