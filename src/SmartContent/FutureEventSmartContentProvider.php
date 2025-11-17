@@ -8,9 +8,12 @@ use Sulu\Bundle\AdminBundle\Metadata\MetadataProviderInterface;
 use Sulu\Bundle\AdminBundle\SmartContent\Configuration\Builder;
 use Sulu\Bundle\AdminBundle\SmartContent\Configuration\ProviderConfigurationInterface;
 use Sulu\Bundle\AdminBundle\SmartContent\SmartContentQueryEnhancer;
+use Sulu\Bundle\SecurityBundle\AccessControl\AccessControlQueryEnhancer;
+use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
 use Sulu\Content\Infrastructure\Doctrine\DimensionContentQueryEnhancer;
 use Sulu\Page\Domain\Model\PageInterface;
 use Sulu\Page\Infrastructure\Sulu\Content\PageSmartContentProvider;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -27,26 +30,29 @@ final readonly class FutureEventSmartContentProvider extends PageSmartContentPro
         DimensionContentQueryEnhancer $dimensionContentQueryEnhancer,
         #[Autowire('@sulu_admin.form_metadata_provider')]
         MetadataProviderInterface $formMetadataProvider,
+        #[Autowire('@sulu_admin.smart_content_query_enhancer')]
+        SmartContentQueryEnhancer $smartContentQueryEnhancer,
         ?TokenStorageInterface $tokenStorage,
         EntityManagerInterface $entityManager,
         #[Autowire('%kernel.bundles%')]
         array $bundles,
+        WebspaceManagerInterface $webspaceManager,
+        #[Autowire('@sulu_security.access_control_query_enhancer')]
+        AccessControlQueryEnhancer $accessControlQueryEnhancer,
+        ?Security $security,
+        ?array $permissions = null,
     ) {
         parent::__construct(
             $dimensionContentQueryEnhancer,
             $formMetadataProvider,
-            new class extends SmartContentQueryEnhancer {
-                #[\Override]
-                public function addOrderBySelects(QueryBuilder $queryBuilder): void
-                {
-                    $queryBuilder
-                        ->addSelect('JSON_GET_TEXT(filterDimensionContent.templateData, \'begin_date\') AS HIDDEN begin_date')
-                        ->addOrderBy('begin_date', 'ASC');
-                }
-            },
+            $smartContentQueryEnhancer,
             $tokenStorage,
             $entityManager,
             $bundles,
+            $webspaceManager,
+            $accessControlQueryEnhancer,
+            $security,
+            $permissions,
         );
     }
 

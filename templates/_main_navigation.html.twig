@@ -1,7 +1,7 @@
 {% set navigation_context_name = 'main' %}
 {% set navigation_max_depth = 3 %}
 
-{% set navigation_root = sulu_navigation_root_tree(navigation_context_name, navigation_max_depth, true) %}
+{% set navigation_root = sulu_page_navigation_root_tree(navigation_context_name, navigation_max_depth) %}
 
 <nav>
     <ul>
@@ -18,7 +18,7 @@
 {% macro display_navigation_nodes(root) %}
     {% for item in root.children %}
         <li>
-            <a href="{{ sulu_content_path(item.url, item.webspaceKey) }}" title="{{ item.title }}">
+            <a href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}">
                 {{ item.title }}
             </a>
 

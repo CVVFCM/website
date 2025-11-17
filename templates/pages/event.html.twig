@@ -60,8 +60,8 @@
         {% endif %}
     {% endif %}
 
-    {% set parent = sulu_page_load(resource.parent.uuid) %}
-    <a href="{{ parent.content.url }}">{{ parent.content.title }}</a>
+    {% set parent = sulu_page_load(resource.parent.uuid, {url: 'url', title: 'title'}) %}
+    <a href="{{ parent.url }}">{{ parent.title }}</a>
 
     {% if content.media %}
         <section>

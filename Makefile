@@ -1,6 +1,6 @@
 DOCKER_COMPOSE = EXTERNAL_USER_ID=$(shell id -u) docker compose
 
-.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset cc hadolint cs psalm psalm_strict
+.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test cc hadolint cs psalm psalm_strict
 
 run: .configured up
 
@@ -34,6 +34,12 @@ first_run: infra/tls/cert.pem build var/ vendor/ up reset public/build/admin/man
 
 reset:
 	@$(DOCKER_COMPOSE) exec php composer reset
+
+reset-test:
+	@$(DOCKER_COMPOSE) exec php composer reset-test
+
+test:
+	@$(DOCKER_COMPOSE) exec php ./vendor/bin/phpunit --colors=always --testdox
 
 cc:
 	@$(DOCKER_COMPOSE) exec php bin/websiteconsole cache:clear
