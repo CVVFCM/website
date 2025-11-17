@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    <article>
-        <header>
+    <article class="LivePage">
+        <header class="LivePage__header">
             <h1>{{ content.title }}</h1>
             {% if content.media %}
                 <div>
@@ -17,8 +17,12 @@
             <div>{{ content.description|raw }}</div>
         </header>
 
-        <section>
+        <section class="LivePage__webcam">
             <twig:Webcam url="{{ content.webcam_stream_url }}" />
+        </section>
+
+        <section class="LivePage__weather">
+            <twig:WeatherLive full="true" />
         </section>
     </article>
 {% endblock %}

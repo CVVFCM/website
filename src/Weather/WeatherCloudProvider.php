@@ -73,6 +73,12 @@ final readonly class WeatherCloudProvider implements LiveWeatherProvider
         );
     }
 
+    #[\Override]
+    public function getExternalLink(): string
+    {
+        return sprintf('https://app.weathercloud.net/d%s', $this->weatherCloudDeviceCode);
+    }
+
     /**
      * @param WeatherCloudData $data
      */

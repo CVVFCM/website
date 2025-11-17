@@ -39,6 +39,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
     #[\Override]
     public function load(ObjectManager $manager): void
     {
+        $medias = $this->mediaRepository->findAll();
         $events = $this->getReference('events', Page::class);
         $regattas = $this->handle(
             new Envelope(
@@ -48,7 +49,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                     [
                         'title' => 'Régates',
                         'url' => '/evenements/regates',
-                        'template' => 'category',
+                        'template' => 'list',
                         'locale' => 'fr',
                         'stage' => DimensionContentInterface::STAGE_LIVE,
                     ]
@@ -60,6 +61,17 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
 
         foreach ($regattas->getDimensionContents() as $regattasDimensionContent) {
             $regattasDimensionContent->addNavigationContext('main');
+            $regattasDimensionContent->setTemplateData([
+                'url' => '/evenements/regates',
+                'title' => 'Régates',
+                'description' => 'Retrouvez ici toutes les régates du CVVFCM.',
+                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'list_type' => 'page',
+                'page_list' => [
+                    'dataSource' => $regattas->getUuid(),
+                    'includeSubFolders' => false,
+                ],
+            ]);
         }
 
         $manager->flush();
@@ -92,7 +104,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                     [
                         'title' => $name,
                         'url' => '/evenements/regates/'.(new AsciiSlugger())->slug($name)->lower()->ascii(),
-                        'template' => 'category',
+                        'template' => 'list',
                         'locale' => 'fr',
                         'stage' => DimensionContentInterface::STAGE_LIVE,
                     ]
@@ -102,6 +114,17 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
 
         foreach ($regatta->getDimensionContents() as $regattaDimensionContent) {
             $regattaDimensionContent->setWorkflowPlace(WorkflowInterface::WORKFLOW_PLACE_PUBLISHED);
+            $regattaDimensionContent->setTemplateData([
+                'url' => '/evenements/regates/'.(new AsciiSlugger())->slug($name)->lower()->ascii(),
+                'title' => $name,
+                'description' => 'Retrouvez ici toutes les éditions de la régate '.$name.'.',
+                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'list_type' => 'page',
+                'page_list' => [
+                    'dataSource' => $regatta->getUuid(),
+                    'includeSubFolders' => false,
+                ],
+            ]);
         }
 
         $manager->flush();

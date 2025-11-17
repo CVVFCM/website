@@ -1,0 +1,104 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
+
+    <key>list</key>
+
+    <view>pages/list</view>
+    <controller>Sulu\Content\UserInterface\Controller\Website\ContentController::indexAction</controller>
+    <cacheLifetime>180</cacheLifetime>
+
+    <meta>
+        <title lang="fr">Liste</title>
+    </meta>
+
+    <properties>
+        <property name="title" type="text_line" mandatory="true">
+            <meta>
+                <title lang="fr">Titre</title>
+            </meta>
+            <params>
+                <param name="headline" value="true"/>
+            </params>
+
+            <tag name="sulu.rlp.part"/>
+        </property>
+
+        <property name="url" type="route" mandatory="true">
+            <meta>
+                <title lang="fr">URL</title>
+            </meta>
+
+            <tag name="sulu.rlp"/>
+        </property>
+
+        <property name="description" type="text_editor" mandatory="true">
+            <meta>
+                <title lang="fr">Description</title>
+            </meta>
+            <params>
+                <param name="headline" value="true"/>
+            </params>
+        </property>
+
+        <property name="media" type="single_media_selection" mandatory="true">
+            <meta>
+                <title lang="fr">Média</title>
+            </meta>
+        </property>
+
+        <section name="list">
+            <meta>
+                <title lang="fr">Liste de contenus</title>
+            </meta>
+            <properties>
+                <property name="list_type" type="single_select">
+                    <meta>
+                        <title lang="fr">Type de liste</title>
+                    </meta>
+                    <params>
+                        <param name="default_value" value="page" />
+                        <param name="values" type="collection">
+                            <param name="page"><meta><title lang="fr">Pages</title></meta></param>
+                            <param name="event"><meta><title lang="fr">Événements futurs</title></meta></param>
+                        </param>
+                    </params>
+                </property>
+
+                <property name="page_list" type="smart_content" visibleCondition="list_type == 'page'">
+                    <meta>
+                        <title lang="fr">Liste des contenus (pages)</title>
+                    </meta>
+                    <params>
+                        <param name="types" value="page"/>
+                        <param name="max_per_page" value="10" />
+                        <param name="properties" type="collection">
+                            <param name="title" value="title" />
+                            <param name="url" value="url" />
+                            <param name="description" value="description" />
+                            <param name="media" value="media" />
+                        </param>
+                    </params>
+                </property>
+
+                <property name="event_list" type="smart_content" visibleCondition="list_type == 'event'">
+                    <meta>
+                        <title lang="fr">Liste des contenus (événements futurs)</title>
+                    </meta>
+                    <params>
+                        <param name="provider" value="future_event" />
+                        <param name="max_per_page" value="10" />
+                        <param name="properties" type="collection">
+                            <param name="title" value="title" />
+                            <param name="url" value="url" />
+                            <param name="begin_date" value="begin_date" />
+                            <param name="description" value="description" />
+                            <param name="media" value="media" />
+                        </param>
+                    </params>
+                </property>
+            </properties>
+        </section>
+    </properties>
+</template>

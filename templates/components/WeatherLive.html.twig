@@ -7,23 +7,29 @@
             Mis à jour le {{ liveWeather.updatedAt.format('d/m/Y à H:i:s') }}
         </time>
 
-        <dl class="WeatherLive__humidity">
-            <dt>Humidité</dt>
-            <dd>{{ liveWeather.humidity|format_number(style: 'percent') }}</dd>
-            <dt>Humidité min</dt>
-            <dd>{{ liveWeather.humidityMin|format_number(style: 'percent') }}</dd>
-            <dt>Humidité max</dt>
-            <dd>{{ liveWeather.humidityMax|format_number(style: 'percent') }}</dd>
-        </dl>
+        {% if full %}
+            <a href="{{ this.link }}">
+                Voir tous les relevés
+            </a>
 
-        <dl class="WeatherLive__pressure">
-            <dt>Pression atmosphérique</dt>
-            <dd>{{ liveWeather.pressure|format_number }} hPa</dd>
-            <dt>Pression atmosphérique min</dt>
-            <dd>{{ liveWeather.pressureMin|format_number }} hPa</dd>
-            <dt>Pression atmosphérique max</dt>
-            <dd>{{ liveWeather.pressureMax|format_number }} hPa</dd>
-        </dl>
+            <dl class="WeatherLive__humidity">
+                <dt>Humidité</dt>
+                <dd>{{ liveWeather.humidity|format_number(style: 'percent') }}</dd>
+                <dt>Humidité min</dt>
+                <dd>{{ liveWeather.humidityMin|format_number(style: 'percent') }}</dd>
+                <dt>Humidité max</dt>
+                <dd>{{ liveWeather.humidityMax|format_number(style: 'percent') }}</dd>
+            </dl>
+
+            <dl class="WeatherLive__pressure">
+                <dt>Pression atmosphérique</dt>
+                <dd>{{ liveWeather.pressure|format_number }} hPa</dd>
+                <dt>Pression atmosphérique min</dt>
+                <dd>{{ liveWeather.pressureMin|format_number }} hPa</dd>
+                <dt>Pression atmosphérique max</dt>
+                <dd>{{ liveWeather.pressureMax|format_number }} hPa</dd>
+            </dl>
+        {% endif %}
 
         <dl class="WeatherLive__temperature">
             <dt>Température</dt>
@@ -34,12 +40,14 @@
             <dd>{{ liveWeather.temperatureMax|format_number }} °C</dd>
         </dl>
 
-        <dl class="WeatherLive__rain">
-            <dt>Rythme pluie</dt>
-            <dd>{{ liveWeather.rainRate|format_number }} mm/h</dd>
-            <dt>Total pluie Aujourd'hui</dt>
-            <dd>{{ liveWeather.rainTotal|format_number }} mm</dd>
-        </dl>
+        {% if full %}
+            <dl class="WeatherLive__rain">
+                <dt>Rythme pluie</dt>
+                <dd>{{ liveWeather.rainRate|format_number }} mm/h</dd>
+                <dt>Total pluie Aujourd'hui</dt>
+                <dd>{{ liveWeather.rainTotal|format_number }} mm</dd>
+            </dl>
+        {% endif %}
 
         <dl class="WeatherLive__currentWind">
             <dt>Direction du vent</dt>

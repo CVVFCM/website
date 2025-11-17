@@ -7,7 +7,7 @@
 
     <view>pages/live</view>
     <controller>Sulu\Content\UserInterface\Controller\Website\ContentController::indexAction</controller>
-    <cacheLifetime>604800</cacheLifetime>
+    <cacheLifetime>180</cacheLifetime>
 
     <meta>
         <title lang="fr">Direct</title>

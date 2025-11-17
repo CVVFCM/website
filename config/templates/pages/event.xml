@@ -8,7 +8,7 @@
 
     <view>pages/event</view>
     <controller>Sulu\Content\UserInterface\Controller\Website\ContentController::indexAction</controller>
-    <cacheLifetime>604800</cacheLifetime>
+    <cacheLifetime>3600</cacheLifetime>
 
     <meta>
         <title lang="fr">Événement</title>

@@ -1,0 +1,21 @@
+<ul class="Pager">
+    {% set page = list_view.page %}
+
+    {% if page - 1 >= 1 %}
+        <li class="Pager__item Pager__item--previous">
+            <a href="{{ sulu_content_path(content.url) }}?p={{ page - 1 }}">&laquo;</a>
+        </li>
+    {% endif %}
+
+    {% for i in 1..list_view.maxPage %}
+        <li class="Pager__item{% if list_view.page == i %} Pager__item--current{% endif %}">
+            <a href="{{ sulu_content_path(content.url) }}?p={{ i }}">{{ i }}</a>
+        </li>
+    {% endfor %}
+
+    {% if list_view.hasNextPage %}
+        <li class="Pager__item Pager__item--next">
+            <a href="{{ sulu_content_path(content.url) }}?p={{ page + 1 }}">&raquo;</a>
+        </li>
+    {% endif %}
+</ul>

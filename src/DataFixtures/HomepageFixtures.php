@@ -84,12 +84,12 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                             [
                                 'type' => 'link',
                                 'link_text' => 'Voir les prévisions',
-                                'link_target' => $events->getUuid(),
+                                'link_target' => $live->getUuid(),
                             ],
                             [
                                 'type' => 'link',
                                 'link_text' => 'Webcam',
-                                'link_target' => $events->getUuid(),
+                                'link_target' => $live->getUuid(),
                             ],
                         ],
                     ],
