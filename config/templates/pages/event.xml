@@ -105,13 +105,13 @@
                             </meta>
 
                             <properties>
-                                <property name="series" type="text_line" mandatory="true">
+                                <property name="series" type="text_line" mandatory="true" colspan="6">
                                     <meta>
                                         <title lang="fr">Série</title>
                                     </meta>
                                 </property>
 
-                                <property name="rank" type="single_select" mandatory="true">
+                                <property name="rank" type="single_select" mandatory="true" colspan="6">
                                     <meta>
                                         <title lang="fr">Grade</title>
                                     </meta>
@@ -125,6 +125,16 @@
                                             <param name="3"><meta><title lang="fr">3</title></meta></param>
                                         </param>
                                     </params>
+                                </property>
+
+                                <property name="registration_price" type="text_line" mandatory="true">
+                                    <meta>
+                                        <title lang="fr">Montant de l'inscription</title>
+                                        <info_text lang="fr">
+                                            Prix à la préinscription. À l'approche de la manifestation,
+                                            le tarif peut être amené à évoluer.
+                                        </info_text>
+                                    </meta>
                                 </property>
                             </properties>
                         </type>
@@ -144,13 +154,13 @@
                     <types>
                         <type name="service">
                             <properties>
-                                <property name="name" type="text_line" mandatory="true">
+                                <property name="name" type="text_line" mandatory="true" colspan="6">
                                     <meta>
                                         <title lang="fr">Nom</title>
                                     </meta>
                                 </property>
 
-                                <property name="availability" type="checkbox">
+                                <property name="availability" type="checkbox" colspan="6">
                                     <meta>
                                         <title lang="fr">Disponibilité</title>
                                     </meta>
@@ -176,15 +186,30 @@
                             </meta>
 
                             <properties>
-                                <property name="boat_type" type="text_line" mandatory="true">
+                                <property name="boat_type" type="text_line" mandatory="true" colspan="6">
                                     <meta>
                                         <title lang="fr">Type de bateau</title>
                                     </meta>
                                 </property>
 
-                                <property name="captain" type="contact_selection" mandatory="true">
+                                <property name="captain" type="contact_selection" mandatory="true" colspan="6">
                                     <meta>
-                                        <title lang="fr">Nom</title>
+                                        <title lang="fr">Chef de bord</title>
+                                    </meta>
+                                </property>
+
+                                <property name="available_seats" type="text_line" mandatory="true" colspan="6">
+                                    <meta>
+                                        <title lang="fr">Nombre de places</title>
+                                    </meta>
+                                    <params>
+                                        <param name="pattern" value="^\d+$"/>
+                                    </params>
+                                </property>
+
+                                <property name="approximative_price" type="text_line" mandatory="true" colspan="6">
+                                    <meta>
+                                        <title lang="fr">Prix approximatif (/ pers)</title>
                                     </meta>
                                 </property>
                             </properties>
