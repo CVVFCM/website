@@ -33,10 +33,10 @@ final class ContactController extends ContentController
     public function indexAction(Request $request, DimensionContentInterface $object, string $view, bool $preview = false, bool $partial = false): Response
     {
         $suluAttribute = $request->attributes->get('_sulu');
-        \assert($suluAttribute instanceof RequestAttributes, 'The "_sulu" request attribute must be of type ' . RequestAttributes::class . ', but got: ' . \get_debug_type($suluAttribute));
+        \assert($suluAttribute instanceof RequestAttributes, 'The "_sulu" request attribute must be of type '.RequestAttributes::class.', but got: '.\get_debug_type($suluAttribute));
         $attributes = $suluAttribute->getAttributes();
         $webspace = $attributes['webspace'];
-        \assert($webspace instanceof Webspace, 'The "webspace" request attribute must be of type ' . Webspace::class . ', but got: ' . \get_debug_type($webspace));
+        \assert($webspace instanceof Webspace, 'The "webspace" request attribute must be of type '.Webspace::class.', but got: '.\get_debug_type($webspace));
 
         $parameters = $this->resolveSuluParameters($object, $webspace->getKey(), false);
 
