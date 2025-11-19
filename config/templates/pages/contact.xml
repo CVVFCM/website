@@ -3,14 +3,14 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
 
-    <key>form</key>
+    <key>contact</key>
 
-    <view>pages/form</view>
-    <controller>Sulu\Content\UserInterface\Controller\Website\ContentController::indexAction</controller>
-    <cacheLifetime>604800</cacheLifetime>
+    <view>pages/contact</view>
+    <controller>App\Controller\ContactController::indexAction</controller>
+    <cacheLifetime>180</cacheLifetime>
 
     <meta>
-        <title lang="fr">Formulaire</title>
+        <title lang="fr">Formulaire de contact</title>
     </meta>
 
     <properties>
@@ -33,22 +33,19 @@
             <tag name="sulu.rlp"/>
         </property>
 
-        <property name="article" type="text_editor">
+        <property name="description" type="text_editor" mandatory="true">
             <meta>
-                <title lang="fr">Article</title>
+                <title lang="fr">Description</title>
             </meta>
-        </property>
-
-        <!--
-        <property name="form" type="single_form_selection">
-            <meta>
-                <title lang="fr">Formulaire</title>
-            </meta>
-
             <params>
-                <param name="resourceKey" value="page"/>
+                <param name="headline" value="true"/>
             </params>
         </property>
-        -->
+
+        <property name="media" type="single_media_selection" mandatory="true">
+            <meta>
+                <title lang="fr">Média</title>
+            </meta>
+        </property>
     </properties>
 </template>

@@ -9,7 +9,7 @@ services:
         environment:
             SERVER_NAME: ${SERVER_NAME:-localhost}
             APP_SECRET: ${APP_SECRET:-!ChangeMe!}
-            MAILER_DSN: ${MAILER_DSN:-smtp://smtp:1025}
+            MAILER_DSN: ${MAILER_DSN:-smtp://mailer:1025}
             DATABASE_URL: ${DATABASE_URL:-pgsql://${POSTGRES_USER:-cvvfcm}:${POSTGRES_PASSWORD:-cvvfcm}@database:5432/${POSTGRES_DB:-cvvfcm}?serverVersion=18&charset=utf8}
             SULU_ADMIN_EMAIL: ${SULU_ADMIN_EMAIL:-"CVVFCM <contact@cvvfcm.fr>"}
             APP_ENV: ${APP_ENV:-prod}

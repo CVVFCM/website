@@ -28,7 +28,9 @@
     </main>
 
     <footer>
-        {% block footer %}{% endblock %}
+        {% block footer %}
+            {{ include('_footer_navigation.html.twig') }}
+        {% endblock %}
     </footer>
 </body>
 </html>

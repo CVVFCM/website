@@ -15,7 +15,6 @@
     <default-templates>
         <default-template type="page">default</default-template>
         <default-template type="home">homepage</default-template>
-        <default-template type="form">form</default-template>
     </default-templates>
 
     <!-- See: https://docs.sulu.io/en/latest/book/webspaces.html#excluded-templates-optional
@@ -35,6 +34,11 @@
             <context key="main">
                 <meta>
                     <title lang="fr">Menu principal</title>
+                </meta>
+            </context>
+            <context key="footer">
+                <meta>
+                    <title lang="fr">Menu pied-de-page</title>
                 </meta>
             </context>
         </contexts>

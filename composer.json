@@ -27,6 +27,7 @@
         "symfony/config": "7.3.*",
         "symfony/dotenv": "7.3.*",
         "symfony/flex": "^2.9.0",
+        "symfony/form": "7.3.*",
         "symfony/framework-bundle": "7.3.*",
         "symfony/mailer": "7.3.*",
         "symfony/monolog-bridge": "7.3.*",
