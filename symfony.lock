@@ -324,6 +324,18 @@
             "config/packages/mailer.yaml"
         ]
     },
+    "symfony/mercure-bundle": {
+        "version": "0.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "0.3",
+            "ref": "528285147494380298f8f991ee8c47abebaf79db"
+        },
+        "files": [
+            "config/packages/mercure.yaml"
+        ]
+    },
     "symfony/messenger": {
         "version": "7.2",
         "recipe": {
@@ -460,6 +472,18 @@
             "ref": "bed7e7f6d7c04e0de9665859ddbf0e842e5323e3"
         }
     },
+    "symfony/ux-live-component": {
+        "version": "2.31",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.6",
+            "ref": "b7130b7b5ddc2f8994bd6149d7c093b184782f0c"
+        },
+        "files": [
+            "config/routes/ux_live_component.yaml"
+        ]
+    },
     "symfony/ux-map": {
         "version": "2.22",
         "recipe": {
@@ -470,6 +494,18 @@
         },
         "files": [
             "config/packages/ux_map.yaml"
+        ]
+    },
+    "symfony/ux-turbo": {
+        "version": "2.31",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.20",
+            "ref": "287f7c6eb6e9b65e422d34c00795b360a787380b"
+        },
+        "files": [
+            "config/packages/ux_turbo.yaml"
         ]
     },
     "symfony/ux-twig-component": {

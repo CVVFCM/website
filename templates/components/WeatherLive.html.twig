@@ -1,8 +1,8 @@
 {% types liveWeather: 'App\\DTO\\LiveWeather' %}
 {% set liveWeather = this.liveWeather %}
 
-{% if liveWeather %}
-    <section {{ attributes.defaults({class: 'WeatherLive'}) }}>
+<section {{ attributes.defaults(stimulus_controller('weather-live', {mercureUrl: mercure('/weather/live')})) }}>
+    {% if liveWeather %}
         <time datetime="{{ liveWeather.updatedAt.format('c') }}">
             Mis à jour le {{ liveWeather.updatedAt.format('d/m/Y à H:i:s') }}
         </time>
@@ -68,5 +68,5 @@
             <dt>Vitesse du vent max</dt>
             <dd>{{ liveWeather.windSpeedMax|round|format_number }} nds</dd>
         </dl>
-    </section>
-{% endif %}
+    {% endif %}
+</section>

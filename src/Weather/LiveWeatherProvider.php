@@ -6,7 +6,7 @@ use App\DTO\LiveWeather;
 
 interface LiveWeatherProvider
 {
-    public function get(): LiveWeather;
+    public function get(): ?LiveWeather;
 
     public function getExternalLink(): string;
 }

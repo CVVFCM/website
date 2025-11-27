@@ -5,11 +5,14 @@ namespace App\Twig\Components;
 use App\DTO\LiveWeather;
 use App\Weather\LiveWeatherProvider;
 use Psr\Log\LoggerInterface;
-use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
+use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
+use Symfony\UX\LiveComponent\DefaultActionTrait;
 
-#[AsTwigComponent]
+#[AsLiveComponent]
 final class WeatherLive
 {
+    use DefaultActionTrait;
+
     public bool $full = false;
 
     public function __construct(
