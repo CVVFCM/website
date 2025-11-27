@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1
 
-ARG FRANKENPHP_VERSION=1.9
+ARG FRANKENPHP_VERSION=1.10
 ARG PHP_VERSION=8.4
 ARG NODE_VERSION=22
 ARG DEBIAN_VERSION=trixie
@@ -72,6 +72,8 @@ RUN set -eux; \
     npm run build
 
 FROM base AS php
+
+ENV MERCURE_TRANSPORT_URL=bolt:///data/mercure.db
 
 COPY --chown=www-data:www-data .env ./
 COPY --chown=www-data:www-data bin bin/

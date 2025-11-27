@@ -3,10 +3,9 @@
 namespace App\Weather;
 
 use App\DTO\LiveWeather;
-use Psr\Cache\CacheItemInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -38,39 +37,39 @@ final readonly class WeatherCloudProvider implements LiveWeatherProvider
     private const string WEATHER_URL = 'https://app.weathercloud.net/device/stats?code=%s';
 
     public function __construct(
-        private CacheInterface $weatherLiveCache,
         private HttpClientInterface $httpClient,
+        private LoggerInterface $logger,
         #[Autowire('%env(WEATHER_CLOUD_DEVICE_CODE)%')]
         private string $weatherCloudDeviceCode,
-        private int $cacheTtl = 180,
     ) {
     }
 
     #[\Override]
-    public function get(): LiveWeather
+    public function get(): ?LiveWeather
     {
-        return $this->weatherLiveCache->get(
-            $this->weatherCloudDeviceCode,
-            function (CacheItemInterface $item): LiveWeather {
-                $item->expiresAfter($this->cacheTtl);
-
-                $response = $this->httpClient->request(
-                    'GET',
-                    sprintf(self::WEATHER_URL, $this->weatherCloudDeviceCode),
-                    [
-                        'headers' => [
-                            'Accept' => 'application/json',
-                            'X-Requested-With' => 'XMLHttpRequest',
-                        ],
+        try {
+            $response = $this->httpClient->request(
+                'GET',
+                sprintf(self::WEATHER_URL, $this->weatherCloudDeviceCode),
+                [
+                    'timeout' => 5,
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'X-Requested-With' => 'XMLHttpRequest',
                     ],
-                );
+                    'verify_peer' => false,
+                ],
+            );
 
-                /** @var WeatherCloudData $data */
-                $data = $response->toArray();
+            /** @var WeatherCloudData $data */
+            $data = $response->toArray();
 
-                return $this->hydrateDTO($data);
-            },
-        );
+            return $this->hydrateDTO($data);
+        } catch (\Exception $e) {
+            $this->logger->error('Error when fetching live weather : ' . $e->getMessage(), ['exception' => $e]);
+
+            return null;
+        }
     }
 
     #[\Override]
