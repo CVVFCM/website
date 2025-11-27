@@ -66,7 +66,7 @@ final readonly class WeatherCloudProvider implements LiveWeatherProvider
 
             return $this->hydrateDTO($data);
         } catch (\Exception $e) {
-            $this->logger->error('Error when fetching live weather : ' . $e->getMessage(), ['exception' => $e]);
+            $this->logger->error('Error when fetching live weather : '.$e->getMessage(), ['exception' => $e]);
 
             return null;
         }

@@ -22,13 +22,16 @@ final readonly class AsyncLiveWeatherProvider implements LiveWeatherProvider
         private LockFactory $lockFactory,
         private HubInterface $mercureHub,
         private int $cacheTtl = 180,
-    )
-    {
+    ) {
     }
 
+    #[\Override]
     public function get(): ?LiveWeather
     {
-        return $this->liveWeatherCache->getItem(self::LIVE_WEATHER_CACHE_KEY)->get();
+        $result = $this->liveWeatherCache->getItem(self::LIVE_WEATHER_CACHE_KEY)->get();
+        assert($result instanceof LiveWeather || null === $result);
+
+        return $result;
     }
 
     #[AsEventListener(event: KernelEvents::TERMINATE)]
@@ -53,9 +56,12 @@ final readonly class AsyncLiveWeatherProvider implements LiveWeatherProvider
 
         $lock->release();
 
-        $this->mercureHub->publish(new Update('/weather/live', json_encode($liveWeather)));
+        $json = json_encode(['type' => '/weather/live', 'data' => $liveWeather]);
+        assert(is_string($json));
+        $this->mercureHub->publish(new Update('/weather/live', $json));
     }
 
+    #[\Override]
     public function getExternalLink(): string
     {
         return $this->decorated->getExternalLink();

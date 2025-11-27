@@ -9,7 +9,9 @@ export default class extends Controller {
     component;
     eventSource;
 
-    connect() {
+    async connect() {
+        this.component = await getComponent(this.element);
+
         this.eventSource = new EventSource(this.mercureUrlValue);
         this.eventSource.onmessage = async (e) => {
             const message = JSON.parse(e.data);
@@ -18,7 +20,7 @@ export default class extends Controller {
                 return;
             }
 
-            (await getComponent(this.element)).render();
+            this.component.render();
         }
     }
 

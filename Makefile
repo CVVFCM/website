@@ -18,7 +18,7 @@ build:
 	@$(DOCKER_COMPOSE) build
 
 up:
-	@$(DOCKER_COMPOSE) up -d --remove-orphans
+	@$(DOCKER_COMPOSE) up -d --remove-orphans --wait php
 
 down:
 	@$(DOCKER_COMPOSE) down --remove-orphans

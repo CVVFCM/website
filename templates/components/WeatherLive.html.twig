@@ -1,7 +1,7 @@
-{% types liveWeather: 'App\\DTO\\LiveWeather' %}
-{% set liveWeather = this.liveWeather %}
-
 <section {{ attributes.defaults(stimulus_controller('weather-live', {mercureUrl: mercure('/weather/live')})) }}>
+    {% types liveWeather: 'App\\DTO\\LiveWeather' %}
+    {% set liveWeather = this.liveWeather %}
+
     {% if liveWeather %}
         <time datetime="{{ liveWeather.updatedAt.format('c') }}">
             Mis à jour le {{ liveWeather.updatedAt.format('d/m/Y à H:i:s') }}
