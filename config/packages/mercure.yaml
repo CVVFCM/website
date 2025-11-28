@@ -1,7 +1,7 @@
 parameters:
     env(MERCURE_URL): 'http://php/.well-known/mercure'
     env(MERCURE_PUBLIC_URL): '/.well-known/mercure'
-    env(MERCURE_JWT_SECRET): null
+    env(MERCURE_JWT_SECRET): ''
 
 mercure:
     hubs:
