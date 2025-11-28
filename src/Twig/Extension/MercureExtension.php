@@ -11,11 +11,11 @@ final class MercureExtension extends AbstractExtension
 {
     public function __construct(
         private readonly HubInterface $hub,
-    )
-    {
+    ) {
     }
 
-    public function getFunctions()
+    #[\Override]
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('mercure_last_event_id', $this->getMercureLastEventId(...)),

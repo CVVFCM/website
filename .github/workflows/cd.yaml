@@ -78,6 +78,11 @@ jobs:
             S3_SECRET: ${{ secrets.S3_SECRET }}
             S3_BUCKET: ${{ secrets.S3_BUCKET }}
             S3_REGION: ${{ secrets.S3_REGION }}
+            MERCURE_PUBLISHER_JWT_KEY: ${{ secrets.MERCURE_PUBLISHER_JWT_KEY }}
+            MERCURE_SUBSCRIBER_JWT_KEY: ${{ secrets.MERCURE_SUBSCRIBER_JWT_KEY }}
+            MERCURE_JWT_SECRET: ${{ secrets.MERCURE_JWT_SECRET }}
+            MERCURE_URL: ${{ vars.MERCURE_URL }}
+            MERCURE_PUBLIC_URL: ${{ vars.MERCURE_PUBLIC_URL }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4

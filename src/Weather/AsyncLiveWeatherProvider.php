@@ -39,9 +39,10 @@ final readonly class AsyncLiveWeatherProvider implements LiveWeatherProvider
     {
         $item = $this->liveWeatherCache->getItem(self::LIVE_WEATHER_CACHE_KEY);
         $liveWeather = $item->get();
+        assert($liveWeather instanceof LiveWeather || null === $liveWeather);
         if (
-            $liveWeather instanceof LiveWeather &&
-            $liveWeather->updatedAt > new \DateTimeImmutable('-'.$this->cacheTtl.' seconds')
+            $liveWeather instanceof LiveWeather
+            && $liveWeather->updatedAt > new \DateTimeImmutable('-'.$this->cacheTtl.' seconds')
         ) {
             return;
         }

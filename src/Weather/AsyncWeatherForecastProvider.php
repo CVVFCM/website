@@ -38,8 +38,8 @@ final readonly class AsyncWeatherForecastProvider implements WeatherForecastProv
     public function onKernelTerminate(): void
     {
         if (
-            $this->cacheItemPool->hasItem(self::WEATHER_FORECAST_CACHE_KEY) &&
-            $this->cacheItemPool->getItem(self::WEATHER_FORECAST_CACHE_KEY)->isHit()
+            $this->cacheItemPool->hasItem(self::WEATHER_FORECAST_CACHE_KEY)
+            && $this->cacheItemPool->getItem(self::WEATHER_FORECAST_CACHE_KEY)->isHit()
         ) {
             return;
         }
