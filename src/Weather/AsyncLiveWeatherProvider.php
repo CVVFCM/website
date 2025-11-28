@@ -21,7 +21,7 @@ final readonly class AsyncLiveWeatherProvider implements LiveWeatherProvider
         private LiveWeatherProvider $decorated,
         private LockFactory $lockFactory,
         private HubInterface $mercureHub,
-        private int $cacheTtl = 180,
+        private int $cacheTtl = 360,
     ) {
     }
 
@@ -37,7 +37,12 @@ final readonly class AsyncLiveWeatherProvider implements LiveWeatherProvider
     #[AsEventListener(event: KernelEvents::TERMINATE)]
     public function onKernelTerminate(): void
     {
-        if ($this->liveWeatherCache->hasItem(self::LIVE_WEATHER_CACHE_KEY)) {
+        $item = $this->liveWeatherCache->getItem(self::LIVE_WEATHER_CACHE_KEY);
+        $liveWeather = $item->get();
+        if (
+            $liveWeather instanceof LiveWeather &&
+            $liveWeather->updatedAt > new \DateTimeImmutable('-'.$this->cacheTtl.' seconds')
+        ) {
             return;
         }
 
@@ -48,17 +53,15 @@ final readonly class AsyncLiveWeatherProvider implements LiveWeatherProvider
 
         $liveWeather = $this->decorated->get();
 
-        $item = $this->liveWeatherCache->getItem(self::LIVE_WEATHER_CACHE_KEY);
         $item->set($liveWeather);
-        $item->expiresAfter($this->cacheTtl);
 
         $this->liveWeatherCache->save($item);
-
-        $lock->release();
 
         $json = json_encode(['type' => '/weather/live', 'data' => $liveWeather]);
         assert(is_string($json));
         $this->mercureHub->publish(new Update('/weather/live', $json));
+
+        $lock->release();
     }
 
     #[\Override]

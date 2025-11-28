@@ -1,28 +1,32 @@
-<section {{ attributes.defaults({class: 'WeatherToday'}) }}>
-    <div>
-        <h4>Aujourd'hui</h4>
+<section {{ attributes.defaults({...stimulus_controller('weather-today', controllerOutlets: {mercure: 'body'}), class: 'WeatherToday'}) }}>
+    {% set forecasts = this.data %}
+    {% if forecasts|length > 0 %}
+        <div>
+            <h4>Aujourd'hui</h4>
 
-        <ul>
-            {% set tomorrow = false %}
-            {% for forecast in this.data %}
-                {% if not tomorrow and forecast.date.format('Y-m-d') != date().format('Y-m-d') %}
-                    {% set tomorrow = true %}
-        </ul>
-    </div>
+            <ul>
+                {% set tomorrow = false %}
+                {% for forecast in forecasts %}
+                    {# Close the current container and open a new one if day change #}
+                    {% if not tomorrow and forecast.date.format('Y-m-d') != date().format('Y-m-d') %}
+                        {% set tomorrow = true %}
+            </ul>
+        </div>
 
-    <div>
-        <h4>Demain</h4>
+        <div>
+            <h4>Demain</h4>
 
-        <ul>
-                {% endif %}
+            <ul>
+                    {% endif %}
 
-                <li>
-                    <strong>{{ forecast.label }}</strong>
-                    <span>{{ forecast.temperature|round }}°C</span>
-                    <span>{{ forecast.windSpeed|round }}nds</span>
-                    <span>{{ forecast.windCardinalDirection.value }}</span>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+                    <li>
+                        <strong>{{ forecast.label }}</strong>
+                        <span>{{ forecast.temperature|round }}°C</span>
+                        <span>{{ forecast.windSpeed|round }}nds</span>
+                        <span>{{ forecast.windCardinalDirection.value }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 </section>

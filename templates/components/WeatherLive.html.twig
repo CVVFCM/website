@@ -1,4 +1,4 @@
-<section {{ attributes.defaults(stimulus_controller('weather-live', {mercureUrl: mercure('/weather/live')})) }}>
+<section {{ attributes.defaults(stimulus_controller('weather-live', controllerOutlets: {mercure: 'body'})) }}>
     {% types liveWeather: 'App\\DTO\\LiveWeather' %}
     {% set liveWeather = this.liveWeather %}
 

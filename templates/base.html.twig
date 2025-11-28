@@ -16,7 +16,7 @@
 
     {% block importmap %}{{ importmap('app') }}{% endblock %}
 </head>
-<body>
+<body {{ stimulus_controller('mercure', {mercureUrl: mercure(['/weather/live', '/weather/forecast', '/facebook/posts', '/instragram/posts'])}) }}>
     <header>
         {% block header %}
             {{ include('_main_navigation.html.twig') }}
