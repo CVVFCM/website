@@ -2,14 +2,14 @@ import {Controller} from '@hotwired/stimulus';
 
 export default class extends Controller {
     static values = {
-        mercureUrl: String,
+        url: String,
     }
 
     eventSource;
     listeners = [];
 
     async initialize() {
-        this.eventSource = new EventSource(this.mercureUrlValue);
+        this.eventSource = new EventSource(this.urlValue);
         this.eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
             this.listeners.forEach(({eventType, callback}) => {
