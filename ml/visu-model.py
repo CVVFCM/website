@@ -1,96 +1,154 @@
+import pandas as pd
+import numpy as np
+import onnxruntime as rt
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
-import pandas as pd
+from sklearn.metrics import r2_score
+
+# Activation du style Seaborn pour des graphiques plus jolis
+sns.set_theme(style="whitegrid")
 
 # ==========================================
-# 0. PRÉPARATION DES DONNÉES
+# 1. CONFIG UTILISATEUR (A REMPLIR !)
 # ==========================================
-# On refait des prédictions propres sur le test set
-y_pred = model.predict(X_test)
+ONNX_MODEL_PATH = "./ml/model_pytorch.onnx"
+CSV_DATA_PATH = "./data/ml.csv"
 
-# On convertit tout en DataFrame pour faciliter la manip
-# Attention : y_test est déjà un DataFrame, mais y_pred est un array numpy
-df_res = y_test.copy()
-df_res.columns = ['Real_Temp', 'Real_Sin', 'Real_Cos']
+# --- TRES IMPORTANT : COPIE-COLLE TES VALEURS ICI ---
+# Ces valeurs sortent de la fin de ton script d'entraînement PyTorch.
+# Sans elles, le modèle ne comprendra pas les entrées et sortira du bruit.
 
-df_res['Pred_Temp'] = y_pred[:, 0]
-df_res['Pred_Sin']  = y_pred[:, 1]
-df_res['Pred_Cos']  = y_pred[:, 2]
+# Ordre Inputs : [Pression, W_Sin, W_Cos, Hum, Temp, D_Sin, D_Cos, H_Sin, H_Cos]
+INPUT_MEAN = np.array([1.01837e+03, 9.20436e-01, -1.78854e+00, 8.96079e+01, 5.11393e+00, -2.55327e-01, 9.54684e-01, -3.18572e-03, 4.85887e-03], dtype=np.float32)
+INPUT_SCALE = np.array([7.57291, 1.99673, 4.15208, 12.01470, 3.94530, 0.14743, 0.04060, 0.70896, 0.70522], dtype=np.float32)
 
-# Reconstruction de la Vitesse du Vent (Magnitude)
-# Vitesse = sqrt(Sin² + Cos²)
-# Note: Si tes targets étaient en m/s (ce qui semble être le cas vu tes graphes -10 à 10), c'est direct.
-df_res['Real_Speed'] = np.sqrt(df_res['Real_Sin']**2 + df_res['Real_Cos']**2)
-df_res['Pred_Speed'] = np.sqrt(df_res['Pred_Sin']**2 + df_res['Pred_Cos']**2)
+# Ordre Targets : [Temp, W_Sin, W_Cos]
+TARGET_MEAN = np.array([5.23164, 1.45494, -1.77619], dtype=np.float32)
+TARGET_SCALE = np.array([4.39401, 2.27482, 3.15535], dtype=np.float32)
 
-# Reconstruction de la Direction (Angles)
-df_res['Real_Dir'] = (np.degrees(np.arctan2(df_res['Real_Sin'], df_res['Real_Cos'])) + 360) % 360
-df_res['Pred_Dir'] = (np.degrees(np.arctan2(df_res['Pred_Sin'], df_res['Pred_Cos'])) + 360) % 360
-
-# ==========================================
-# VISUALISATION 1 : RÉALITÉ vs PRÉDICTION (Scatter Plot)
-# ==========================================
-plt.figure(figsize=(10, 6))
-plt.scatter(df_res['Real_Speed'], df_res['Pred_Speed'], alpha=0.3, color='#4c72b0', s=15)
-
-# Ligne parfaite idéale
-max_val = max(df_res['Real_Speed'].max(), df_res['Pred_Speed'].max())
-plt.plot([0, max_val], [0, max_val], 'r--', linewidth=2, label='Parfait')
-
-plt.title(f"Vitesse du Vent : Réalité vs Modèle (R² = {score:.2f})")
-plt.xlabel("Vitesse Réelle (m/s)")
-plt.ylabel("Vitesse Prédite (m/s)")
-plt.grid(True, alpha=0.3)
-plt.legend()
-plt.show()
+# Colonnes à utiliser
+FEATURE_COLS = [
+    'forecast_pressure', 'forecast_wind_sin', 'forecast_wind_cos', 
+    'forecast_humidity', 'forecast_temperature',
+    'day_sin', 'day_cos', 'hour_sin', 'hour_cos'
+]
+TARGET_COLS = ['temperature', 'wind_sin', 'wind_cos']
 
 # ==========================================
-# VISUALISATION 2 : SÉRIE TEMPORELLE (Zoom sur 100h)
+# 2. FONCTIONS UTILITAIRES
 # ==========================================
-# On prend un échantillon aléatoire de 100 points consécutifs s'ils sont triés, 
-# ou juste les 100 premiers du test set.
-subset = 100
-plt.figure(figsize=(15, 5))
+def get_physical_wind(sin_col, cos_col):
+    """Convertit U/V (Sin/Cos) en Vitesse et Direction (Degrés)"""
+    # Vitesse (Magnitude)
+    speed = np.sqrt(sin_col**2 + cos_col**2)
+    # Direction (Angle 0-360)
+    angle_rad = np.arctan2(sin_col, cos_col)
+    angle_deg = (np.degrees(angle_rad) + 360) % 360
+    return speed, angle_deg
 
-# Attention: X_test a été mélangé (shuffle), donc l'ordre temporel est perdu.
-# Pour l'affichage "Time Series", c'est moins joli mais ça permet de voir si les pics sont suivis.
-plt.plot(df_res['Real_Speed'].values[:subset], label='Réalité', color='black', linewidth=2)
-plt.plot(df_res['Pred_Speed'].values[:subset], label='Prédiction IA', color='#55a868', linewidth=2)
+def load_and_prep_data(csv_path):
+    """Charge le CSV et applique la normalisation manuelle"""
+    print("Chargement des données...")
+    df = pd.read_csv(csv_path).dropna()
+    
+    # On prend tout le CSV pour la visu (ou tu peux faire un sample)
+    X_raw = df[FEATURE_COLS].values.astype(np.float32)
+    y_raw = df[TARGET_COLS].values.astype(np.float32)
+    
+    # --- NORMALISATION MANUELLE (Comme en PROD) ---
+    # (Raw - Mean) / Scale
+    X_norm = (X_raw - INPUT_MEAN) / INPUT_SCALE
+    
+    print(f"{len(df)} lignes chargées et normalisées.")
+    return X_norm, y_raw # On retourne y_raw car c'est la vérité terrain
 
-plt.title("Comparaison sur un échantillon de 100 points de test")
-plt.ylabel("Vitesse Vent (m/s)")
-plt.xlabel("Points de test")
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.show()
+def run_onnx_inference(X_norm):
+    """Exécute le modèle ONNX et dé-normalise la sortie"""
+    print(f"Chargement du modèle ONNX : {ONNX_MODEL_PATH}...")
+    sess = rt.InferenceSession(ONNX_MODEL_PATH, providers=["CPUExecutionProvider"])
+    input_name = sess.get_inputs()[0].name
+    
+    print("Inférence en cours...")
+    # ONNX attend des float32
+    preds_norm = sess.run(None, {input_name: X_norm.astype(np.float32)})[0]
+    
+    # --- DÉ-NORMALISATION MANUELLE ---
+    # (Pred_Norm * Scale) + Mean
+    preds_physical = (preds_norm * TARGET_SCALE) + TARGET_MEAN
+    
+    return preds_physical
 
 # ==========================================
-# VISUALISATION 3 : L'ERREUR SELON LA DIRECTION (Radar Plot)
+# 3. MAIN : GÉNÉRATION DES GRAPHIQUES
 # ==========================================
-# Où est-ce que le modèle se trompe encore ?
+if __name__ == "__main__":
+    # A. Préparation
+    X_norm, y_real_physical = load_and_prep_data(CSV_DATA_PATH)
+    
+    # B. Prédiction ONNX
+    y_pred_physical = run_onnx_inference(X_norm)
+    
+    # C. Calcul du Score R2 global sur la vitesse
+    real_speed, real_dir = get_physical_wind(y_real_physical[:, 1], y_real_physical[:, 2])
+    pred_speed, pred_dir = get_physical_wind(y_pred_physical[:, 1], y_pred_physical[:, 2])
+    
+    r2_speed = r2_score(real_speed, pred_speed)
+    print(f"\n--- Score R² sur la Vitesse du Vent : {r2_speed:.4f} ---")
 
-df_res['Error_Speed'] = df_res['Pred_Speed'] - df_res['Real_Speed'] # Positif = Surestimation, Négatif = Sous-estimation
+    # ==========================================
+    # VISU 1 : SCATTER PLOT (VITESSE)
+    # ==========================================
+    plt.figure(figsize=(8, 8))
+    plt.scatter(real_speed, pred_speed, alpha=0.2, s=10, color='purple')
+    
+    # Ligne diagonale parfaite
+    max_val = max(real_speed.max(), pred_speed.max())
+    plt.plot([0, max_val], [0, max_val], 'k--', label='Prédiction Parfaite')
+    
+    plt.title(f"Vitesse Vent : Réalité vs ONNX (R²={r2_speed:.2f})")
+    plt.xlabel("Vitesse Réelle (m/s)")
+    plt.ylabel("Vitesse Prédite par ONNX (m/s)")
+    plt.legend()
+    plt.xlim(0, max_val)
+    plt.ylim(0, max_val)
+    plt.tight_layout()
+    plt.show()
 
-plt.figure(figsize=(10, 10))
-ax = plt.subplot(111, polar=True)
+    # ==========================================
+    # VISU 2 : TIME SERIES (ZOOM)
+    # ==========================================
+    # On regarde les 200 premiers points (si le CSV est trié chronologiquement)
+    subset = 200 
+    plt.figure(figsize=(14, 6))
+    plt.plot(real_speed[:subset], label='Réalité (Target)', color='black', linewidth=1.5, alpha=0.7)
+    plt.plot(pred_speed[:subset], label='Prédiction ONNX', color='#007acc', linewidth=2)
+    
+    plt.title(f"Dynamique Temporelle (Zoom sur {subset} points)")
+    plt.ylabel("Vitesse (m/s)")
+    plt.xlabel("Temps (index)")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
-# On plotte l'erreur en fonction de la direction RÉELLE du vent
-sc = ax.scatter(np.radians(df_res['Real_Dir']), df_res['Error_Speed'], 
-                c=df_res['Error_Speed'], cmap='coolwarm', alpha=0.5, s=20, vmin=-5, vmax=5)
+    # ==========================================
+    # VISU 3 : ERREUR POLAIRE (BIAS DIRECTIONNEL)
+    # ==========================================
+    # Positif = Le modèle surestime. Négatif = Il sous-estime.
+    speed_error = pred_speed - real_speed
+    
+    plt.figure(figsize=(10, 10))
+    ax = plt.subplot(111, polar=True)
+    ax.set_theta_zero_location("N")
+    ax.set_theta_direction(-1) # Sens horaire
 
-ax.set_theta_zero_location("N")
-ax.set_theta_direction(-1)
-plt.colorbar(sc, label="Erreur de Vitesse (m/s) : Rouge=Trop fort, Bleu=Trop faible")
-plt.title("Biais du modèle selon la direction du vent")
-plt.show()
+    # Plot: Angle = Direction Réelle, Rayon = Erreur Absolue, Couleur = Signe de l'erreur
+    # On utilise real_dir (en degrés) converti en radians pour le plot
+    sc = ax.scatter(np.radians(real_dir), speed_error, 
+                    c=speed_error, cmap='coolwarm', 
+                    alpha=0.6, s=20, vmin=-5, vmax=5) # vmin/vmax bornent les couleurs entre -5 et +5 m/s
 
-# ==========================================
-# VISUALISATION 4 : DISTRIBUTION DES ERREURS
-# ==========================================
-plt.figure(figsize=(10, 5))
-sns.histplot(df_res['Error_Speed'], kde=True, bins=50, color='purple')
-plt.axvline(0, color='k', linestyle='--')
-plt.title("Distribution des Erreurs (Doit être centrée sur 0)")
-plt.xlabel("Erreur (m/s)")
-plt.show()
+    plt.title("Où le modèle se trompe-t-il ?\n(Erreur de vitesse selon la direction du vent)", va='bottom')
+    cbar = plt.colorbar(sc, pad=0.1)
+    cbar.set_label("Erreur (m/s) : Rouge=Surestimation, Bleu=Sous-estimation")
+    plt.tight_layout()
+    plt.show()
