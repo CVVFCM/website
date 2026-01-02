@@ -27,9 +27,6 @@ final class FacebookTokenRepository extends ServiceEntityRepository
             ->getSingleResult();
     }
 
-    /**
-     * @psalm-suppress UnusedParam
-     */
     public function save(FacebookToken $facebookToken): void
     {
         $this->getEntityManager()->persist($facebookToken);

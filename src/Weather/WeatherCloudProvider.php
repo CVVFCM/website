@@ -102,6 +102,7 @@ final readonly class WeatherCloudProvider implements LiveWeatherProvider
         $weather->pressureMax = $data['bar_day_max'][1];
         $weather->rainRate = $data['rainrate_current'][1];
         $weather->rainTotal = $data['rain_day_total'][1];
+        $weather->solarRadiation = $data['solarrad_current'][1];
         $weather->temperature = $data['temp_current'][1];
         $weather->temperatureMin = $data['temp_day_min'][1];
         $weather->temperatureMax = $data['temp_day_max'][1];

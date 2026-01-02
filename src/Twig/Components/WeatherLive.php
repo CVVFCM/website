@@ -6,7 +6,6 @@ use App\DTO\LiveWeather;
 use App\Weather\LiveWeatherProvider;
 use Psr\Log\LoggerInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
-use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
 #[AsLiveComponent]
@@ -14,7 +13,6 @@ final class WeatherLive
 {
     use DefaultActionTrait;
 
-    #[LiveProp]
     public bool $full = false;
 
     public function __construct(
