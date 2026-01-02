@@ -68,11 +68,17 @@ final class LiveWeatherRecordRepository extends ServiceEntityRepository
             ->addScalarResult('day_sin', 'day_sin')
             ->addScalarResult('day_cos', 'day_cos')
             ->addScalarResult('pressure_minus_3h', 'pressure_minus_3h')
-            ->addScalarResult('pressure_trend_3h', 'pressure_trend_3h');
+            ->addScalarResult('pressure_trend_3h', 'pressure_trend_3h')
+            ->addScalarResult('forecast_temperature', 'forecast_temperature')
+            ->addScalarResult('forecast_humidity', 'forecast_humidity')
+            ->addScalarResult('forecast_pressure', 'forecast_pressure')
+            ->addScalarResult('forecast_wind_sin', 'forecast_wind_sin')
+            ->addScalarResult('forecast_wind_cos', 'forecast_wind_cos')
+        ;
 
         return $this->getEntityManager()->createNativeQuery(
             <<<SQL
-                WITH hourly_metrics AS (
+                WITH hourly_live_record AS (
                     SELECT
                         DATE_TRUNC('hour', lwr.recorded_at) AS recorded_hour,
                         AVG(lwr.humidity) AS humidity,
@@ -85,16 +91,22 @@ final class LiveWeatherRecordRepository extends ServiceEntityRepository
                     HAVING COUNT(*) >= 6
                 )
                 SELECT
-                    hourly_metrics.*,
-                    SIN(2 * PI() * (EXTRACT(HOURS FROM hourly_metrics.recorded_hour) / 24)) AS hour_sin,
-                    COS(2 * PI() * (EXTRACT(HOURS FROM hourly_metrics.recorded_hour) / 24)) AS hour_cos,
-                    SIN(2 * PI() * (EXTRACT(DOY FROM hourly_metrics.recorded_hour) / 365.25)) AS day_sin,
-                    COS(2 * PI() * (EXTRACT(DOY FROM hourly_metrics.recorded_hour) / 365.25)) AS day_cos,
+                    hourly_live_record.*,
+                    SIN(2 * PI() * (EXTRACT(HOURS FROM hourly_live_record.recorded_hour) / 24)) AS hour_sin,
+                    COS(2 * PI() * (EXTRACT(HOURS FROM hourly_live_record.recorded_hour) / 24)) AS hour_cos,
+                    SIN(2 * PI() * (EXTRACT(DOY FROM hourly_live_record.recorded_hour) / 365.25)) AS day_sin,
+                    COS(2 * PI() * (EXTRACT(DOY FROM hourly_live_record.recorded_hour) / 365.25)) AS day_cos,
                     t_minus_3.pressure AS pressure_minus_3h,
-                    hourly_metrics.pressure - t_minus_3.pressure AS pressure_trend_3h
-                FROM hourly_metrics
-                LEFT JOIN hourly_metrics t_minus_3 ON t_minus_3.recorded_hour = hourly_metrics.recorded_hour - INTERVAL '3 hours'
-                ORDER BY hourly_metrics.recorded_hour;
+                    hourly_live_record.pressure - t_minus_3.pressure AS pressure_trend_3h,
+                    weather_forecast_record.temperature AS forecast_temperature,
+                    weather_forecast_record.humidity AS forecast_humidity,
+                    weather_forecast_record.pressure AS forecast_pressure,
+                    SIN(RADIANS(weather_forecast_record.wind_direction)) * weather_forecast_record.wind_speed AS forecast_wind_sin,
+                    COS(RADIANS(weather_forecast_record.wind_direction)) * weather_forecast_record.wind_speed AS forecast_wind_cos
+                FROM hourly_live_record
+                INNER JOIN weather_forecast_record ON hourly_live_record.recorded_hour = weather_forecast_record.date
+                LEFT JOIN hourly_live_record t_minus_3 ON t_minus_3.recorded_hour = hourly_live_record.recorded_hour - INTERVAL '3 hours'
+                ORDER BY hourly_live_record.recorded_hour;
             SQL,
             $rsm,
         )->toIterable();

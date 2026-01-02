@@ -114,7 +114,8 @@
             "php bin/console sulu:page:initialize",
             "php bin/console doctrine:fixtures:load --no-interaction --append",
             "php bin/console cmsig:seal:reindex",
-            "php bin/console app:import:live-weather-csv"
+            "php bin/console app:import:live-weather-csv",
+            "php bin/console app:import:weather-forecast-csv"
         ],
         "reset-test": [
             "php bin/console -etest doctrine:database:create --if-not-exists",
@@ -128,7 +129,8 @@
             "php bin/console -etest sulu:page:initialize",
             "php bin/console -etest doctrine:fixtures:load --no-interaction --append",
             "php bin/console -etest cmsig:seal:reindex",
-            "php bin/console -etest app:import:live-weather-csv"
+            "php bin/console -etest app:import:live-weather-csv",
+            "php bin/console -etest app:import:weather-forecast-csv"
         ]
     },
     "config": {
