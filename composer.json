@@ -3,7 +3,7 @@
     "license": "proprietary",
     "type": "project",
     "require": {
-        "php": "^8.4",
+        "php": "^8.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-imagick": "*",
@@ -113,7 +113,8 @@
             "php bin/console sulu:security:init",
             "php bin/console sulu:page:initialize",
             "php bin/console doctrine:fixtures:load --no-interaction --append",
-            "php bin/console cmsig:seal:reindex"
+            "php bin/console cmsig:seal:reindex",
+            "php bin/console app:import:live-weather-csv"
         ],
         "reset-test": [
             "php bin/console -etest doctrine:database:create --if-not-exists",
@@ -126,7 +127,8 @@
             "php bin/console -etest sulu:security:init",
             "php bin/console -etest sulu:page:initialize",
             "php bin/console -etest doctrine:fixtures:load --no-interaction --append",
-            "php bin/console -etest cmsig:seal:reindex"
+            "php bin/console -etest cmsig:seal:reindex",
+            "php bin/console -etest app:import:live-weather-csv"
         ]
     },
     "config": {
