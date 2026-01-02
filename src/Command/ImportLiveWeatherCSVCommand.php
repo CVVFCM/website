@@ -15,7 +15,7 @@ final readonly class ImportLiveWeatherCSVCommand
 {
     private const array COLUMN_MAPPING = [
         'Date' => 'recordedAt',
-        'Température' => 'temperature',
+        'Température (°C)' => 'temperature',
         'Humidité' => 'humidity',
         'Pression atmosphérique' => 'pressure',
         'Vitesse moyenne du vent' => 'windSpeed',
@@ -46,7 +46,7 @@ final readonly class ImportLiveWeatherCSVCommand
             $file->setFlags(\SplFileObject::READ_CSV | \SplFileObject::SKIP_EMPTY);
             $file->setCsvControl(';');
 
-            foreach ($file as $row) {
+            foreach ($file as $i => $row) {
                 if (null === $mapping) {
                     $mapping = $this->extractColumnMapping($row);
 
@@ -56,7 +56,14 @@ final readonly class ImportLiveWeatherCSVCommand
                 $data = [];
                 foreach (self::COLUMN_MAPPING as $property) {
                     if (!isset($mapping[$property])) {
-                        $io->warning('Mising column for property: '.$property);
+                        $io->warning(
+                            sprintf(
+                                'Missing column for property: %s. File: %s, Line: %d',
+                                $property,
+                                $fileInfo->getFilename(),
+                                $i + 1,
+                            )
+                        );
 
                         continue 2;
                     }
@@ -87,7 +94,7 @@ final readonly class ImportLiveWeatherCSVCommand
         $columns = [];
         foreach ($row as $index => $columnName) {
             foreach (self::COLUMN_MAPPING as $expectedColumnName => $expectedProperty) {
-                if (str_starts_with($columnName, $expectedColumnName)) {
+                if (str_contains($columnName, $expectedColumnName)) {
                     $columns[$expectedProperty] = $index;
 
                     break;

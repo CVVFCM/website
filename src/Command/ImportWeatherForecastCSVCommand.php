@@ -61,7 +61,14 @@ final readonly class ImportWeatherForecastCSVCommand
                 $data = [];
                 foreach (self::COLUMN_MAPPING as $property) {
                     if (!isset($row[$mapping[$property]])) {
-                        $io->warning('Mising column for property: '.$property);
+                        $io->warning(
+                            sprintf(
+                                'Missing column for property: %s. File: %s, Line: %d',
+                                $property,
+                                $fileInfo->getFilename(),
+                                $i + 1,
+                            )
+                        );
 
                         continue 2;
                     }

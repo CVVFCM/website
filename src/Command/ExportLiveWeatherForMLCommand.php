@@ -28,6 +28,7 @@ final readonly class ExportLiveWeatherForMLCommand
                 $headerPrinted = true;
             }
 
+            $line['recorded_hour'] = new \DateTimeImmutable($line['recorded_hour'], new \DateTimeZone('Europe/Paris'))->getTimestamp();
             $output->fputcsv($line);
         }
 
