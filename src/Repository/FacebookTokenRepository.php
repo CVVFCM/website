@@ -28,7 +28,7 @@ final class FacebookTokenRepository extends ServiceEntityRepository
     }
 
     /**
-     * @psalm-suppress UnusedParam
+     * @psalm-suppress UnusedParam Don't know why it complains about this
      */
     public function save(FacebookToken $facebookToken): void
     {
@@ -37,7 +37,7 @@ final class FacebookTokenRepository extends ServiceEntityRepository
     }
 
     /**
-     * @psalm-suppress UnusedParam
+     * @psalm-suppress UnusedParam Don't know why it complains about this
      */
     public function remove(FacebookToken $facebookToken): void
     {

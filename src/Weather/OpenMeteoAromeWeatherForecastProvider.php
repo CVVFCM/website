@@ -28,11 +28,11 @@ final readonly class OpenMeteoAromeWeatherForecastProvider implements WeatherFor
             $response = $client->request(
                 'GET',
                 strtr(
-                    'forecast?latitude=::latitude::&longitude=::longitude::&hourly=::data_types::&wind_speed_unit=kn&timezone=Europe%2FParis&models=meteofrance_seamless&start_hour=::start_hour::&end_hour=::end_hour::',
+                    'forecast?latitude=::latitude::&longitude=::longitude::&hourly=::data_types::&wind_speed_unit=kn&timezone=UTC&models=meteofrance_seamless&start_hour=::start_hour::&end_hour=::end_hour::',
                     [
                         '::latitude::' => $this->latitude,
                         '::longitude::' => $this->longitude,
-                        '::data_types::' => 'temperature_2m,precipitation,wind_speed_10m,wind_direction_10m',
+                        '::data_types::' => 'temperature_2m,relative_humidity_2m,pressure_msl,precipitation,wind_speed_10m,wind_direction_10m',
                         '::start_hour::' => date('Y-m-d\TH:00'),
                         '::end_hour::' => new \DateTimeImmutable('tomorrow 23:00')->format('Y-m-d\TH:00'),
                     ],
@@ -47,19 +47,19 @@ final readonly class OpenMeteoAromeWeatherForecastProvider implements WeatherFor
              *          precipitation: float[],
              *          wind_speed_10m: float[],
              *          wind_direction_10m: int[],
+             *          pressure_msl: float[],
+             *          relative_humidity_2m: int[],
              *      }
              * } $arrayResponse
              */
             $arrayResponse = $response->toArray();
             $forecasts = [];
             foreach ($arrayResponse['hourly']['time'] as $i => $time) {
-                if (0 !== $i && !in_array(new \DateTimeImmutable($time)->format('H'), array_keys(WeatherForecast::HOURS))) {
-                    continue;
-                }
-
                 $forecasts[] = new WeatherForecast(
                     new \DateTimeImmutable($time),
                     $arrayResponse['hourly']['temperature_2m'][$i],
+                    $arrayResponse['hourly']['pressure_msl'][$i],
+                    $arrayResponse['hourly']['relative_humidity_2m'][$i],
                     $arrayResponse['hourly']['precipitation'][$i],
                     $arrayResponse['hourly']['wind_speed_10m'][$i],
                     $arrayResponse['hourly']['wind_direction_10m'][$i],

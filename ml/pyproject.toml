@@ -1,0 +1,30 @@
+[project]
+name = "cvvfcm-website-ml"
+version = "0.1.0"
+requires-python = ">=3.13,<3.14"
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.poetry]
+package-mode = false
+
+[[tool.poetry.source]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[tool.poetry.dependencies]
+numpy = "^2.4.0"
+pandas = "^2.3.3"
+torch = { version = "^2.9.1", source = "pytorch-cpu" }
+scikit-learn = "^1.8.0"
+seaborn = "^0.13.2"
+matplotlib = "^3.10.8"
+onnxruntime = "^1.23.2"
+onnx = "^1.20.0"
+onnxscript = "^0.5.7"

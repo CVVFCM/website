@@ -27,6 +27,8 @@ final class LiveWeather
 
     public float $rainTotal;
 
+    public int $solarRadiation;
+
     public float $temperature;
 
     public float $temperatureMin;

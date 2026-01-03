@@ -13,7 +13,7 @@
         "doctrine/doctrine-fixtures-bundle": "^4.3.0",
         "doctrine/doctrine-migrations-bundle": "*",
         "friendsofsymfony/http-cache-bundle": "^3.0",
-        "league/flysystem-aws-s3-v3": "^3.30",
+        "league/flysystem-async-aws-s3": "*",
         "league/flysystem-bundle": "^3.3",
         "runtime/frankenphp-symfony": "^0.2.0",
         "scheb/2fa-bundle": "^7.11.0",
@@ -31,10 +31,11 @@
         "symfony/framework-bundle": "7.4.*",
         "symfony/lock": "7.4.*",
         "symfony/mailer": "7.4.*",
-        "symfony/mercure-bundle": "^0.4.2",
+        "symfony/messenger": "7.4.*",
         "symfony/monolog-bridge": "7.4.*",
         "symfony/monolog-bundle": "^3.10.0",
         "symfony/runtime": "7.4.*",
+        "symfony/scheduler": "7.4.*",
         "symfony/security-bundle": "7.4.*",
         "symfony/stimulus-bundle": "^2.31.0",
         "symfony/twig-bundle": "7.4.*",
@@ -114,7 +115,8 @@
             "php bin/console sulu:page:initialize",
             "php bin/console doctrine:fixtures:load --no-interaction --append",
             "php bin/console cmsig:seal:reindex",
-            "php bin/console app:import:live-weather-csv"
+            "php bin/console app:import:live-weather-csv",
+            "php bin/console app:import:weather-forecast-csv"
         ],
         "reset-test": [
             "php bin/console -etest doctrine:database:create --if-not-exists",
@@ -128,7 +130,8 @@
             "php bin/console -etest sulu:page:initialize",
             "php bin/console -etest doctrine:fixtures:load --no-interaction --append",
             "php bin/console -etest cmsig:seal:reindex",
-            "php bin/console -etest app:import:live-weather-csv"
+            "php bin/console -etest app:import:live-weather-csv",
+            "php bin/console -etest app:import:weather-forecast-csv"
         ]
     },
     "config": {

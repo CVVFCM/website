@@ -19,6 +19,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  *   bar_day_max: array{0: int, 1: float},
  *   rainrate_current: array{0: int, 1: float},
  *   rain_day_total: array{0: int, 1: float},
+ *   solarrad_current: array{0: int, 1: int},
  *   temp_current: array{0: int, 1: float},
  *   temp_day_min: array{0: int, 1: float},
  *   temp_day_max: array{0: int, 1: float},
@@ -102,6 +103,7 @@ final readonly class WeatherCloudProvider implements LiveWeatherProvider
         $weather->pressureMax = $data['bar_day_max'][1];
         $weather->rainRate = $data['rainrate_current'][1];
         $weather->rainTotal = $data['rain_day_total'][1];
+        $weather->solarRadiation = $data['solarrad_current'][1];
         $weather->temperature = $data['temp_current'][1];
         $weather->temperatureMin = $data['temp_day_min'][1];
         $weather->temperatureMax = $data['temp_day_max'][1];

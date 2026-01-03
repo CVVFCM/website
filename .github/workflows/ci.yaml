@@ -32,9 +32,9 @@ jobs:
                         compose.yaml
                         compose.override.yaml
                     set: |
-                        *.cache-from=type=gha,scope=${{github.ref}}
-                        *.cache-from=type=gha,scope=refs/heads/main
-                        *.cache-to=type=gha,scope=${{github.ref}},mode=max
+                        *.cache-from=type=gha,scope=build-main
+                        *.cache-from=type=gha,scope=build-${{ github.ref_name }}
+                        *.cache-to=type=gha,scope=build-${{ github.ref_name }},mode=max
 
     tests:
         name: Tests
@@ -57,9 +57,7 @@ jobs:
                         compose.yaml
                         compose.override.yaml
                     set: |
-                        *.cache-from=type=gha,scope=${{github.ref}}
-                        *.cache-from=type=gha,scope=refs/heads/main
-                        *.cache-to=type=gha,scope=${{github.ref}},mode=max
+                        *.cache-from=type=gha,scope=build-${{ github.ref_name }}
             -   name: Set up Docker Compose
                 uses: docker/setup-compose-action@v1
                 with:
@@ -153,3 +151,18 @@ jobs:
 
             -   name: Twig CS Fixer
                 run: ./vendor/bin/twig-cs-fixer lint --report=github
+
+    python_cs:
+        runs-on: ubuntu-latest
+        name: Python Code Style
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Setup Python
+                uses: actions/setup-python@v4
+                with:
+                    python-version: '3.13'
+    
+            -   name: Run Ruff (in ml folder)
+                uses: astral-sh/ruff-action@v1
