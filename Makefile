@@ -33,7 +33,7 @@ ml_cli:
 	test -f $@ || make first_run
 	@touch $@
 
-first_run: infra/tls/cert.pem build var/ vendor/ up reset public/build/admin/manifest.json
+first_run: infra/tls/cert.pem build var/ vendor/ up reset public/build/admin/manifest.json data/weather/ml/model_pytorch.onnx
 
 reset:
 	@$(DOCKER_COMPOSE) exec php composer reset
@@ -85,6 +85,9 @@ public/build/admin/manifest.json: assets/admin/package.json assets/admin/package
 infra/tls/cert.pem:
 	@mkdir -p infra/tls
 	@mkcert -key-file infra/tls/key.pem -cert-file infra/tls/cert.pem localhost
+
+data/weather/ml/ml.csv:
+	@$(DOCKER_COMPOSE) exec php bin/console app:export:weather-for-ml > data/weather/ml/ml.csv
 
 ml/.venv: ml/pyproject.toml
 	@$(DOCKER_COMPOSE) run --rm ml poetry install --only main

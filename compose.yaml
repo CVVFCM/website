@@ -29,6 +29,7 @@ services:
             - caddy_config:/config
             - search_indexes:/app/var/indexes
             - thumbnails:/app/public/uploads
+            - ml_data:/app/data/weather/ml
         ports:
             -   target: 80
                 published: ${HTTP_PORT:-80}
@@ -51,6 +52,8 @@ services:
 
     ml:
         image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}ml:${IMAGE_TAG:-latest}
+        volumes:
+            - ml_data:/app/data/weather/ml
         build:
             context: ml
             target: python
@@ -63,3 +66,4 @@ volumes:
     caddy_config:
     search_indexes:
     thumbnails:
+    ml_data:

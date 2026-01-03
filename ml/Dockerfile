@@ -3,11 +3,14 @@ ARG DEBIAN_VERSION=trixie
 
 FROM python:${PYTHON_VERSION}-slim-${DEBIAN_VERSION} AS python
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c", "-eux"]
+SHELL ["/bin/bash", "-o", "pipefail", "-eux", "-c"]
 
 ARG EXTERNAL_USER_ID
 
-RUN set -eux; \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    --mount=type=cache,target=/root/.cache/pip \
+    set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
       python3-tk \
@@ -19,14 +22,15 @@ RUN set -eux; \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN set -eux; \
-    usermod -u ${EXTERNAL_USER_ID} www-data; \
+RUN usermod -u ${EXTERNAL_USER_ID} www-data; \
     groupmod -g ${EXTERNAL_USER_ID} www-data; \
-    mkdir -p /app/ml /var/www ; \
-    chown -R www-data:www-data /app /var/www
+    mkdir -p /app/ml /var/www /app/data/weather/ml; \
+    chown -R www-data:www-data /app /var/www /app/data/weather/ml
 
 USER www-data
 WORKDIR /app/ml
+
+VOLUME /app/data/weather/ml
 
 COPY --chown=www-data:www-data pyproject.toml poetry.lock /app/ml/
 
