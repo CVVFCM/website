@@ -2,9 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\LiveWeatherRecord;
 use App\Entity\WeatherForecastRecord;
-use App\Repository\LiveWeatherRecordRepository;
 use App\Repository\WeatherForecastRecordRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
