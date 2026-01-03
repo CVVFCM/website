@@ -112,6 +112,7 @@ EXPOSE 443
 EXPOSE 443/udp
 EXPOSE 2019
 
+
 FROM base AS consumer
 
 COPY --chown=www-data:www-data .env ./
@@ -127,5 +128,7 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
     php bin/console cache:clear; \
     php bin/console cache:warmup -eprod; \
     sync
+
+HEALTHCHECK CMD php bin/console doctrine:query:sql "SELECT 1" || exit 1
 
 CMD [ "php", "bin/console", "messenger:consume", "-vv" ]

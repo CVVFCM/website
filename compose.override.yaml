@@ -50,7 +50,7 @@ services:
     consumer:
         volumes:
             - '.:/app:rw'
-        depends_on: [ database, mailer, localstack ]
+        depends_on: [ database, mailer, localstack, php ]
         environment:
             APP_ENV: ${APP_ENV:-dev}
         tty: true

@@ -7,11 +7,15 @@ variable "TAGS" {
 }
 
 group "default" {
-  targets = ["php", "rtsp-to-web", "ml"]
+  targets = ["php", "consumer", "rtsp-to-web", "ml"]
 }
 
 target "php" {
   tags = [for t in split(",", TAGS) : "${IMAGE_PREFIX}php:${t}"]
+}
+
+target "consumer" {
+  tags = [for t in split(",", TAGS) : "${IMAGE_PREFIX}consumer:${t}"]
 }
 
 target "ml" {

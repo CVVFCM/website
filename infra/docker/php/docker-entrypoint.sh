@@ -8,15 +8,13 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 		ln -sf ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 	fi
 
-	if [ $APP_ENV = "dev" ]; then
+	if [ $APP_ENV = "dev" ] && [ ! -d vendor ]; then
 		composer install --prefer-dist --no-progress --optimize-autoloader
 	fi
 
 	# Display information about the current project
 	# Or about an error in project initialization
 	php bin/console -V
-
-	php bin/console cache:clear
 
 	if grep -q ^DATABASE_URL= .env; then
 		echo 'Waiting for database to be ready...'

@@ -9,7 +9,19 @@ clean_admin_assets:
 
 clean: clean_admin_assets
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
-	@rm -rf .configured assets/admin/node_modules infra/tls public/assets public/build public/uploads vendor var/cache var/indexes var/log
+	@rm -rf \
+		.configured \
+		assets/admin/node_modules \
+		infra/tls \
+		data/weather/ml \
+		ml/.venv \
+		public/assets \
+		public/build \
+		public/uploads \
+		vendor \
+		var/cache \
+		var/indexes \
+		var/log
 
 ps:
 	@$(DOCKER_COMPOSE) ps
@@ -45,8 +57,8 @@ test:
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/phpunit --colors=always --testdox
 
 cc:
-	@$(DOCKER_COMPOSE) exec php bin/websiteconsole cache:clear
-	@$(DOCKER_COMPOSE) exec php bin/adminconsole cache:clear
+	@$(DOCKER_COMPOSE) run --rm php bin/websiteconsole cache:clear
+	@$(DOCKER_COMPOSE) run --rm php bin/adminconsole cache:clear
 
 logs: ## Show live logs, pass the parameter "c=" to specify a container, example: make logs c=php
 	@$(eval c ?= 'php')
@@ -86,7 +98,10 @@ infra/tls/cert.pem:
 	@mkdir -p infra/tls
 	@mkcert -key-file infra/tls/key.pem -cert-file infra/tls/cert.pem localhost
 
-data/weather/ml/ml.csv:
+data/weather/ml:
+	@mkdir -p data/weather/ml
+
+data/weather/ml/ml.csv: data/weather/ml
 	@$(DOCKER_COMPOSE) exec php bin/console app:export:weather-for-ml > data/weather/ml/ml.csv
 
 ml/.venv: ml/pyproject.toml
