@@ -1,14 +1,15 @@
-import pandas as pd
+import json
 import pathlib
+
 import numpy as np
+import pandas as pd
 import torch
-from torch.export import Dim
 import torch.nn as nn
 import torch.optim as optim
-import json
+from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import r2_score
+from torch.export import Dim
 
 CURRENT_DIR = pathlib.Path(__file__).parent.resolve()
 
@@ -17,7 +18,7 @@ ONNX_MODEL_PATH = CURRENT_DIR / "../../data/weather/ml/model_pytorch.onnx"
 SCALER_PARAMS_PATH = CURRENT_DIR / "../../data/weather/ml/scaler_params.json"
 
 FEATURE_COLS = [
-    'forecast_pressure', 'forecast_wind_sin', 'forecast_wind_cos', 
+    'forecast_pressure', 'forecast_wind_sin', 'forecast_wind_cos',
     'forecast_humidity', 'forecast_temperature',
     'day_sin', 'day_cos', 'hour_sin', 'hour_cos'
 ]
@@ -56,7 +57,7 @@ class CustomWeatherForecastNet(nn.Module):
         # ReLU returns max(0,x) (only positive values)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(0.2)
-    
+
     def forward(self, x):
         x = self.relu(self.layer1(x))
         x = self.dropout(x)
@@ -71,7 +72,7 @@ class CustomWeatherForecastNet(nn.Module):
 
 model = CustomWeatherForecastNet()
 criterion = nn.MSELoss() # Measure Mean Squared Error
-optimizer = optim.Adam(model.parameters(), lr=0.001) # Adam Stochastic Optimization. Didn't understand, took it from the docs.
+optimizer = optim.Adam(model.parameters(), lr=0.001) # Adam Stochastic Optimization. Didn't understand, it's from docs.
 
 
 print("Start Training...")
@@ -82,7 +83,7 @@ n_samples = X_train_th.shape[0]
 for epoch in range(epochs):
     model.train()
     permutation = torch.randperm(n_samples)
-    
+
     for i in range(0, n_samples, batch_size):
         indices = permutation[i:i+batch_size]
         batch_x, batch_y = X_train_th[indices], y_train_th[indices]
@@ -92,7 +93,7 @@ for epoch in range(epochs):
         loss = criterion(outputs, batch_y)
         loss.backward()
         optimizer.step()
-        
+
     if (epoch+1) % 50 == 0:
         print(f"Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}")
 
@@ -114,19 +115,19 @@ print(f"R² : {r2:.4f}")
 print("\nONNX Export...")
 
 batch_dim = Dim("batch_size", min=1)
-dummy_input = torch.randn(1, 9) 
+dummy_input = torch.randn(1, 9)
 dynamic_shapes = {
     "x": {0: batch_dim}
 }
 
 torch.onnx.export(
-    model, 
-    dummy_input, 
+    model,
+    dummy_input,
     ONNX_MODEL_PATH,
     export_params=True,
     opset_version=18,
     do_constant_folding=True,
-    input_names = ['input'],  
+    input_names = ['input'],
     output_names = ['output'],
     dynamic_shapes=dynamic_shapes
 )
