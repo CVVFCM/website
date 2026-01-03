@@ -29,6 +29,11 @@ final readonly class ImportLiveWeatherCSVCommand
     ) {
     }
 
+    /**
+     * @psalm-suppress MixedArrayAccess
+     * @psalm-suppress MixedArrayOffset
+     * @psalm-suppress MixedAssignment
+     */
     public function __invoke(SymfonyStyle $io): int
     {
         $finder = Finder::create()
@@ -48,6 +53,13 @@ final readonly class ImportLiveWeatherCSVCommand
 
             foreach ($file as $i => $row) {
                 if (null === $mapping) {
+                    if (!\is_array($row)) {
+                        $io->warning('Skipping invalid CSV file: '.$fileInfo->getFilename());
+
+                        continue 2;
+                    }
+
+                    /** @var array<int, string> $row */
                     $mapping = $this->extractColumnMapping($row);
 
                     continue;
@@ -68,18 +80,46 @@ final readonly class ImportLiveWeatherCSVCommand
                         continue 2;
                     }
 
+                    if ('recordedAt' === $property) {
+                        $date = \DateTimeImmutable::createFromFormat(
+                            'd/m/Y H:i:s',
+                            (string) $row[$mapping[$property]],
+                            new \DateTimeZone('Europe/Paris'),
+                        );
+
+                        if (false === $date) {
+                            $io->warning('Skipping record with invalid date line '.($i + 1));
+
+                            continue;
+                        }
+
+                        $data['recordedAt'] = $date;
+
+                        continue;
+                    }
+
                     $data[$property] = $row[$mapping[$property]]
-                        |> (fn (string $s) => str_replace(',', '.', $s))
-                        |> (fn (string $s) => str_replace("\u{A0}", '', $s));
+                        |> (fn (string $s): string => str_replace(',', '.', $s))
+                        |> (fn (string $s): string => str_replace("\u{A0}", '', $s));
                 }
 
+                /**
+                 * @var array{
+                 *     recordedAt: \DateTimeImmutable,
+                 *     humidity: string,
+                 *     pressure: string,
+                 *     temperature: string,
+                 *     windDirection: string,
+                 *     windSpeed: string,
+                 *     windGusts: string,
+                 * } $data
+                 */
                 if (!$data['humidity'] || !$data['pressure']) {
-                    $io->warning('Skipping record with invalid data: '.json_encode($data));
+                    $io->warning('Skipping record with invalid data: '.json_encode($data, JSON_THROW_ON_ERROR));
 
                     continue;
                 }
 
-                $data['recordedAt'] = \DateTimeImmutable::createFromFormat('d/m/Y H:i:s', $data['recordedAt']);
                 $this->recordRepository->saveDeferred(LiveWeatherRecord::fromArray($data));
             }
         }
@@ -89,6 +129,11 @@ final readonly class ImportLiveWeatherCSVCommand
         return Command::SUCCESS;
     }
 
+    /**
+     * @param array<int, string> $row
+     *
+     * @return array<string, int>
+     */
     private function extractColumnMapping(array $row): array
     {
         $columns = [];

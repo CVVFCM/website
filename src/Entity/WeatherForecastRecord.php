@@ -12,6 +12,18 @@ use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Table;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @api
+ *
+ * @psalm-type CSVForecastData = array{
+ *     date: \DateTimeImmutable,
+ *     humidity: string,
+ *     pressure: string,
+ *     temperature: string,
+ *     windDirection: string,
+ *     windSpeed: string,
+ * }
+ */
 #[Index(fields: ['date'])]
 #[Entity(repositoryClass: WeatherForecastRecordRepository::class)]
 #[Table]
@@ -40,21 +52,25 @@ readonly class WeatherForecastRecord
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     public \DateTimeImmutable $date;
 
-    public function __construct()
+    /**
+     * @param CSVForecastData $data
+     */
+    private function __construct(array $data)
     {
         $this->id = Uuid::v6();
+        $this->date = $data['date'];
+        $this->humidity = (float) $data['humidity'];
+        $this->pressure = (float) $data['pressure'];
+        $this->temperature = (float) $data['temperature'];
+        $this->windDirection = (int) $data['windDirection'];
+        $this->windSpeed = (float) $data['windSpeed'];
     }
 
+    /**
+     * @param CSVForecastData $data
+     */
     public static function fromArray(array $data): self
     {
-        $record = new self();
-        $record->date = $data['date'];
-        $record->humidity = (float) $data['humidity'];
-        $record->pressure = (float) $data['pressure'];
-        $record->temperature = (float) $data['temperature'];
-        $record->windDirection = (int) $data['windDirection'];
-        $record->windSpeed = (float) $data['windSpeed'];
-
-        return $record;
+        return new self($data);
     }
 }

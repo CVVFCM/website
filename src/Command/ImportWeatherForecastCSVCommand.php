@@ -51,6 +51,13 @@ final readonly class ImportWeatherForecastCSVCommand
                 }
 
                 if (null === $mapping) {
+                    if (!\is_array($row)) {
+                        $io->warning('Skipping invalid CSV file: '.$fileInfo->getFilename());
+
+                        continue 2;
+                    }
+
+                    /** @var array<int, string> $row */
                     $mapping = $this->extractColumnMapping($row);
 
                     continue;
@@ -71,17 +78,43 @@ final readonly class ImportWeatherForecastCSVCommand
                         continue 2;
                     }
 
-                    $data[$property] = $row[$mapping[$property]];
+                    if ('date' === $property) {
+                        $date = \DateTimeImmutable::createFromFormat(
+                            'Y-m-d\TH:i',
+                            (string) $row[$mapping[$property]],
+                            new \DateTimeZone('UTC'),
+                        );
+
+                        if (false === $date) {
+                            $io->warning('Skipping record with invalid date line '.($i + 1));
+
+                            continue;
+                        }
+
+                        $data['date'] = $date->setTimezone(new \DateTimeZone('Europe/Paris'));
+
+                        continue;
+                    }
+
+                    $data[$property] = (string) $row[$mapping[$property]];
                 }
 
+                /**
+                 * @var array{
+                 *     date: \DateTimeImmutable,
+                 *     humidity: string,
+                 *     pressure: string,
+                 *     temperature: string,
+                 *     windDirection: string,
+                 *     windSpeed: string,
+                 * } $data
+                 */
                 if ('NaN' === $data['humidity'] || 'NaN' === $data['pressure']) {
-                    $io->warning('Skipping record with invalid data: '.json_encode($data));
+                    $io->warning('Skipping record with invalid data: '.json_encode($data, JSON_THROW_ON_ERROR));
 
                     continue;
                 }
 
-                $data['date'] = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i', $data['date'], new \DateTimeZone('UTC'))
-                    ->setTimezone(new \DateTimeZone('Europe/Paris'));
                 $this->recordRepository->saveDeferred(WeatherForecastRecord::fromArray($data));
             }
         }
@@ -91,6 +124,11 @@ final readonly class ImportWeatherForecastCSVCommand
         return Command::SUCCESS;
     }
 
+    /**
+     * @param array<int, string> $row
+     *
+     * @return array<string, int>
+     */
     private function extractColumnMapping(array $row): array
     {
         $columns = [];

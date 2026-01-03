@@ -7,8 +7,8 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand('app:export:live-weather-for-ml', 'Export live weather data for machine learning')]
-final readonly class ExportLiveWeatherForMLCommand
+#[AsCommand('app:export:weather-for-ml', 'Export weather data for machine learning')]
+final readonly class ExportWeatherForMLCommand
 {
     public function __construct(
         private LiveWeatherRecordRepository $liveWeatherRecordRepository,
@@ -30,6 +30,10 @@ final readonly class ExportLiveWeatherForMLCommand
 
             $line['recorded_hour'] = new \DateTimeImmutable($line['recorded_hour'], new \DateTimeZone('Europe/Paris'))->getTimestamp();
             $output->fputcsv($line);
+        }
+
+        if (!$headerPrinted) {
+            $io->error('No weather data found.');
         }
 
         return Command::SUCCESS;

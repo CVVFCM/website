@@ -19,6 +19,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  *   bar_day_max: array{0: int, 1: float},
  *   rainrate_current: array{0: int, 1: float},
  *   rain_day_total: array{0: int, 1: float},
+ *   solarrad_current: array{0: int, 1: int},
  *   temp_current: array{0: int, 1: float},
  *   temp_day_min: array{0: int, 1: float},
  *   temp_day_max: array{0: int, 1: float},
