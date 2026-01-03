@@ -52,6 +52,7 @@ jobs:
                       docker-bake.hcl
                   targets: |
                       php
+                      consumer
                       ml
                       rtsp-to-web
                   push: true
