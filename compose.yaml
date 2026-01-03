@@ -1,11 +1,11 @@
 services:
     php:
-        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/php}:${IMAGE_TAG:-latest}
+        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}php:${IMAGE_TAG:-latest}
         depends_on: [ rtsp-to-web ]
         build:
             target: php
             args:
-                EXTERNAL_USER_ID: ${EXTERNAL_USER_ID:-33}
+                EXTERNAL_USER_ID: ${EXTERNAL_USER_ID}
         environment:
             SERVER_NAME: ${SERVER_NAME:-localhost}
             APP_SECRET: ${APP_SECRET:-!ChangeMe!}
@@ -41,13 +41,22 @@ services:
                 protocol: udp
 
     rtsp-to-web:
-        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/rtsp-to-web}:${IMAGE_TAG:-latest}
+        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}rtsp-to-web:${IMAGE_TAG:-latest}
         build:
             context: infra/docker/rtsp-to-web
             target: rtsp-to-web
         environment:
             HTTP_LOGIN: '${RTSP_TO_WEB_HTTP_LOGIN:-admin}'
             HTTP_PASSWORD: '${RTSP_TO_WEB_HTTP_PASSWORD:-!ChangeMe!}'
+
+    ml:
+        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}ml:${IMAGE_TAG:-latest}
+        build:
+            context: ml
+            target: python
+            args:
+                EXTERNAL_USER_ID: ${EXTERNAL_USER_ID}
+
 
 volumes:
     caddy_data:

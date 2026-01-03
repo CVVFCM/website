@@ -39,6 +39,12 @@ services:
             - localstack_data:/var/lib/localstack
             - ./infra/docker/localstack/create-bucket.sh:/etc/localstack/init/ready.d/create-bucket.sh:ro
 
+    ml:
+        environment:
+            - DISPLAY
+        volumes:
+            - '.:/app:rw'
+            - '/tmp/.X11-unix:/tmp/.X11-unix'
 
 volumes:
     database_data:

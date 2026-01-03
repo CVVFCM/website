@@ -9,11 +9,11 @@ import seaborn as sns
 from sklearn.metrics import r2_score
 
 CURRENT_DIR = pathlib.Path(__file__).parent.resolve()
-ONNX_MODEL_PATH = CURRENT_DIR / ".." / "data" / "model_pytorch.onnx"
-SCALER_PARAMS_PATH = CURRENT_DIR /  ".." / "data" / "scaler_params.json"
-CSV_DATA_PATH = CURRENT_DIR / ".." / ".." / "data" / "ml.csv"
+ONNX_MODEL_PATH = CURRENT_DIR / ".." / ".." / "data" / "weather" / "ml" / "model_pytorch.onnx"
+SCALER_PARAMS_PATH = CURRENT_DIR /  ".." / ".." / "data" / "weather" / "ml" / "scaler_params.json"
+CSV_DATA_PATH = CURRENT_DIR / ".." / ".." / "data" / "weather" / "ml" / "ml.csv"
 
-sns.set_theme(style="darkgrid")
+sns.set_theme(style="whitegrid")
 
 # Loads training and scaler params
 with open(SCALER_PARAMS_PATH, 'r') as f:
@@ -88,7 +88,7 @@ if __name__ == "__main__":
 
     subset = 200
     plt.figure(figsize=(14, 6))
-    plt.plot(real_speed[:subset], label='Réalité (Target)', color='white', linewidth=1.5, alpha=0.7)
+    plt.plot(real_speed[:subset], label='Réalité (Target)', color='black', linewidth=1.5, alpha=0.7)
     plt.plot(pred_speed[:subset], label='Prédiction PyTorch', color='#007acc', linewidth=2)
 
     plt.title(f"Dynamique Temporelle (Zoom sur {subset} points)")

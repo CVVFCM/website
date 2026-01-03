@@ -26,6 +26,9 @@ down:
 cli:
 	@$(DOCKER_COMPOSE) exec php bash
 
+ml_cli:
+	@$(DOCKER_COMPOSE) run --rm ml bash
+
 .configured:
 	test -f $@ || make first_run
 	@touch $@
@@ -55,14 +58,17 @@ hadolint: ## Lint Dockerfile
 	@docker run --rm -i hadolint/hadolint hadolint - < Dockerfile
 
 cs: ## Fix code style
-	@docker compose exec -T php ./vendor/bin/php-cs-fixer fix
-	@docker compose exec -T php ./vendor/bin/twig-cs-fixer fix templates
+	@$(DOCKER_COMPOSE) exec -T php ./vendor/bin/php-cs-fixer fix
+	@$(DOCKER_COMPOSE) exec -T php ./vendor/bin/twig-cs-fixer fix templates
 
 psalm: ## Run static analysis
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/psalm --no-diff
 
 psalm_strict: ## Run static analysis (strict mode)
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/psalm --show-info=true --no-diff
+
+ml_cs: ## Fix code style in ML code
+	@$(DOCKER_COMPOSE) run --rm ml ruff check
 
 var/:
 	@mkdir -p var/cache var/indexes var/log
@@ -79,3 +85,16 @@ public/build/admin/manifest.json: assets/admin/package.json assets/admin/package
 infra/tls/cert.pem:
 	@mkdir -p infra/tls
 	@mkcert -key-file infra/tls/key.pem -cert-file infra/tls/cert.pem localhost
+
+ml/.venv: ml/pyproject.toml
+	@$(DOCKER_COMPOSE) run --rm ml poetry install --only main
+
+data/weather/ml/model_pytorch.onnx: data/weather/ml/ml.csv ml/.venv
+	@$(DOCKER_COMPOSE) run --rm ml python src/train_forecast_model.py
+
+rebuild_model:
+	@rm -f data/weather/ml/model_pytorch.onnx
+	@make data/weather/ml/model_pytorch.onnx
+
+view_model_accuracy: data/weather/ml/model_pytorch.onnx
+	@$(DOCKER_COMPOSE) run --rm ml python src/view_model_accuracy.py
