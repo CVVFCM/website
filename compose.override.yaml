@@ -44,7 +44,16 @@ services:
             - DISPLAY
         volumes:
             - '.:/app:rw'
+            - './data/weather/ml:/app/data/weather/ml:rw'
             - '/tmp/.X11-unix:/tmp/.X11-unix'
+
+    consumer:
+        volumes:
+            - '.:/app:rw'
+        depends_on: [ database, mailer, localstack ]
+        environment:
+            APP_ENV: ${APP_ENV:-dev}
+        tty: true
 
 volumes:
     database_data:

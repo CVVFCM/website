@@ -2,15 +2,13 @@
 
 namespace App\Twig\Components;
 
+use App\DTO\WeatherForecast;
 use App\Weather\WeatherForecastProvider;
-use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
-use Symfony\UX\LiveComponent\DefaultActionTrait;
+use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
-#[AsLiveComponent]
+#[AsTwigComponent]
 final class WeatherToday
 {
-    use DefaultActionTrait;
-
     public function __construct(
         private WeatherForecastProvider $weatherForecastProvider,
     ) {
@@ -18,6 +16,9 @@ final class WeatherToday
 
     public function getData(): array
     {
-        return $this->weatherForecastProvider->get();
+        return array_filter(
+            $this->weatherForecastProvider->get(),
+            fn (WeatherForecast $forecast): bool => array_key_exists($forecast->date->format('H'), WeatherForecast::HOURS),
+        );
     }
 }

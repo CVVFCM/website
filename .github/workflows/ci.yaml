@@ -32,9 +32,9 @@ jobs:
                         compose.yaml
                         compose.override.yaml
                     set: |
-                        *.cache-from=type=gha,scope=${{github.ref}}
-                        *.cache-from=type=gha,scope=refs/heads/main
-                        *.cache-to=type=gha,scope=${{github.ref}},mode=max
+                        *.cache-from=type=gha,scope=build-main
+                        *.cache-from=type=gha,scope=build-${{ github.ref_name }}
+                        *.cache-to=type=gha,scope=build-${{ github.ref_name }},mode=max
 
     tests:
         name: Tests

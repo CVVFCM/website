@@ -6,7 +6,7 @@ services:
             target: php
             args:
                 EXTERNAL_USER_ID: ${EXTERNAL_USER_ID}
-        environment:
+        environment: &php-env
             SERVER_NAME: ${SERVER_NAME:-localhost}
             APP_SECRET: ${APP_SECRET:-!ChangeMe!}
             MAILER_DSN: ${MAILER_DSN:-smtp://mailer:1025}
@@ -19,11 +19,6 @@ services:
             S3_ENDPOINT: ${S3_ENDPOINT:-}
             S3_REGION: ${S3_REGION:-eu-west-3}
             S3_BUCKET: ${S3_BUCKET:-cvvfcm}
-            MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-            MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-            MERCURE_URL: ${CADDY_MERCURE_URL:-http://php/.well-known/mercure}
-            MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}/.well-known/mercure}
-            MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
         volumes:
             - caddy_data:/data
             - caddy_config:/config
@@ -60,6 +55,13 @@ services:
             args:
                 EXTERNAL_USER_ID: ${EXTERNAL_USER_ID}
 
+    consumer:
+        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}consumer:${IMAGE_TAG:-latest}
+        build:
+            target: consumer
+            args:
+                EXTERNAL_USER_ID: ${EXTERNAL_USER_ID}
+        environment: *php-env
 
 volumes:
     caddy_data:

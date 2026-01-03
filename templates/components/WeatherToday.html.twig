@@ -1,4 +1,4 @@
-<section {{ attributes.defaults({...stimulus_controller('weather-today', controllerOutlets: {mercure: 'body'}), class: 'WeatherToday'}) }}>
+<section {{ attributes.defaults({}) }}>
     {% set forecasts = this.data %}
     {% if forecasts|length > 0 %}
         <div>

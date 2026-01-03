@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\DTO\WeatherForecast;
 use App\Repository\WeatherForecastRecordRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
@@ -52,18 +53,25 @@ readonly class WeatherForecastRecord
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     public \DateTimeImmutable $date;
 
-    /**
-     * @param CSVForecastData $data
-     */
-    private function __construct(array $data)
-    {
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
+    public \DateTimeImmutable $createdAt;
+
+    private function __construct(
+        float $humidity,
+        float $pressure,
+        float $temperature,
+        int $windDirection,
+        float $windSpeed,
+        \DateTimeImmutable $date,
+    ) {
         $this->id = Uuid::v6();
-        $this->date = $data['date'];
-        $this->humidity = (float) $data['humidity'];
-        $this->pressure = (float) $data['pressure'];
-        $this->temperature = (float) $data['temperature'];
-        $this->windDirection = (int) $data['windDirection'];
-        $this->windSpeed = (float) $data['windSpeed'];
+        $this->humidity = $humidity;
+        $this->pressure = $pressure;
+        $this->temperature = $temperature;
+        $this->windDirection = $windDirection;
+        $this->windSpeed = $windSpeed;
+        $this->date = $date;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     /**
@@ -71,6 +79,25 @@ readonly class WeatherForecastRecord
      */
     public static function fromArray(array $data): self
     {
-        return new self($data);
+        return new self(
+            (float) $data['humidity'],
+            (float) $data['pressure'],
+            (float) $data['temperature'],
+            (int) $data['windDirection'],
+            (float) $data['windSpeed'],
+            $data['date'],
+        );
+    }
+
+    public static function fromWeatherForecast(WeatherForecast $forecast): self
+    {
+        return new self(
+            $forecast->humidity,
+            $forecast->pressure,
+            $forecast->temperature,
+            $forecast->windDirection,
+            $forecast->windSpeed,
+            $forecast->date,
+        );
     }
 }

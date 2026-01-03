@@ -40,8 +40,8 @@ VOLUME /app/data/weather/ml
 VOLUME /app/public/uploads
 VOLUME /app/var/indexes
 
-COPY --link --chown=www-data:www-data infra/docker/php/Caddyfile /etc/caddy/Caddyfile
-COPY --link --chown=www-data:www-data infra/docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY --chown=www-data:www-data infra/docker/php/Caddyfile /etc/caddy/Caddyfile
+COPY --chown=www-data:www-data infra/docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
@@ -79,8 +79,6 @@ RUN --mount=type=cache,target=/app/assets/admin/node_modules \
 
 FROM base AS php
 
-ENV MERCURE_TRANSPORT_URL=bolt:///data/mercure.db
-
 COPY --chown=www-data:www-data .env ./
 COPY --chown=www-data:www-data assets/website assets/website/
 COPY --chown=www-data:www-data bin bin/
@@ -113,3 +111,21 @@ EXPOSE 80
 EXPOSE 443
 EXPOSE 443/udp
 EXPOSE 2019
+
+FROM base AS consumer
+
+COPY --chown=www-data:www-data .env ./
+COPY --chown=www-data:www-data bin bin/
+COPY --chown=www-data:www-data config config/
+COPY --chown=www-data:www-data src src/
+COPY --chown=www-data:www-data translations translations/
+
+RUN --mount=type=cache,target=/var/www/.cache/composer \
+    mkdir -p var/cache var/log; \
+    composer dump-autoload --optimize --no-dev --classmap-authoritative; \
+    chmod +x bin/console; \
+    php bin/console cache:clear; \
+    php bin/console cache:warmup -eprod; \
+    sync
+
+CMD [ "php", "bin/console", "messenger:consume", "-vv" ]

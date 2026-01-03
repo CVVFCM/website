@@ -15,6 +15,8 @@ final readonly class WeatherForecast
     public function __construct(
         public \DateTimeImmutable $date,
         public float $temperature,
+        public float $pressure,
+        public int $humidity,
         public float $precipitation,
         public float $windSpeed,
         public int $windDirection,
@@ -23,10 +25,14 @@ final readonly class WeatherForecast
 
     public function getLabel(): string
     {
-        /** @var 10|13|16 $hour */
+        /** @var int<0,23> $hour */
         $hour = $this->date->format('H');
 
-        return self::HOURS[$hour] ?? 'En ce moment';
+        if (array_key_exists($hour, self::HOURS)) {
+            return self::HOURS[$hour];
+        }
+
+        return $this->date->format('H\hi');
     }
 
     public function getWindCardinalDirection(): CardinalDirection
