@@ -45,14 +45,14 @@ COPY --chown=www-data:www-data infra/docker/php/docker-entrypoint.sh /usr/local/
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY --link infra/docker/php/conf.d/symfony.prod.ini $PHP_INI_DIR/conf.d/symfony.ini
-
 ARG APP_ENV=prod
 ARG APP_DEBUG=false
 
 USER www-data
 WORKDIR /app
+
+RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY --link infra/docker/php/conf.d/symfony.prod.ini $PHP_INI_DIR/conf.d/symfony.ini
 
 COPY --chown=www-data:www-data composer.json composer.lock symfony.lock ./
 
