@@ -45,8 +45,6 @@ COPY --chown=www-data:www-data infra/docker/php/docker-entrypoint.sh /usr/local/
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-ARG STAGE=dev
-
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY --link infra/docker/php/conf.d/symfony.prod.ini $PHP_INI_DIR/conf.d/symfony.ini
 
@@ -129,6 +127,6 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
     php bin/console cache:warmup -eprod; \
     sync
 
-HEALTHCHECK CMD php bin/console doctrine:query:sql "SELECT 1" || exit 1
+HEALTHCHECK NONE
 
 CMD [ "php", "bin/console", "messenger:consume", "-vv" ]
