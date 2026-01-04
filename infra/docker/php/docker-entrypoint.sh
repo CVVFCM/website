@@ -2,10 +2,9 @@
 set -e
 
 if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
+    ls -al ${PHP_INI_DIR}
 	 if [ "$APP_ENV" != 'prod' ]; then
 		ln -sf ${PHP_INI_DIR}/php.ini-development ${PHP_INI_DIR}/php.ini
-	else
-		ln -sf ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 	fi
 
 	if [ $APP_ENV = "dev" ] && [ ! -d vendor ]; then

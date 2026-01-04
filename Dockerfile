@@ -32,7 +32,7 @@ COPY --link --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN usermod -u ${EXTERNAL_USER_ID} www-data; \
     groupmod -g ${EXTERNAL_USER_ID} www-data; \
     mkdir -p /var/run/php /data /config /app/var/indexes /app/public/uploads /app/data/weather/ml; \
-    chown -R www-data:www-data /app /var/www /usr/local/etc/php /var/run/php /data /config /app/var/indexes /app/public/uploads /app/data/weather/ml
+    chown -R www-data:www-data /app /var/www /usr/local/etc/php /var/run/php /data /config /app/var/indexes /app/public/uploads /app/data/weather/ml $PHP_INI_DIR
 
 VOLUME /config
 VOLUME /data
@@ -52,7 +52,7 @@ USER www-data
 WORKDIR /app
 
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY --link infra/docker/php/conf.d/symfony.prod.ini $PHP_INI_DIR/conf.d/symfony.ini
+COPY --chown=www-data:www-data infra/docker/php/conf.d/symfony.prod.ini $PHP_INI_DIR/conf.d/symfony.ini
 
 COPY --chown=www-data:www-data composer.json composer.lock symfony.lock ./
 
