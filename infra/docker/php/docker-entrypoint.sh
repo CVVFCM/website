@@ -41,4 +41,6 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	echo 'PHP app ready!'
 fi
 
+ls -al /data
+
 exec docker-php-entrypoint "$@"

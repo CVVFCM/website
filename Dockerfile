@@ -27,12 +27,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     mkdir -p /app; \
     sync
 
-COPY --link --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN usermod -u ${EXTERNAL_USER_ID} www-data; \
-    groupmod -g ${EXTERNAL_USER_ID} www-data; \
+RUN sed -i -r s/"(www-data:x:)([[:digit:]]+):([[:digit:]]+):"/\\1${EXTERNAL_USER_ID}:${EXTERNAL_USER_ID}:/g /etc/passwd; \
+    sed -i -r s/"(www-data:x:)([[:digit:]]+):"/\\1${EXTERNAL_USER_ID}:/g /etc/group; \
     mkdir -p /var/run/php /data /config /app/var/indexes /app/public/uploads /app/data/weather/ml; \
-    chown -R www-data:www-data /app /var/www /usr/local/etc/php /var/run/php /data /config /app/var/indexes /app/public/uploads /app/data/weather/ml $PHP_INI_DIR
+    chown -R www-data:www-data /app /var/www $PHP_INI_DIR /var/run/php /data /config /app/var/indexes /app/public/uploads /app/data/weather/ml
 
 VOLUME /config
 VOLUME /data
