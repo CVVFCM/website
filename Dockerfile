@@ -129,4 +129,4 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
 
 HEALTHCHECK NONE
 
-CMD [ "php", "bin/console", "messenger:consume", "-vv" ]
+CMD [ "php", "bin/console", "messenger:consume", "--time-limit=3600", "--failure-limit=10", "-vv" ]
