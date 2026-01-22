@@ -2,7 +2,6 @@
 set -e
 
 if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
-    ls -al ${PHP_INI_DIR}
 	 if [ "$APP_ENV" != 'prod' ]; then
 		ln -sf ${PHP_INI_DIR}/php.ini-development ${PHP_INI_DIR}/php.ini
 	fi
@@ -40,7 +39,5 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 
 	echo 'PHP app ready!'
 fi
-
-ls -al /data
 
 exec docker-php-entrypoint "$@"
