@@ -70,25 +70,26 @@ final class FacebookExtension extends AbstractExtension
 
     public function getInstagramFeed(): array
     {
-        try {
-            return $this->cache->get(
-                'instagram_feed',
-                function (CacheItemInterface $cacheItem) {
-                    $cacheItem->expiresAfter(60 * 60);
+        return $this->cache->get(
+            'instagram_feed',
+            function (CacheItemInterface $cacheItem) {
+                $cacheItem->expiresAfter(60 * 60);
 
-                    try {
-                        $instagramMedia = $this->facebookService->getInstagramMedia();
-                    } catch (ClientException $exception) {
-                        return [];
-                    }
+                try {
+                    return $this->facebookService->getInstagramMedia();
+                } catch (ClientException $exception) {
+                    $this->logger->error(
+                        'Error fetching Instagram feed: '.$exception->getMessage(),
+                        [
+                            'exception' => $exception,
+                            'response_content' => $exception->getResponse()->getContent(false),
+                        ],
+                    );
+                    $cacheItem->expiresAfter(0);
 
-                    return $instagramMedia;
-                },
-            );
-        } catch (\Exception $e) {
-            $this->logger->error('Error fetching Instagram feed: '.$e->getMessage());
-
-            return [];
-        }
+                    return [];
+                }
+            },
+        );
     }
 }

@@ -1,31 +1,74 @@
-<section class="HomepageSocial">
-    <h2 class="HomepageSocial__title">{{ block.title }}</h2>
-    <div class="HomepageSocial__description">{{ block.description|raw }}</div>
-    <ul class="HomepageSocial__socialLinks">
-        <li><a href="https://www.facebook.com/cvvfcm/">Facebook</a></li>
-        <li><a href="https://www.instagram.com/cvvfcm/">Instagram</a></li>
-        <li><a href="https://www.youtube.com/channel/UCfPmr-DQD8X4nqJebVIGRIQ">YouTube</a></li>
-    </ul>
+{% types block: 'object' %}
 
-    <ul class="HomepageSocial__facebookPosts">
-        {% for post in facebook_page_feed(3) %}
-            <li>
-                {% if post.picture %}
-                    <img src="{{ post.picture }}" />
-                {% endif %}
-                <time datetime="{{ post.createdAt.format('c') }}">{{ post.createdAt|format_date }}</time>
-                <div class="HomepageFacebookPost">{{ post.message|nl2br }}</div>
-                <a href="{{ post.permalinkUrl }}" target="_blank">Voir sur Facebook</a>
+<section class="HomepageFacebook">
+    <header class="HomepageFacebook__header">
+        <div class="HomepageFacebook__titleWrapper">
+            <svg class="HomepageFacebook__icon" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            <h2 class="HomepageFacebook__title">{{ block.title }}</h2>
+        </div>
+        <a href="https://www.facebook.com/cvvfcm/" class="HomepageFacebook__followButton" target="_blank" rel="noopener">
+            <svg class="HomepageFacebook__followIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Follow us
+        </a>
+    </header>
+
+    <ul class="HomepageFacebook__posts">
+        {% for post in facebook_page_feed(4) %}
+            <li class="HomepageFacebook__postItem">
+                <article class="HomepageFacebook__post">
+                    <div class="HomepageFacebook__postContent">
+                        <div class="HomepageFacebook__postLogo">
+                            <img src="{{ asset('images/logo-cvvfcm-small.png') }}" alt="CVVFCM" width="32" height="32">
+                        </div>
+                        <p class="HomepageFacebook__postMessage">{{ post.message|length > 150 ? post.message|slice(0, 150) ~ '...' : post.message }}</p>
+                        <a href="{{ post.permalinkUrl }}" class="HomepageFacebook__postLink" target="_blank" rel="noopener">Voir plus</a>
+                    </div>
+                    {% if post.picture %}
+                        <div class="HomepageFacebook__postImage">
+                            <img src="{{ post.picture }}" alt="" loading="lazy">
+                        </div>
+                    {% endif %}
+                </article>
             </li>
         {% endfor %}
     </ul>
+</section>
 
-    <ul class="HomepageSocial__instagramPosts">
-        {% for post in instagram_feed()|slice(0, 3) %}
-            <li>
-                <img src="{{ post.mediaUrl }}" alt="{{ post.caption }}" />
-                <div class="HomepageInstagramPost">{{ post.caption|nl2br }}</div>
-                <a href="{{ post.permalink }}" target="_blank">Voir sur Instagram</a>
+<section class="HomepageInstagram">
+    <header class="HomepageInstagram__header">
+        <div class="HomepageInstagram__titleWrapper">
+            <svg class="HomepageInstagram__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+        </div>
+        <a href="https://www.instagram.com/cvvfcm/" class="HomepageInstagram__followButton" target="_blank" rel="noopener">
+            <svg class="HomepageInstagram__followIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Follow us
+        </a>
+    </header>
+
+    <ul class="HomepageInstagram__grid">
+        {% for post in instagram_feed()|slice(0, 10) %}
+            <li class="HomepageInstagram__item">
+                <a href="{{ post.permalink }}" class="HomepageInstagram__link" target="_blank" rel="noopener">
+                    <img src="{{ post.thumbnailUrl ?? post.mediaUrl }}" alt="{{ post.caption|default('')|striptags|slice(0, 100) }}" class="HomepageInstagram__image" loading="lazy">
+
+                    {% if post.type == 'VIDEO' %}
+                        <span class="HomepageInstagram__videoIndicator" aria-label="Vidéo">
+                            <svg class="HomepageInstagram__videoIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </span>
+                    {% endif %}
+                </a>
             </li>
         {% endfor %}
     </ul>

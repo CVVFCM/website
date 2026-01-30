@@ -187,7 +187,8 @@ final readonly class FacebookService
                 $media->media_type,
                 $media->caption ?? '',
                 $media->permalink,
-                $media->media_url ?? $media->thumbnail_url,
+                $media->media_url,
+                $media->thumbnail_url ?? null,
             ),
             $rawContent->data,
         );
