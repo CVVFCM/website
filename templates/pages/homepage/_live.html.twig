@@ -1,20 +1,37 @@
+{% types block: 'object' %}
+
 <section class="HomepageLive">
     <h2 class="HomepageLive__title">{{ block.title }}</h2>
     <div class="HomepageLive__description">{{ block.description|raw }}</div>
 
-    <twig:Webcam url="{{ block.webcam_stream_url }}" link="{{ block.webcam_stream_page_link }}" />
-    <div id="WeatherLive">
-        <twig:WeatherLive />
+    {# Webcam Column #}
+    <div class="HomepageLive__webcam">
+        <div class="HomepageLive__webcamWrapper">
+            <twig:Webcam url="{{ block.webcam_stream_url }}" link="{{ block.webcam_stream_page_link }}" />
+        </div>
+        <div class="HomepageLive__webcamControls">
+            <button type="button" class="HomepageLive__webcamNav" aria-label="Précédent">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+                </svg>
+            </button>
+            <a href="{{ block.webcam_stream_page_link.url|default('#') }}" class="HomepageLive__liveButton">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M8 5v14l11-7z"></path>
+                </svg>
+                En direct
+            </a>
+            <button type="button" class="HomepageLive__webcamNav" aria-label="Suivant">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+                </svg>
+            </button>
+        </div>
     </div>
-    <twig:WeatherToday />
 
-    {% if block.links %}
-        <ul>
-            {% for link in block.links %}
-                <li>
-                    <a href="{{ link.link_target.url }}">{{ link.link_text }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    {# Weather Column #}
+    <twig:WeatherLive class="HomepageLive__weather" variant="homepage" />
+
+    {# Wind Column #}
+    <twig:WeatherLive class="HomepageLive__wind" variant="homepage-wind" />
 </section>

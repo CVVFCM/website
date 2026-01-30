@@ -11,6 +11,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 final class WeatherLive
 {
     public bool $full = false;
+    public string $variant = 'default';
 
     public function __construct(
         private readonly LiveWeatherProvider $weatherProvider,

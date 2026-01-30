@@ -3,70 +3,122 @@
     {% set liveWeather = this.liveWeather %}
 
     {% if liveWeather %}
-        <time datetime="{{ liveWeather.updatedAt.format('c') }}">
-            Mis à jour le {{ liveWeather.updatedAt.format('d/m/Y à H:i:s') }}
-        </time>
+        {% if this.variant == 'homepage' %}
+            {# Homepage weather variant - Date and temperature display #}
+            <div class="HomepageLive__weatherDate">
+                <span class="HomepageLive__weatherDay">{{ 'now'|date('l')|trans }}</span>
+                <span class="HomepageLive__weatherDateNumber">{{ 'now'|date('d') }} {{ 'now'|date('M')|upper }}.</span>
+            </div>
 
-        {% if full %}
-            <a href="{{ this.link }}">
-                Voir tous les relevés
-            </a>
+            <div class="HomepageLive__weatherCurrent">
+                <svg class="HomepageLive__weatherIcon" viewBox="0 0 64 64" aria-hidden="true">
+                    <circle cx="26" cy="26" r="10" fill="#f26d4f"></circle>
+                    <path d="M40 38c6 0 11 4 11 10s-5 10-11 10H20c-7 0-12-5-12-11s5-11 12-11c1-6 6-10 12-10 5 0 9 3 11 7 0 0 3-1 5 0 3 1 5 3 5 5z" fill="#fff"></path>
+                </svg>
+                <span class="HomepageLive__weatherTemp">{{ liveWeather.temperature|round(1)|replace({'.': ','}) }}°c</span>
+            </div>
 
-            <dl class="WeatherLive__humidity">
-                <dt>Humidité</dt>
-                <dd>{{ liveWeather.humidity|format_number(style: 'percent') }}</dd>
-                <dt>Humidité min</dt>
-                <dd>{{ liveWeather.humidityMin|format_number(style: 'percent') }}</dd>
-                <dt>Humidité max</dt>
-                <dd>{{ liveWeather.humidityMax|format_number(style: 'percent') }}</dd>
+            <div class="HomepageLive__weatherCondition">Éclaircies</div>
+
+            <div class="HomepageLive__weatherPrev">
+                Prev. 20°c Nuageux
+            </div>
+
+        {% elseif this.variant == 'homepage-wind' %}
+            {# Homepage wind variant - Lake map with wind info #}
+            <div class="HomepageLive__lakeMap">
+                <svg class="HomepageLive__lakeShape" viewBox="0 0 200 120" fill="none" aria-hidden="true">
+                    <path d="M10 60 Q30 20, 80 30 Q120 10, 160 40 Q190 60, 170 80 Q140 110, 100 100 Q50 110, 20 90 Q0 80, 10 60Z" fill="#fff" stroke="#1a1a2e" stroke-width="1"></path>
+                </svg>
+
+                <svg class="HomepageLive__compass" viewBox="0 0 50 50" aria-label="Direction du vent: {{ liveWeather.windDirectionAsCardinal.value }}">
+                    <circle class="HomepageLive__compassCircle" cx="25" cy="25" r="20"></circle>
+                    <polygon class="HomepageLive__compassArrow" points="25,5 30,25 25,20 20,25" style="transform: rotate({{ liveWeather.windDirection|default(135) }}deg)"></polygon>
+                </svg>
+
+                <div class="HomepageLive__windInfo">
+                    <div class="HomepageLive__windKnots">
+                        <span class="HomepageLive__windKnotsValue">{{ liveWeather.windSpeed|round }}</span> Noeuds
+                    </div>
+                    <div class="HomepageLive__windSpeed">
+                        {{ (liveWeather.windSpeed * 1.852)|round(2)|replace({'.': ','}) }} <span class="HomepageLive__windSpeedUnit">km/h</span>
+                    </div>
+                    <div class="HomepageLive__windDirection">
+                        {{ liveWeather.windDirectionAsCardinal.value }}
+                    </div>
+                    <div class="HomepageLive__windPrev">
+                        Prev. 20km/h SUD
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            {# Default full variant #}
+            <time datetime="{{ liveWeather.updatedAt.format('c') }}">
+                Mis à jour le {{ liveWeather.updatedAt.format('d/m/Y à H:i:s') }}
+            </time>
+
+            {% if this.full %}
+                <a href="{{ this.link }}">
+                    Voir tous les relevés
+                </a>
+
+                <dl class="WeatherLive__humidity">
+                    <dt>Humidité</dt>
+                    <dd>{{ liveWeather.humidity|format_number(style: 'percent') }}</dd>
+                    <dt>Humidité min</dt>
+                    <dd>{{ liveWeather.humidityMin|format_number(style: 'percent') }}</dd>
+                    <dt>Humidité max</dt>
+                    <dd>{{ liveWeather.humidityMax|format_number(style: 'percent') }}</dd>
+                </dl>
+
+                <dl class="WeatherLive__pressure">
+                    <dt>Pression atmosphérique</dt>
+                    <dd>{{ liveWeather.pressure|format_number }} hPa</dd>
+                    <dt>Pression atmosphérique min</dt>
+                    <dd>{{ liveWeather.pressureMin|format_number }} hPa</dd>
+                    <dt>Pression atmosphérique max</dt>
+                    <dd>{{ liveWeather.pressureMax|format_number }} hPa</dd>
+                </dl>
+            {% endif %}
+
+            <dl class="WeatherLive__temperature">
+                <dt>Température</dt>
+                <dd>{{ liveWeather.temperature|format_number }} °C</dd>
+                <dt>Température min</dt>
+                <dd>{{ liveWeather.temperatureMin|format_number }} °C</dd>
+                <dt>Température max</dt>
+                <dd>{{ liveWeather.temperatureMax|format_number }} °C</dd>
             </dl>
 
-            <dl class="WeatherLive__pressure">
-                <dt>Pression atmosphérique</dt>
-                <dd>{{ liveWeather.pressure|format_number }} hPa</dd>
-                <dt>Pression atmosphérique min</dt>
-                <dd>{{ liveWeather.pressureMin|format_number }} hPa</dd>
-                <dt>Pression atmosphérique max</dt>
-                <dd>{{ liveWeather.pressureMax|format_number }} hPa</dd>
+            {% if this.full %}
+                <dl class="WeatherLive__rain">
+                    <dt>Rythme pluie</dt>
+                    <dd>{{ liveWeather.rainRate|format_number }} mm/h</dd>
+                    <dt>Total pluie Aujourd'hui</dt>
+                    <dd>{{ liveWeather.rainTotal|format_number }} mm</dd>
+                </dl>
+            {% endif %}
+
+            <dl class="WeatherLive__currentWind">
+                <dt>Direction du vent</dt>
+                <dd>{{ liveWeather.windDirectionAsCardinal.value }}</dd>
+                <dt>Vitesse du vent</dt>
+                <dd>{{ liveWeather.windSpeed|round|format_number }} nds</dd>
+                <dt>Vitesse des rafales</dt>
+                <dd>{{ liveWeather.windGusts|round|format_number }} nds</dd>
+            </dl>
+
+            <dl class="WeatherLive__averageWind">
+                <dt>Direction du vent moyen</dt>
+                <dd>{{ liveWeather.windDirectionAverageAsCardinal.value }}</dd>
+                <dt>Vitesse du vent moyen</dt>
+                <dd>{{ liveWeather.windSpeedAverage|round|format_number }} nds</dd>
+                <dt>Vitesse du vent min</dt>
+                <dd>{{ liveWeather.windSpeedMax|round|format_number }} nds</dd>
+                <dt>Vitesse du vent max</dt>
+                <dd>{{ liveWeather.windSpeedMax|round|format_number }} nds</dd>
             </dl>
         {% endif %}
-
-        <dl class="WeatherLive__temperature">
-            <dt>Température</dt>
-            <dd>{{ liveWeather.temperature|format_number }} °C</dd>
-            <dt>Température min</dt>
-            <dd>{{ liveWeather.temperatureMin|format_number }} °C</dd>
-            <dt>Température max</dt>
-            <dd>{{ liveWeather.temperatureMax|format_number }} °C</dd>
-        </dl>
-
-        {% if full %}
-            <dl class="WeatherLive__rain">
-                <dt>Rythme pluie</dt>
-                <dd>{{ liveWeather.rainRate|format_number }} mm/h</dd>
-                <dt>Total pluie Aujourd'hui</dt>
-                <dd>{{ liveWeather.rainTotal|format_number }} mm</dd>
-            </dl>
-        {% endif %}
-
-        <dl class="WeatherLive__currentWind">
-            <dt>Direction du vent</dt>
-            <dd>{{ liveWeather.windDirectionAsCardinal.value }}</dd>
-            <dt>Vitesse du vent</dt>
-            <dd>{{ liveWeather.windSpeed|round|format_number }} nds</dd>
-            <dt>Vitesse des rafales</dt>
-            <dd>{{ liveWeather.windGusts|round|format_number }} nds</dd>
-        </dl>
-
-        <dl class="WeatherLive__averageWind">
-            <dt>Direction du vent moyen</dt>
-            <dd>{{ liveWeather.windDirectionAverageAsCardinal.value }}</dd>
-            <dt>Vitesse du vent moyen</dt>
-            <dd>{{ liveWeather.windSpeedAverage|round|format_number }} nds</dd>
-            <dt>Vitesse du vent min</dt>
-            <dd>{{ liveWeather.windSpeedMax|round|format_number }} nds</dd>
-            <dt>Vitesse du vent max</dt>
-            <dd>{{ liveWeather.windSpeedMax|round|format_number }} nds</dd>
-        </dl>
     {% endif %}
 </section>

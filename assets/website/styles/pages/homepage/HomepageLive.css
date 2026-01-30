@@ -1,0 +1,268 @@
+.HomepageLive {
+    --live-bg: #c8d8e4;
+    --live-accent: #f26d4f;
+    --live-text: #1a1a2e;
+    --live-text-light: #5c5c6e;
+    --live-white: #fff;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem 1rem;
+    background-color: var(--live-bg);
+}
+
+.HomepageLive__title,
+.HomepageLive__description {
+    display: none;
+}
+
+/* Webcam Section */
+.HomepageLive__webcam {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.HomepageLive__webcamWrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.HomepageLive__webcamWrapper video {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+}
+
+.HomepageLive__webcamControls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: -1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.HomepageLive__webcamNav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--live-text);
+    color: var(--live-white);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.HomepageLive__webcamNav:hover {
+    background-color: #2a2a3e;
+}
+
+.HomepageLive__webcamNav svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.HomepageLive__liveButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--live-accent);
+    color: var(--live-white);
+    padding: 0.625rem 1.5rem;
+    border-radius: 2rem;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.HomepageLive__liveButton svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Weather Section */
+.HomepageLive__weather {
+    text-align: center;
+}
+
+.HomepageLive__weatherDate {
+    margin-bottom: 1rem;
+}
+
+.HomepageLive__weatherDay {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--live-text);
+    letter-spacing: 0.1em;
+}
+
+.HomepageLive__weatherDateNumber {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--live-accent);
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+.HomepageLive__weatherCurrent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.HomepageLive__weatherIcon {
+    width: 4rem;
+    height: 4rem;
+    flex-shrink: 0;
+}
+
+.HomepageLive__weatherTemp {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--live-text);
+    line-height: 1;
+}
+
+.HomepageLive__weatherCondition {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--live-text);
+    margin-bottom: 0.25rem;
+}
+
+.HomepageLive__weatherPrev {
+    font-size: 0.75rem;
+    color: var(--live-text-light);
+    text-transform: uppercase;
+}
+
+/* Wind Section */
+.HomepageLive__wind {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.HomepageLive__lakeMap {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+}
+
+.HomepageLive__lakeShape {
+    width: 100%;
+    height: auto;
+}
+
+.HomepageLive__windInfo {
+    position: absolute;
+    top: 50%;
+    right: 10%;
+    transform: translateY(-50%);
+    text-align: center;
+}
+
+.HomepageLive__windKnots {
+    font-size: 0.875rem;
+    color: var(--live-text);
+    margin-bottom: 0.25rem;
+}
+
+.HomepageLive__windKnotsValue {
+    font-weight: 700;
+}
+
+.HomepageLive__windSpeed {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--live-text);
+    line-height: 1;
+}
+
+.HomepageLive__windSpeedUnit {
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+
+.HomepageLive__windDirection {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--live-text);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.25rem;
+}
+
+.HomepageLive__windPrev {
+    font-size: 0.75rem;
+    color: var(--live-text-light);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+}
+
+.HomepageLive__compass {
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    width: 4rem;
+    height: 4rem;
+}
+
+.HomepageLive__compassCircle {
+    fill: none;
+    stroke: var(--live-text);
+    stroke-width: 1;
+}
+
+.HomepageLive__compassArrow {
+    fill: var(--live-accent);
+    transform-origin: center;
+}
+
+@media (min-width: 48rem) {
+    .HomepageLive {
+        grid-template-columns: 1fr 1fr 1.2fr;
+        padding: 3rem 2rem;
+        align-items: center;
+    }
+
+    .HomepageLive__webcamWrapper {
+        max-width: none;
+    }
+
+    .HomepageLive__weatherDateNumber {
+        font-size: 3rem;
+    }
+
+    .HomepageLive__weatherTemp {
+        font-size: 3.5rem;
+    }
+}
+
+@media (min-width: 64rem) {
+    .HomepageLive {
+        padding: 4rem 3rem;
+    }
+}
