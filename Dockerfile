@@ -127,6 +127,6 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
     php bin/console cache:warmup -eprod; \
     sync
 
-HEALTHCHECK NONE
+HEALTHCHECK CMD echo "OK"
 
 CMD [ "php", "bin/console", "messenger:consume", "--time-limit=3600", "--failure-limit=10", "-vv" ]
