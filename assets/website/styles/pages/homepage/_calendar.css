@@ -1,0 +1,219 @@
+.HomepageCalendar {
+    --bg: #0f2a4a;
+    --accent: #e85a3c;
+    --accent-hover: #d14a2e;
+    --text-muted: #6b7280;
+    --btn-bg: #9ca3af;
+    --btn-hover: #6b7280;
+
+    background-color: var(--bg);
+    padding: 3rem 1rem;
+}
+
+.HomepageCalendar__header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.HomepageCalendar__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-style: italic;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 0.5rem;
+}
+
+.HomepageCalendar__description {
+    color: #fff;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.HomepageCalendar__events {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 25rem;
+}
+
+.HomepageCalendar__eventItem {
+    width: 100%;
+}
+
+.HomepageCalendar__event {
+    display: flex;
+    flex-direction: row;
+    background-color: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+    min-height: 10rem;
+    box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+}
+
+.HomepageCalendar__eventImage {
+    flex: 0 0 6.25rem;
+    overflow: hidden;
+    border-radius: 1rem 0 0 1rem;
+
+    & img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.HomepageCalendar__eventContent {
+    flex: 1;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.HomepageCalendar__eventCountdown {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.025em;
+}
+
+.HomepageCalendar__eventTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 auto;
+    line-height: 1.2;
+}
+
+.HomepageCalendar__eventDate {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    margin-top: 0.5rem;
+}
+
+.HomepageCalendar__eventLink {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--btn-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+
+    &:hover,
+    &:focus {
+        background-color: var(--btn-hover);
+        transform: scale(1.05);
+    }
+}
+
+.HomepageCalendar__eventIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-left: 0.125rem;
+}
+
+.HomepageCalendar__footer {
+    text-align: center;
+    margin-top: 2.5rem;
+}
+
+.HomepageCalendar__button {
+    display: inline-block;
+    background-color: var(--accent);
+    color: #fff;
+    padding: 0.875rem 2rem;
+    border-radius: 2rem;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+
+    &:hover,
+    &:focus {
+        background-color: var(--accent-hover);
+        transform: translateY(-0.0625rem);
+    }
+}
+
+@media (min-width: 48rem) {
+    .HomepageCalendar {
+        padding: 4rem 2rem 5rem;
+    }
+
+    .HomepageCalendar__title {
+        font-size: 3rem;
+    }
+
+    .HomepageCalendar__events {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+        max-width: 75rem;
+    }
+
+    .HomepageCalendar__eventItem {
+        width: calc(25% - 1.25rem);
+        min-width: 13rem;
+        max-width: 17.5rem;
+    }
+
+    .HomepageCalendar__event {
+        flex-direction: row;
+        min-height: 11rem;
+    }
+
+    .HomepageCalendar__eventImage {
+        flex: 0 0 5.5rem;
+        height: auto;
+        border-radius: 1rem 0 0 1rem;
+    }
+
+    .HomepageCalendar__eventContent {
+        flex: 1;
+        padding: 0.875rem 1rem 0.875rem 1rem;
+    }
+
+    .HomepageCalendar__eventTitle {
+        font-size: 1rem;
+    }
+
+    .HomepageCalendar__eventDate {
+        font-size: 0.75rem;
+    }
+
+    .HomepageCalendar__eventLink {
+        right: 0.75rem;
+        bottom: 0.75rem;
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .HomepageCalendar__eventIcon {
+        width: 1rem;
+        height: 1rem;
+    }
+}
+
+@media (min-width: 64rem) {
+    .HomepageCalendar__events {
+        gap: 1.25rem;
+    }
+
+    .HomepageCalendar__eventItem {
+        width: calc(25% - 1rem);
+    }
+}

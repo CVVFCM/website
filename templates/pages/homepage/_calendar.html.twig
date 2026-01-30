@@ -1,27 +1,44 @@
+{% types block: 'array' %}
+
 <section class="HomepageCalendar">
-    <div class="HomepageCalendar__titleAndLink">
+    <header class="HomepageCalendar__header">
         <h2 class="HomepageCalendar__title">{{ block.title }}</h2>
-        <div class="HomepageCalendar__description">
-            {{ block.description|raw }}
-        </div>
-        <sulu-link href="{{ block.link_target.url }}">{{ block.link_text }}</sulu-link>
-    </div>
+        <p class="HomepageCalendar__description">{{ block.description|striptags }}</p>
+    </header>
+
     <ul class="HomepageCalendar__events">
         {% for event in block.events %}
-            <li>
-                <div class="HomepageCalendar__event">
-                    <div class="HomepageCalendar__eventDate">
-                        {{ event.begin_date|format_date }}
+            {% set daysRemaining = (event.begin_date|date('U') - 'now'|date('U')) // 86400 %}
+
+            <li class="HomepageCalendar__eventItem">
+                <article class="HomepageCalendar__event">
+                    {% if event.main_media is defined and event.main_media %}
+                        <div class="HomepageCalendar__eventImage">
+                            <img src="{{ event.main_media.thumbnails['sulu-170x170'] }}"
+                                 alt="{{ event.main_media.title }}"
+                                 loading="lazy"
+                                 width="170"
+                                 height="170">
+                        </div>
+                    {% endif %}
+                    <div class="HomepageCalendar__eventContent">
+                        <span class="HomepageCalendar__eventCountdown">J-{{ daysRemaining }}</span>
+                        <h3 class="HomepageCalendar__eventTitle">{{ event.title }}</h3>
+                        <time class="HomepageCalendar__eventDate" datetime="{{ event.begin_date|date('Y-m-d') }}">
+                            {{ event.begin_date|format_date(pattern: 'd') }}–{{ event.end_date|format_date(pattern: 'd MMMM Y')|upper }}
+                        </time>
+                        <a href="{{ event.url }}" class="HomepageCalendar__eventLink" aria-label="Voir {{ event.title }}">
+                            <svg class="HomepageCalendar__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </a>
                     </div>
-                    <div class="HomepageCalendar__eventTitle">
-                        {{ event.title }}
-                    </div>
-                    <div class="HomepageCalendar__eventDescription">
-                        {{ event.description|raw }}
-                    </div>
-                    <a href="{{ event.url }}">Plus d'informations</a>
-                </div>
+                </article>
             </li>
         {% endfor %}
     </ul>
+
+    <div class="HomepageCalendar__footer">
+        <a href="{{ block.link_target.url }}" class="HomepageCalendar__button">{{ block.link_text }}</a>
+    </div>
 </section>
