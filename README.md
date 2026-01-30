@@ -1,13 +1,13 @@
 # CVVFCM V4
 
 Architecture projet :
- * FrankenPHP 1.9
- * PHP 8.4
+ * FrankenPHP 1.11
+ * PHP 8.5
  * PostgreSQL 18
  * Sulu 3
 
 Hébergement :
- * Mutu OVH
+ * Docker Compose + Serverless PostgreSQL
 
 ## Nécessaire sur le poste
 
@@ -49,7 +49,7 @@ La dernière étape est très longue (build des JS de l'admin) mais plus besoin 
 
  $ make ps # Affiche les containers
  $ make logs # Affiche les logs PHP
- $ make logs c=apache # Affiche les logs Apache
+ $ make logs c=php # Affiche les logs PHP
  $ make cli # Ouvre un terminal dans le container PHP
 
 ```

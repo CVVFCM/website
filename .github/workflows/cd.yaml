@@ -57,9 +57,18 @@ jobs:
                       rtsp-to-web
                   push: true
                   set: |
-                      *.cache-from=type=gha,scope=build-main
-                      *.cache-from=type=gha,scope=build-${{ github.ref_name }}
-                      *.cache-to=type=gha,scope=build-${{ github.ref_name }},mode=max
+                      php.cache-from=type=gha,scope=php-main
+                      php.cache-from=type=gha,scope=php-${{ github.ref_name }}
+                      php.cache-to=type=gha,scope=php-${{ github.ref_name }},mode=max
+                      consumer.cache-from=type=gha,scope=consumer-main
+                      consumer.cache-from=type=gha,scope=consumer-${{ github.ref_name }}
+                      consumer.cache-to=type=gha,scope=consumer-${{ github.ref_name }},mode=max
+                      ml.cache-from=type=gha,scope=ml-main
+                      ml.cache-from=type=gha,scope=ml-${{ github.ref_name }}
+                      ml.cache-to=type=gha,scope=ml-${{ github.ref_name }},mode=max
+                      rtsp-to-web.cache-from=type=gha,scope=rtsp-main
+                      rtsp-to-web.cache-from=type=gha,scope=rtsp-${{ github.ref_name }}
+                      rtsp-to-web.cache-to=type=gha,scope=rtsp-${{ github.ref_name }},mode=max
 
     deploy-preprod:
         name: Deploy to PREPROD
