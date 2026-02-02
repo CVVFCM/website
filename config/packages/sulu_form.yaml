@@ -1,9 +1,6 @@
-parameters:
-    env(SULU_ADMIN_EMAIL): 'Club de Voile des Vieilles-Forges de Charleville-Mézières <contact@cvvfcm.fr>'
-
 sulu_form:
     mail:
         helper: mailer
-        from: "%env(SULU_ADMIN_EMAIL)%"
-        to:   "%env(SULU_ADMIN_EMAIL)%"
-        sender: "%env(SULU_ADMIN_EMAIL)%"
+        from: 'Club de Voile des Vieilles-Forges de Charleville-Mézières <contact@cvvfcm.fr>'
+        to:   'contact@cvvfcm.fr'
+        sender: 'contact@cvvfcm.fr'

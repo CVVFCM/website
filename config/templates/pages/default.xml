@@ -33,6 +33,12 @@
             <tag name="sulu.rlp"/>
         </property>
 
+        <property name="media" type="single_media_selection" mandatory="true">
+            <meta>
+                <title lang="fr">Média</title>
+            </meta>
+        </property>
+
         <property name="article" type="text_editor">
             <meta>
                 <title lang="fr">Article</title>
