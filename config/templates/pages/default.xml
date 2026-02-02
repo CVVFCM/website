@@ -38,5 +38,19 @@
                 <title lang="fr">Article</title>
             </meta>
         </property>
+
+        <section name="form">
+            <meta>
+                <title lang="fr">Formulaire</title>
+            </meta>
+
+            <properties>
+                <property name="form" type="single_form_selection">
+                    <meta>
+                        <title lang="fr">Formulaire</title>
+                    </meta>
+                </property>
+            </properties>
+        </section>
     </properties>
 </template>
