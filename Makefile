@@ -45,7 +45,7 @@ ml_cli:
 	test -f $@ || make first_run
 	@touch $@
 
-first_run: infra/tls/cert.pem build var/ vendor/ up reset public/build/admin/manifest.json data/weather/ml/model_pytorch.onnx
+first_run: infra/tls/cert.pem build var/ data/weather/ml vendor/ up reset public/build/admin/manifest.json data/weather/ml/model_pytorch.onnx
 
 reset:
 	@$(DOCKER_COMPOSE) exec php composer reset

@@ -18,3 +18,4 @@ applyTo: "**/*.css"
  * Use a mobile first approach. Mobile style should be the default, without any media queries, and desktop styles should be added with media queries.
  * Media query should use rem units.
  * All colors, fonts, important sizes should be defined in custom properties, but you should keep variable number as less as possible.
+ * 
