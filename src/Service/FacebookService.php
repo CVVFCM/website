@@ -172,7 +172,7 @@ final readonly class FacebookService
          *      data: array<int, object{
          *          caption?: string,
          *          permalink: string,
-         *          thumbnail_url:  string,
+         *          thumbnail_url?: string,
          *          media_url?: string,
          *          media_type: string,
          *          id: string
@@ -187,7 +187,7 @@ final readonly class FacebookService
                 $media->media_type,
                 $media->caption ?? '',
                 $media->permalink,
-                $media->media_url,
+                $media->media_url ?? $media->thumbnail_url,
                 $media->thumbnail_url ?? null,
             ),
             $rawContent->data,

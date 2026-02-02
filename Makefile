@@ -68,6 +68,7 @@ logs: ## Show live logs, pass the parameter "c=" to specify a container, example
 hadolint: ## Lint Dockerfile
 	@docker pull hadolint/hadolint
 	@docker run --rm -i hadolint/hadolint hadolint - < Dockerfile
+	@docker run --rm -i hadolint/hadolint hadolint - < ml/Dockerfile
 
 cs: ## Fix code style
 	@$(DOCKER_COMPOSE) exec -T php ./vendor/bin/php-cs-fixer fix

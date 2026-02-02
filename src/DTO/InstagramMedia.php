@@ -11,8 +11,8 @@ final readonly class InstagramMedia
         public string $type,
         public string $caption,
         public string $permalink,
-        public string $mediaUrl,
-        public ?string $thumbnailUrl,
+        public ?string $mediaUrl = null,
+        public ?string $thumbnailUrl = null,
     ) {
     }
 }

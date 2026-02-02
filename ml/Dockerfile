@@ -7,6 +7,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-eux", "-c"]
 
 ARG EXTERNAL_USER_ID
 
+# hadolint ignore=DL3008,DL3013
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     --mount=type=cache,target=/root/.cache/pip \
