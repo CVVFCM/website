@@ -1,0 +1,34 @@
+<section class="HomepagePartners">
+    <div class="HomepagePartners__header">
+        <h2 class="HomepagePartners__title">{{ block.title }}</h2>
+        {% if block.description %}
+            <div class="HomepagePartners__description">{{ block.description|raw }}</div>
+        {% endif %}
+    </div>
+
+    <ul class="HomepagePartners__grid">
+        {% for partner in block.partners %}
+            <li class="HomepagePartners__item">
+                {% if partner.url %}
+                    <a href="{{ partner.url }}"
+                       class="HomepagePartners__link"
+                       target="_blank"
+                       rel="noopener"
+                       title="{{ partner.name }}">
+                        <img src="{{ partner.media.thumbnails['sulu-400x400'] }}"
+                             alt="{{ partner.name }}"
+                             class="HomepagePartners__logo"
+                             loading="lazy" />
+                    </a>
+                {% else %}
+                    <div class="HomepagePartners__logoWrapper">
+                        <img src="{{ partner.media.thumbnails['sulu-400x400'] }}"
+                             alt="{{ partner.name }}"
+                             class="HomepagePartners__logo"
+                             loading="lazy" />
+                    </div>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</section>

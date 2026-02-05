@@ -1,12 +1,8 @@
 .HomepageCalendar {
-    --bg: #0f2a4a;
-    --accent: #e85a3c;
-    --accent-hover: #d14a2e;
-    --text-muted: #6b7280;
-    --btn-bg: #9ca3af;
-    --btn-hover: #6b7280;
+    --calendar-accent: #e85a3c;
+    --calendar-accent-hover: #d14a2e;
 
-    background-color: var(--bg);
+    background-color: var(--color-bg-dark);
     padding: 3rem 1rem;
 }
 
@@ -20,12 +16,12 @@
     font-size: 2.5rem;
     font-style: italic;
     font-weight: 700;
-    color: var(--accent);
+    color: var(--calendar-accent);
     margin: 0 0 0.5rem;
 }
 
 .HomepageCalendar__description {
-    color: #fff;
+    color: var(--color-white);
     font-size: 0.9rem;
     margin: 0;
 }
@@ -47,7 +43,7 @@
 .HomepageCalendar__event {
     display: flex;
     flex-direction: row;
-    background-color: #fff;
+    background-color: var(--color-white);
     border-radius: 1rem;
     overflow: hidden;
     min-height: 10rem;
@@ -76,7 +72,7 @@
 
 .HomepageCalendar__eventCountdown {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: var(--color-gray-500);
     margin-bottom: 0.25rem;
     letter-spacing: 0.025em;
 }
@@ -84,14 +80,14 @@
 .HomepageCalendar__eventTitle {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1a1a2e;
+    color: var(--color-dark);
     margin: 0 0 auto;
     line-height: 1.2;
 }
 
 .HomepageCalendar__eventDate {
     font-size: 0.85rem;
-    color: var(--accent);
+    color: var(--calendar-accent);
     font-weight: 600;
     letter-spacing: 0.025em;
     margin-top: 0.5rem;
@@ -103,18 +99,18 @@
     bottom: 1rem;
     width: 2.5rem;
     height: 2.5rem;
-    background-color: var(--btn-bg);
+    background-color: var(--color-gray-400);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: var(--color-white);
     text-decoration: none;
     transition: background-color 0.2s ease, transform 0.2s ease;
 
     &:hover,
     &:focus {
-        background-color: var(--btn-hover);
+        background-color: var(--color-gray-500);
         transform: scale(1.05);
     }
 }
@@ -132,8 +128,8 @@
 
 .HomepageCalendar__button {
     display: inline-block;
-    background-color: var(--accent);
-    color: #fff;
+    background-color: var(--calendar-accent);
+    color: var(--color-white);
     padding: 0.875rem 2rem;
     border-radius: 2rem;
     text-decoration: none;
@@ -143,7 +139,7 @@
 
     &:hover,
     &:focus {
-        background-color: var(--accent-hover);
+        background-color: var(--calendar-accent-hover);
         transform: translateY(-0.0625rem);
     }
 }

@@ -1,0 +1,32 @@
+.FooterNavigation {
+    background-color: var(--color-gray-800);
+    padding: 2rem 1rem;
+}
+
+.FooterNavigation__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.FooterNavigation__link {
+    color: var(--color-gray-300);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+}
+
+.FooterNavigation__link:hover,
+.FooterNavigation__link:focus {
+    color: var(--color-white);
+}
+
+@media (min-width: 48rem) {
+    .FooterNavigation {
+        padding: 3rem 2rem;
+    }
+}

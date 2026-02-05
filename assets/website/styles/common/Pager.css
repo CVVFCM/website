@@ -1,0 +1,38 @@
+.Pager {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.Pager__item {
+    margin: 0;
+}
+
+.Pager__link {
+    display: block;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-gray-100);
+    color: var(--color-dark);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+}
+
+.Pager__link:hover,
+.Pager__link:focus {
+    background-color: var(--color-gray-200);
+}
+
+.Pager__link--active {
+    background-color: var(--color-accent-primary);
+    color: var(--color-white);
+}
+
+.Pager__link--active:hover,
+.Pager__link--active:focus {
+    background-color: var(--color-accent-hover);
+}

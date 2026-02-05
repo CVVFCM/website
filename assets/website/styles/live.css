@@ -1,0 +1,5 @@
+/* Live page styles */
+@import './app.css';
+@import './pages/homepage/HomepageLive.css';
+@import './common/Webcam.css';
+@import './common/WeatherLive.css';

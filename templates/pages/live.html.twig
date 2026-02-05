@@ -1,5 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('styles/live.css') }}" />
+{% endblock %}
+
 {% block content %}
     <article class="LivePage">
         <header class="LivePage__header">
@@ -10,7 +14,7 @@
                     <img
                         src="{{ content.media.formats['sulu-400x400.webp'] }}"
                         alt="{{ content.media.title }}"
-                        title="{{ content.media.description|default(content.media.title) }}"/>
+                        title="{{ content.media.description|default(content.media.title) }}" />
                 </div>
             {% endif %}
 

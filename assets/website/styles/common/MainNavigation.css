@@ -1,0 +1,33 @@
+.MainNavigation {
+    background-color: var(--color-dark);
+    padding: 1rem;
+}
+
+.MainNavigation__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.MainNavigation__link {
+    color: var(--color-white);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    display: block;
+    transition: background-color 0.2s ease;
+}
+
+.MainNavigation__link:hover,
+.MainNavigation__link:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 48rem) {
+    .MainNavigation__list {
+        flex-direction: row;
+        justify-content: center;
+    }
+}

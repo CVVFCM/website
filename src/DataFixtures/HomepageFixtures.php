@@ -98,6 +98,49 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                         'title' => 'Suivez le club',
                         'description' => '<p>Retrouvez nos actualités, nos photos, nos vidéos sur nos différentes plateformes</p>',
                     ],
+                    [
+                        'type' => 'partners',
+                        'title' => 'Les partenaires',
+                        'description' => '<p>Merci pour leur soutien et leur aide.</p>',
+                        'partners' => [
+                            [
+                                'type' => 'partner',
+                                'name' => 'Conseil Départemental des Ardennes',
+                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'url' => 'https://www.ardennes.com',
+                            ],
+                            [
+                                'type' => 'partner',
+                                'name' => 'Lac des Vieilles Forges',
+                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'url' => 'https://www.lacdesvieillesforges.fr',
+                            ],
+                            [
+                                'type' => 'partner',
+                                'name' => 'Région Grand Est',
+                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'url' => 'https://www.grandest.fr',
+                            ],
+                            [
+                                'type' => 'partner',
+                                'name' => 'Conseil Départemental des Ardennes',
+                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'url' => 'https://www.ardennes.com',
+                            ],
+                            [
+                                'type' => 'partner',
+                                'name' => 'Ville de Charleville-Mézières',
+                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'url' => 'https://www.agglo-ardenne.fr',
+                            ],
+                            [
+                                'type' => 'partner',
+                                'name' => 'Lac des Vieilles Forges',
+                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'url' => 'https://www.lacdesvieillesforges.fr',
+                            ],
+                        ],
+                    ],
                 ],
             ]);
         }

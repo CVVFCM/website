@@ -1,5 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('styles/homepage.css') }}" />
+{% endblock %}
+
 {% block content %}
     {% for block in content.content %}
         {{ include('pages/homepage/_' ~ block.type ~ '.html.twig', {block: block, content: content}) }}

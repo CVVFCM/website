@@ -1,0 +1,32 @@
+.WeatherLive {
+    padding: 2rem 1rem;
+    background-color: var(--color-bg-primary);
+}
+
+.WeatherLive__humidity,
+.WeatherLive__pressure,
+.WeatherLive__temperature,
+.WeatherLive__rain,
+.WeatherLive__currentWind,
+.WeatherLive__averageWind {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.WeatherLive dt {
+    font-weight: 600;
+    color: var(--color-dark);
+}
+
+.WeatherLive dd {
+    margin: 0;
+    color: var(--color-gray-600);
+}
+
+@media (min-width: 48rem) {
+    .WeatherLive {
+        padding: 3rem 2rem;
+    }
+}

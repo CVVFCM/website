@@ -1,5 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('styles/event.css') }}" />
+{% endblock %}
+
 {% block content %}
 
     <header>
@@ -14,7 +18,7 @@
                 <img
                     src="{{ content.main_media.formats['sulu-400x400.webp'] }}"
                     alt="{{ content.main_media.title }}"
-                    title="{{ content.main_media.description|default(content.main_media.title) }}"/>
+                    title="{{ content.main_media.description|default(content.main_media.title) }}" />
             </div>
         {% endif %}
 
@@ -71,7 +75,7 @@
                         <img
                             src="{{ media.formats['sulu-400x400.webp'] }}"
                             alt="{{ media.title }}"
-                            title="{{ media.description|default(media.title) }}"/>
+                            title="{{ media.description|default(media.title) }}" />
                     </li>
                 {% endfor %}
             </ul>
@@ -96,8 +100,8 @@
         <ul>
             {% for contact in content.contact %}
                 <li>
-                    {{ contact.fullName }} <br/>
-                    {{ contact.positionName }}<br/>
+                    {{ contact.fullName }}<br />
+                    {{ contact.positionName }}<br />
                     {{ contact.contactDetails.emails[0].email }}
                 </li>
             {% endfor %}

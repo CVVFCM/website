@@ -1,5 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('styles/list.css') }}" />
+{% endblock %}
+
 {% block content %}
     {% set list = content.list_type == 'page' ? content.page_list : content.event_list %}
     {% set list_view = content.list_type == 'page' ? view.page_list : view.event_list %}
@@ -32,7 +36,7 @@
                                 {% set media = item.media.formats is defined ? item.media : item.media[0] %}
                                 <img
                                     src="{{ media.formats['sulu-400x400.webp'] }}"
-                                    alt="{{ media.title }}"/>
+                                    alt="{{ media.title }}" />
                             {% endif %}
 
                             <div class="HomepageCalendar__eventDescription">
