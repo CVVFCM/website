@@ -73,6 +73,19 @@
                                                 <title lang="fr">Titre</title>
                                             </meta>
                                         </property>
+
+                                        <property name="description" type="text_area" mandatory="true">
+                                            <meta>
+                                                <title lang="fr">Description</title>
+                                            </meta>
+                                        </property>
+
+                                        <property name="image" type="single_media_selection" mandatory="true">
+                                            <meta>
+                                                <title lang="fr">Image</title>
+                                            </meta>
+                                        </property>
+
                                         <property name="url" type="url" mandatory="true">
                                             <meta>
                                                 <title lang="fr">URL</title>

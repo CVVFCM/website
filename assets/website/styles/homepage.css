@@ -1,7 +1,7 @@
 /* Homepage page styles - imports only homepage-specific blocks */
 @import './app.css';
 @import './homepage/Header.css';
-@import './homepage/Ctas.css';
+@import './homepage/CtaCard.css';
 @import './pages/homepage/HomepageFacebook.css';
 @import './pages/homepage/HomepageLive.css';
 @import './pages/homepage/HomepageInstagram.css';

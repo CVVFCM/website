@@ -27,7 +27,7 @@ applyTo: "**/*.css"
  * **Global variables**: `variables.css` at root
    * Common colors, shared custom properties
  * **Per-page imports**: Create one CSS file per page template that imports only needed blocks
-   * Example: `assets/styles/homepage.css` imports only homepage blocks
+   * Example: `assets/website/styles/homepage.css` imports only homepage blocks
    * Common/reusable blocks can be imported across multiple pages
    * With HTTP/3 + Early Hints + Brotli, keep files separate (no concatenation needed)
    * Each Twig template loads only its page-specific CSS file

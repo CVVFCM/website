@@ -29,12 +29,12 @@ applyTo: "**/*.html.twig"
  * **Never duplicate HTML** - always extract reusable parts
 
 # File Organization
- * **Page CSS files** at root: `assets/styles/homepage.css`, `assets/styles/event.css`
+ * **Page CSS files** at root: `assets/website/styles/homepage.css`, `assets/website/styles/event.css`
    * Each page CSS imports only what it needs
- * **Page-specific components** in page folder: `assets/styles/homepage/Header.css`
+ * **Page-specific components** in page folder: `assets/website/styles/homepage/Header.css`
    * Used only by one specific page
- * **Shared/common components** in common folder: `assets/styles/common/Map.css`
+ * **Shared/common components** in common folder: `assets/website/styles/common/Map.css`
    * Reusable across multiple pages
- * **Page-specific blocks** (Sulu blocks): `assets/styles/pages/homepage/HomepageFacebook.css`
+ * **Page-specific blocks** (Sulu blocks): `assets/website/styles/pages/homepage/HomepageFacebook.css`
    * One block = one CSS file, named exactly like the BEM block class
- * **Global variables**: `assets/styles/variables.css`
+ * **Global variables**: `assets/website/styles/variables.css`
