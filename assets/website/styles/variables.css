@@ -1,5 +1,8 @@
 /* Global CSS Custom Properties */
 :root {
+    /* Typography */
+    --font-family-base: 'DM Sans', sans-serif;
+
     /* Colors - Neutral */
     --color-white: #fff;
     --color-black: #000;
