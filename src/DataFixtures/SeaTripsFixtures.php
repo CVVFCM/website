@@ -1,0 +1,140 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\DataFixtures;
+
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
+use Sulu\Bundle\ContactBundle\Entity\Contact;
+use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;
+use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
+use Sulu\Content\Application\ContentWorkflow\ContentWorkflowInterface;
+use Sulu\Content\Domain\Model\WorkflowInterface;
+use Sulu\Page\Application\Message\CreatePageMessage;
+use Sulu\Page\Domain\Model\Page;
+use Sulu\Page\Domain\Repository\PageRepositoryInterface;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\HandleTrait;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\String\Slugger\AsciiSlugger;
+
+final class SeaTripsFixtures extends Fixture implements DependentFixtureInterface
+{
+    use HandleTrait;
+
+    private MessageBusInterface $messageBus;
+
+    public function __construct(
+        private readonly PageRepositoryInterface $pageRepository,
+        private readonly MediaRepositoryInterface $mediaRepository,
+        private readonly ContactRepositoryInterface $contactRepository,
+        private readonly ContentWorkflowInterface $contentWorkflow,
+        MessageBusInterface $messageBus,
+    ) {
+        $this->messageBus = $messageBus;
+    }
+
+    #[\Override]
+    public function load(ObjectManager $manager): void
+    {
+        $events = $this->getReference('events', Page::class);
+        $medias = $this->mediaRepository->findAll();
+        $contacts = array_filter($this->contactRepository->findAll(), static fn (Contact $contact) => $contact->getMainEmail());
+        $slugger = new AsciiSlugger();
+
+        $seaTrips = [
+            ['name' => 'Traversée du Lac des Vieilles Forges', 'date' => 'second saturday of july next year'],
+            ['name' => 'Sortie découverte Optimist', 'date' => 'first saturday of august next year'],
+            ['name' => 'Balade nautique au crépuscule', 'date' => 'third saturday of september next year'],
+        ];
+
+        foreach ($seaTrips as $trip) {
+            $begin = new \DateTimeImmutable($trip['date']);
+            $url = '/evenements/' . $slugger->slug($trip['name'])->lower()->ascii();
+
+            /** @var Page $seaTrip */
+            $seaTrip = $this->handle(
+                new Envelope(
+                    new CreatePageMessage(
+                        $events->getWebspaceKey(),
+                        $events->getId(),
+                        [
+                            'title' => $trip['name'],
+                            'url' => $url,
+                            'template' => 'event',
+                            'locale' => 'fr',
+                        ]
+                    ),
+                ),
+            );
+
+            foreach ($seaTrip->getDimensionContents() as $dimensionContent) {
+                $dimensionContent->setTemplateData([
+                    'url' => $url,
+                    'title' => $trip['name'],
+                    'main_media' => ['id' => $medias[array_rand($medias)]->getId()],
+                    'media' => [
+                        'displayOption' => null,
+                        'ids' => array_map(
+                            fn (int $media): int => $medias[$media]->getId(),
+                            (array) array_rand($medias, random_int(1, 4)),
+                        ),
+                    ],
+                    'description' => array_reduce(
+                        Factory::create()->paragraphs(random_int(2, 4)),
+                        fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
+                        '',
+                    ),
+                    'begin_date' => $begin->format('Y-m-d\TH:i:s'),
+                    'end_date' => $begin->format('Y-m-d\TH:i:s'),
+                    'event_type' => 'sea_trip',
+                    'boats' => [
+                        [
+                            'type' => 'boat',
+                            'boat_type' => 'Habitable',
+                            'captain' => ['c' . $contacts[array_rand($contacts)]->getId()],
+                            'available_seats' => (string) random_int(2, 6),
+                            'approximative_price' => random_int(10, 30) . '€',
+                        ],
+                        [
+                            'type' => 'boat',
+                            'boat_type' => 'Dériveur',
+                            'captain' => ['c' . $contacts[array_rand($contacts)]->getId()],
+                            'available_seats' => (string) random_int(1, 3),
+                            'approximative_price' => random_int(5, 15) . '€',
+                        ],
+                    ],
+                    'location' => [
+                        'code' => '08500',
+                        'country' => 'FR',
+                        'lat' => 49.87332855,
+                        'long' => 4.59566473,
+                        'number' => null,
+                        'street' => null,
+                        'title' => 'CVVFCM',
+                        'town' => 'Les Mazures',
+                        'zoom' => 17,
+                    ],
+                    'contact' => ['c' . $contacts[array_rand($contacts)]->getId()],
+                ]);
+            }
+
+            $manager->flush();
+            $this->contentWorkflow->apply($seaTrip, ['locale' => 'fr'], WorkflowInterface::WORKFLOW_TRANSITION_PUBLISH);
+            $manager->flush();
+        }
+    }
+
+    #[\Override]
+    public function getDependencies(): array
+    {
+        return [
+            MediaFixtures::class,
+            EventsFixtures::class,
+            ContactsFixtures::class,
+        ];
+    }
+}
