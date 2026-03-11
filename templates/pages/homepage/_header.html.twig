@@ -1,4 +1,4 @@
-<header class="Header">
+<header class="Header sectionPadded">
     <div class="Header__background">
         {% if block.header_media.thumbnails is defined and block.header_media.thumbnails['sulu-1920x'] is defined %}
             <img src="{{ block.header_media.thumbnails['sulu-1920x'] }}" alt="" class="Header__backgroundImage" />
@@ -9,9 +9,12 @@
         {% endif %}
     </div>
 
-    <div class="Header__logoPlaceholder" aria-label="Logo CVVFCM"></div>
 
-    <h1 class="Header__title">{{ content.title }}</h1>
+    <div class="Header__titleContainer">
+        <div class="Header__logoPlaceholder" aria-label="Logo CVVFCM"></div>
+        <h1 class="Header__title">{{ content.title }}</h1>
+    </div>
+
 
     <div class="Header__ctas">
         {% for cta in block.header_ctas %}

@@ -1,11 +1,6 @@
 .Header {
     position: relative;
     min-height: 100vh;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    overflow: hidden;
-    padding: 2rem 1rem;
 }
 
 .Header__background {
@@ -20,28 +15,17 @@
     object-fit: cover;
 }
 
+.Header__titleContainer {
+
+}
 .Header__logoPlaceholder {
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
+
     width: 8rem;
     height: 8rem;
-    background-color: var(--color-white);
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    z-index: 1;
+
 }
 
 .Header__title {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
 }
 
 .Header__ctas {
@@ -54,21 +38,3 @@
     z-index: 1;
 }
 
-@media (min-width: 48rem) {
-    .Header {
-        padding: 3rem 2rem;
-    }
-    
-    .Header__logoPlaceholder {
-        top: 3rem;
-        left: 3rem;
-        width: 12rem;
-        height: 12rem;
-    }
-    
-    .Header__ctas {
-        flex-direction: row;
-        justify-content: center;
-        gap: 3rem;
-    }
-}
