@@ -12,9 +12,7 @@
 }
 
 .HomepageCalendar__title {
-    font-family: 'Playfair Display', serif;
     font-size: 2.5rem;
-    font-style: italic;
     font-weight: 700;
     color: var(--calendar-accent);
     margin: 0 0 0.5rem;
