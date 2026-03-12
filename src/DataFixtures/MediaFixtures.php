@@ -9,6 +9,7 @@ use Sulu\Bundle\MediaBundle\DataFixtures\ORM\LoadCollectionTypes;
 use Sulu\Bundle\MediaBundle\Entity\Collection;
 use Sulu\Bundle\MediaBundle\Entity\CollectionMeta;
 use Sulu\Bundle\MediaBundle\Entity\CollectionType;
+use Sulu\Bundle\MediaBundle\Entity\Media;
 use Sulu\Bundle\MediaBundle\Media\Manager\MediaManagerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -36,11 +37,12 @@ final class MediaFixtures extends Fixture implements DependentFixtureInterface
 
         $finder = Finder::create()->in(__DIR__.'/stubs')->files()->depth(0);
         foreach ($finder as $fileInfo) {
-            $this->mediaManager->save(
+            $media = $this->mediaManager->save(
                 new UploadedFile($fileInfo->getPathname(), $fileInfo->getFilename()),
                 ['locale' => 'fr', 'collection' => $stubsCollection->getId()],
                 1,
             );
+            $this->addReference('media_'.$fileInfo->getFilenameWithoutExtension(), $manager->find(Media::class, $media->getId()));
         }
 
         $partnerCollection = new Collection();
