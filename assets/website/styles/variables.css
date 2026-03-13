@@ -3,6 +3,9 @@
     /* Typography */
     --font-family-base: 'DM Sans', sans-serif;
 
+    --blueNote-text:#01529B;
+    --redAct-text: #FF6C4E;
+
     /* Colors - Neutral */
     --color-white: #fff;
     --color-black: #000;

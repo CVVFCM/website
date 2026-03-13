@@ -4,7 +4,6 @@
     display: flex;
     justify-content: center;
     flex-direction: row;
-    flex: 100%;
 }
 
 .Header__ctas {
@@ -12,28 +11,33 @@
     flex-direction: column;
     gap: 3rem;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
-    max-width: 80rem;
     z-index: 1;
 }
 
 @container (width > 60em){
     .Header__ctas {
         flex-direction: row;
+        align-items: stretch;
     }
 }
 
-.CtaCard {
 
+
+.CtaCard {
+    --CtaCard-pictureWidth: 45%;
+
+    font-size: .75rem;
     position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
     width: 100%;
-    max-width: 24rem;
+    max-width: 30rem;
     background-color: var(--color-white);
     border-radius: 1rem;
-    padding: 2rem 2rem 2rem 8rem;
+    padding: 3rem 3rem 3rem 2rem;
     text-decoration: none;
     color: var(--color-dark);
     box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.2);
@@ -51,55 +55,40 @@
 .CtaCard__image {
     position: absolute;
     top: 50%;
-    left: -2rem;
+    left: -5%;
     transform: translateY(-50%);
-    width: 10rem;
-    height: 10rem;
-    border-radius: 50%;
+    width: var(--CtaCard-pictureWidth);
+    height: auto;
+    border-radius: 120em;
     object-fit: cover;
 }
 
 .CtaCard__content {
     display: flex;
     flex-direction: column;
+    padding-left: var(--CtaCard-pictureWidth);
+    color: var(--blueNote-text);
 }
 
 .CtaCard__title {
-    font-size: 1.5rem;
+    font-size: 2.2em;
+    line-height: 1.12;
     font-weight: 600;
-    margin: 0 0 1rem;
-    color: #005580;
+    margin: 0 0 .5em;
     text-align: left;
 }
 
 .CtaCard__description {
-    font-size: 0.875rem;
-    line-height: 1.5;
-    margin: 0 0 1rem;
-    color: #005580;
+    font-size: 1em;
+    margin: 0 0 1em;
     text-align: left;
+    font-weight: 500;
 }
 
 .CtaCard__link {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #e74c3c;
+    font-size: 1em;
+    font-weight: 700;
     margin-top: auto;
+    color: var(--redAct-text);
 }
 
-@media (min-width: 48rem) {
-    .CtaCard {
-        max-width: 26rem;
-        padding: 2.5rem 2.5rem 2.5rem 9rem;
-    }
-    
-    .CtaCard__image {
-        left: -2.5rem;
-        width: 11rem;
-        height: 11rem;
-    }
-    
-    .CtaCard__title {
-        font-size: 1.75rem;
-    }
-}
