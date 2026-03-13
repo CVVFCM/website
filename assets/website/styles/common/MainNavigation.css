@@ -1,6 +1,9 @@
 .MainNavigation {
     background-color: var(--color-dark);
-    padding: 1rem;
+    position: fixed;
+    height: 0;
+    overflow: hidden;
+    display: block;
 }
 
 .MainNavigation__list {

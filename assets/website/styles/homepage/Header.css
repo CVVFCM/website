@@ -1,6 +1,8 @@
 .Header {
     position: relative;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .Header__background {
@@ -16,8 +18,9 @@
 }
 
 .Header__titleContainer {
-
+    padding-top: 5vh;
 }
+
 .Header__logoPlaceholder {
 
     width: 8rem;

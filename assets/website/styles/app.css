@@ -1,4 +1,5 @@
 @import './variables.css';
+@import './common/MainNavigation.css';
 
 
 body {
@@ -9,5 +10,6 @@ body {
 }
 
 .sectionPadded {
-        padding: 2rem 10vw;
+    padding: 5rem 10vw;
+    box-sizing: border-box;
 }

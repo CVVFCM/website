@@ -1,6 +1,10 @@
 
 .Header__ctas_container{
     container-type: inline-size;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex: 100%;
 }
 
 .Header__ctas {
@@ -13,7 +17,7 @@
     z-index: 1;
 }
 
-@container (width > 30rem){
+@container (width > 60em){
     .Header__ctas {
         flex-direction: row;
     }
