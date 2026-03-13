@@ -18,18 +18,20 @@
     </div>
 
 
-    <div class="Header__ctas">
-        {% for cta in block.header_ctas %}
-            <a href="{{ cta.url }}" class="CtaCard">
-                {% if cta.image is defined and cta.image %}
-                    <img src="{{ cta.image.thumbnails['sulu-400x400'] ?? cta.image.url }}" alt="" class="CtaCard__image" />
-                {% endif %}
-                <div class="CtaCard__content">
-                    <h2 class="CtaCard__title">{{ cta.title }}</h2>
-                    <p class="CtaCard__description">{{ cta.description }}</p>
-                    <span class="CtaCard__link">En savoir +</span>
-                </div>
-            </a>
-        {% endfor %}
+    <div class="Header__ctas_container">
+        <div class="Header__ctas">
+            {% for cta in block.header_ctas %}
+                <a href="{{ cta.url }}" class="CtaCard">
+                    {% if cta.image is defined and cta.image %}
+                        <img src="{{ cta.image.thumbnails['sulu-400x400'] ?? cta.image.url }}" alt="" class="CtaCard__image" />
+                    {% endif %}
+                    <div class="CtaCard__content">
+                        <h2 class="CtaCard__title">{{ cta.title }}</h2>
+                        <p class="CtaCard__description">{{ cta.description }}</p>
+                        <span class="CtaCard__link">En savoir +</span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
     </div>
 </header>

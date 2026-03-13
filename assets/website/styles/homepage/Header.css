@@ -28,13 +28,6 @@
 .Header__title {
 }
 
-.Header__ctas {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    align-items: center;
-    width: 100%;
-    max-width: 80rem;
-    z-index: 1;
-}
+
+
 
