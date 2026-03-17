@@ -118,6 +118,24 @@
                             </meta>
                         </property>
 
+                        <property name="featured_event" type="smart_content">
+                            <meta>
+                                <title lang="fr">Événement mis en avant</title>
+                            </meta>
+
+                            <params>
+                                <param name="provider" value="featured_event" />
+                                <param name="properties" type="collection">
+                                    <param name="title" value="title" />
+                                    <param name="url" value="url" />
+                                    <param name="begin_date" value="begin_date" />
+                                    <param name="end_date" value="end_date" />
+                                    <param name="description" value="description" />
+                                    <param name="main_media" value="main_media" />
+                                </param>
+                            </params>
+                        </property>
+
                         <property name="events" type="smart_content" mandatory="true">
                             <meta>
                                 <title lang="fr">Événements</title>
@@ -133,6 +151,7 @@
                                     <param name="end_date" value="end_date" />
                                     <param name="description" value="description" />
                                     <param name="main_media" value="main_media" />
+                                    <param name="featured" value="featured" />
                                 </param>
                             </params>
                         </property>

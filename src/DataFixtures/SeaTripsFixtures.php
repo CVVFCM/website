@@ -46,14 +46,14 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
         $slugger = new AsciiSlugger();
 
         $seaTrips = [
-            ['name' => 'Traversée du Lac des Vieilles Forges', 'date' => 'second saturday of july next year'],
-            ['name' => 'Sortie découverte Optimist', 'date' => 'first saturday of august next year'],
-            ['name' => 'Balade nautique au crépuscule', 'date' => 'third saturday of september next year'],
+            ['name' => 'Traversée du Lac des Vieilles Forges', 'date' => 'second saturday of july next year', 'featured' => true],
+            ['name' => 'Sortie découverte Optimist', 'date' => 'first saturday of august next year', 'featured' => false],
+            ['name' => 'Balade nautique au crépuscule', 'date' => 'third saturday of september next year', 'featured' => false],
         ];
 
         foreach ($seaTrips as $trip) {
             $begin = new \DateTimeImmutable($trip['date']);
-            $url = '/evenements/' . $slugger->slug($trip['name'])->lower()->ascii();
+            $url = '/evenements/'.$slugger->slug($trip['name'])->lower()->ascii();
 
             /** @var Page $seaTrip */
             $seaTrip = $this->handle(
@@ -90,21 +90,22 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                     ),
                     'begin_date' => $begin->format('Y-m-d\TH:i:s'),
                     'end_date' => $begin->format('Y-m-d\TH:i:s'),
+                    'featured' => $trip['featured'],
                     'event_type' => 'sea_trip',
                     'boats' => [
                         [
                             'type' => 'boat',
                             'boat_type' => 'Habitable',
-                            'captain' => ['c' . $contacts[array_rand($contacts)]->getId()],
+                            'captain' => ['c'.$contacts[array_rand($contacts)]->getId()],
                             'available_seats' => (string) random_int(2, 6),
-                            'approximative_price' => random_int(10, 30) . '€',
+                            'approximative_price' => random_int(10, 30).'€',
                         ],
                         [
                             'type' => 'boat',
                             'boat_type' => 'Dériveur',
-                            'captain' => ['c' . $contacts[array_rand($contacts)]->getId()],
+                            'captain' => ['c'.$contacts[array_rand($contacts)]->getId()],
                             'available_seats' => (string) random_int(1, 3),
-                            'approximative_price' => random_int(5, 15) . '€',
+                            'approximative_price' => random_int(5, 15).'€',
                         ],
                     ],
                     'location' => [
@@ -118,7 +119,7 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                         'town' => 'Les Mazures',
                         'zoom' => 17,
                     ],
-                    'contact' => ['c' . $contacts[array_rand($contacts)]->getId()],
+                    'contact' => ['c'.$contacts[array_rand($contacts)]->getId()],
                 ]);
             }
 

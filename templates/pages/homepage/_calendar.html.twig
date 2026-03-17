@@ -4,8 +4,49 @@
         <p class="HomepageCalendar__description">{{ block.description|striptags }}</p>
     </header>
 
-    <ul class="HomepageCalendar__events">
+    {% set featuredEventUrl = next_featured_event_url() %}
+    {% set featuredEvent = null %}
+    {% if featuredEventUrl %}
         {% for event in block.events %}
+            {% if featuredEvent is null and event.url == featuredEventUrl %}
+                {% set featuredEvent = event %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <div class="HomepageCalendar__featuredBlock">
+        {% if featuredEvent %}
+            {% set daysRemaining = (featuredEvent.begin_date|date('U') - 'now'|date('U')) // 86400 %}
+            <article class="HomepageCalendar__event HomepageCalendar__event--featured">
+                {% if featuredEvent.main_media is defined and featuredEvent.main_media %}
+                    <div class="HomepageCalendar__eventImage">
+                        <img src="{{ featuredEvent.main_media.thumbnails['sulu-170x170'] }}"
+                             alt="{{ featuredEvent.main_media.title }}"
+                             loading="lazy"
+                             width="170"
+                             height="170" />
+                    </div>
+                {% endif %}
+                <div class="HomepageCalendar__eventContent">
+                    <span class="HomepageCalendar__eventCountdown">J-{{ daysRemaining }}</span>
+                    <h3 class="HomepageCalendar__eventTitle">{{ featuredEvent.title }}</h3>
+                    <time class="HomepageCalendar__eventDate" datetime="{{ featuredEvent.begin_date|date('Y-m-d') }}">
+                        {{ featuredEvent.begin_date|format_date(pattern: 'd') }}–{{ featuredEvent.end_date|format_date(pattern: 'd MMMM Y')|upper }}
+                    </time>
+                    <a href="{{ featuredEvent.url }}" class="HomepageCalendar__eventLink" aria-label="Voir {{ featuredEvent.title }}">
+                        <svg class="HomepageCalendar__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </a>
+                </div>
+            </article>
+        {% endif %}
+    </div>
+
+    {% set listEvents = next_list_events(4, featuredEventUrl) %}
+
+    <ul class="HomepageCalendar__events">
+        {% for event in listEvents %}
             {% set daysRemaining = (event.begin_date|date('U') - 'now'|date('U')) // 86400 %}
 
             <li class="HomepageCalendar__eventItem">
