@@ -36,7 +36,7 @@
     width: 100%;
     max-width: 30rem;
     background-color: var(--color-white);
-    border-radius: 1rem;
+    border-radius: var(--whiteCard-radius);
     padding: 3rem 3rem 3rem 2rem;
     text-decoration: none;
     color: var(--color-dark);

@@ -3,6 +3,8 @@
     /* Typography */
     --font-family-base: 'DM Sans', sans-serif;
 
+    --whiteCard-radius: 1.2rem;
+
     --blueNote-text:#01529B;
     --redAct-text: #FF6C4E;
 

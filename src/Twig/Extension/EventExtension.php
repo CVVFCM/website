@@ -50,7 +50,7 @@ final class EventExtension extends AbstractExtension
     }
 
     /**
-     * @return array<int, array{title: string, url: string, begin_date: string, end_date: string, main_media: object|null}>
+     * @return array<int, array{title: string, url: string, begin_date: string, end_date: string, event_type: string|null, main_media: object|null}>
      */
     public function getNextListEvents(int $limit = 3, ?string $excludeUrl = null): array
     {
@@ -58,6 +58,7 @@ final class EventExtension extends AbstractExtension
                        JSON_GET_TEXT(dc.templateData, 'url') as url,
                        JSON_GET_TEXT(dc.templateData, 'begin_date') as begin_date,
                        JSON_GET_TEXT(dc.templateData, 'end_date') as end_date,
+                       JSON_GET_TEXT(dc.templateData, 'event_type') as event_type,
                        JSON_GET_TEXT(dc.templateData, 'main_media') as main_media_json
                 FROM Sulu\\Page\\Domain\\Model\\Page p
                 JOIN p.dimensionContents dc
@@ -103,6 +104,7 @@ final class EventExtension extends AbstractExtension
                 'url' => $row['url'],
                 'begin_date' => $row['begin_date'],
                 'end_date' => $row['end_date'],
+                'event_type' => $row['event_type'],
                 'main_media' => $mainMedia,
             ];
         }, $rows);
