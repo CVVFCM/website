@@ -4,6 +4,7 @@
         <p class="HomepageCalendar__description">{{ block.description|striptags }}</p>
     </header>
 
+    {% set eventTypeLabels = { 'regatta': 'Régate', 'sea_trip': 'Sortie en mer', 'default': 'Événement' } %}
     {% set featuredEventUrl = next_featured_event_url() %}
     {% set featuredEvent = null %}
     {% if featuredEventUrl %}
@@ -29,6 +30,7 @@
                 {% endif %}
                 <div class="HomepageCalendar__eventContent">
                     <span class="HomepageCalendar__eventCountdown">J-{{ daysRemaining }}</span>
+                    <span class="HomepageCalendar__eventType">{{ eventTypeLabels[featuredEvent.event_type|default('default')]|default('Événement') }}</span>
                     <h3 class="HomepageCalendar__eventTitle">{{ featuredEvent.title }}</h3>
                     <time class="HomepageCalendar__eventDate" datetime="{{ featuredEvent.begin_date|date('Y-m-d') }}">
                         {{ featuredEvent.begin_date|format_date(pattern: 'd') }}–{{ featuredEvent.end_date|format_date(pattern: 'd MMMM Y')|upper }}
@@ -62,6 +64,7 @@
                     {% endif %}
                     <div class="HomepageCalendar__eventContent">
                         <span class="HomepageCalendar__eventCountdown">J-{{ daysRemaining }}</span>
+                        <span class="HomepageCalendar__eventType">{{ eventTypeLabels[event.event_type|default('default')]|default('Événement') }}</span>
                         <h3 class="HomepageCalendar__eventTitle">{{ event.title }}</h3>
                         <time class="HomepageCalendar__eventDate" datetime="{{ event.begin_date|date('Y-m-d') }}">
                             {{ event.begin_date|format_date(pattern: 'd') }}–{{ event.end_date|format_date(pattern: 'd MMMM Y')|upper }}
