@@ -23,21 +23,29 @@ final class EventExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('next_featured_event_url', $this->getNextFeaturedEventUrl(...)),
+            new TwigFunction('next_featured_event', $this->getNextFeaturedEvent(...)),
             new TwigFunction('next_list_events', $this->getNextListEvents(...)),
         ];
     }
 
-    public function getNextFeaturedEventUrl(): ?string
+    /**
+     * @return array{title: string, url: string, begin_date: string, end_date: string, event_type: string|null, main_media: object|null}|null
+     */
+    public function getNextFeaturedEvent(): ?array
     {
-        /** @var array{url: string}|null $result */
-        $result = $this->entityManager
+        /** @var array{title: string, url: string, begin_date: string, end_date: string, event_type: string|null, main_media_json: string|null}|null $row */
+        $row = $this->entityManager
             ->createQuery(
-                "SELECT JSON_GET_TEXT(dc.templateData, 'url') as url
+                "SELECT JSON_GET_TEXT(dc.templateData, 'title') as title,
+                        JSON_GET_TEXT(dc.templateData, 'url') as url,
+                        JSON_GET_TEXT(dc.templateData, 'begin_date') as begin_date,
+                        JSON_GET_TEXT(dc.templateData, 'end_date') as end_date,
+                        JSON_GET_TEXT(dc.templateData, 'event_type') as event_type,
+                        JSON_GET_TEXT(dc.templateData, 'main_media') as main_media_json
                  FROM Sulu\\Page\\Domain\\Model\\Page p
                  JOIN p.dimensionContents dc
                  WHERE dc.templateKey = 'event'
-                   AND dc.stage = 'draft'
+                   AND dc.stage = 'live'
                    AND JSON_GET_TEXT(dc.templateData, 'featured') = 'true'
                    AND JSON_GET_TEXT(dc.templateData, 'begin_date') >= :today
                  ORDER BY JSON_GET_TEXT(dc.templateData, 'begin_date') ASC",
@@ -46,7 +54,30 @@ final class EventExtension extends AbstractExtension
             ->setMaxResults(1)
             ->getOneOrNullResult();
 
-        return $result['url'] ?? null;
+        if (null === $row) {
+            return null;
+        }
+
+        $mainMedia = null;
+        if (isset($row['main_media_json'])) {
+            /** @var array{id?: int}|null $mediaData */
+            $mediaData = json_decode($row['main_media_json'], true);
+            if (isset($mediaData['id'])) {
+                try {
+                    $mainMedia = $this->mediaManager->getById($mediaData['id'], 'fr');
+                } catch (\Exception) {
+                }
+            }
+        }
+
+        return [
+            'title' => $row['title'],
+            'url' => $row['url'],
+            'begin_date' => $row['begin_date'],
+            'end_date' => $row['end_date'],
+            'event_type' => $row['event_type'],
+            'main_media' => $mainMedia,
+        ];
     }
 
     /**

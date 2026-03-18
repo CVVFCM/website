@@ -5,15 +5,8 @@
     </header>
 
     {% set eventTypeLabels = { 'regatta': 'Régate', 'sea_trip': 'Sortie en mer', 'default': 'Événement' } %}
-    {% set featuredEventUrl = next_featured_event_url() %}
-    {% set featuredEvent = null %}
-    {% if featuredEventUrl %}
-        {% for event in block.events %}
-            {% if featuredEvent is null and event.url == featuredEventUrl %}
-                {% set featuredEvent = event %}
-            {% endif %}
-        {% endfor %}
-    {% endif %}
+    {% set featuredEvent = next_featured_event() %}
+    {% set featuredEventUrl = featuredEvent ? featuredEvent.url : null %}
 
     <div class="HomepageCalendar__grid">
         <div class="HomepageCalendar__featuredBlock">
