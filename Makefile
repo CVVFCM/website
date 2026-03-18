@@ -1,6 +1,6 @@
 DOCKER_COMPOSE = EXTERNAL_USER_ID=$(shell id -u) docker compose
 
-.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test cc hadolint cs psalm psalm_strict
+.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test cc css hadolint cs psalm psalm_strict
 
 run: .configured up
 
@@ -56,9 +56,11 @@ reset-test:
 test:
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/phpunit --colors=always --testdox
 
-cc:
-	@$(DOCKER_COMPOSE) run --rm php bin/websiteconsole cache:clear
-	@$(DOCKER_COMPOSE) run --rm php bin/adminconsole cache:clear
+cc: ## Clear Symfony cache (website + admin)
+	@$(DOCKER_COMPOSE) exec php bin/websiteconsole cache:clear
+	@$(DOCKER_COMPOSE) exec php bin/adminconsole cache:clear
+
+css: cc ## Clear cache after CSS changes
 
 logs: ## Show live logs, pass the parameter "c=" to specify a container, example: make logs c=php
 	@$(eval c ?= 'php')
