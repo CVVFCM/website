@@ -29,16 +29,21 @@
 
 	@phpRoute {
 		not file {path}
+		not path /.well-known/mercure*
 		not path /stream/*
 	}
 	rewrite @phpRoute index.php
 
 	@frontController path index.php
-	php @frontController
+	php @frontController {
+		{$PHP_SERVER_CONFIG}
+	}
 
 	file_server {
 		hide *.php
 	}
+
+	{$COMMON_EXTRA_CONFIG}
 }
 
 php:80, localhost:80 {
