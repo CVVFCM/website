@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1
 
-ARG FRANKENPHP_VERSION=1.11
+ARG FRANKENPHP_VERSION=1.12
 ARG PHP_VERSION=8.5
 ARG NODE_VERSION=24
 ARG DEBIAN_VERSION=trixie
@@ -40,7 +40,7 @@ VOLUME /app/data/weather/ml
 VOLUME /app/public/uploads
 VOLUME /app/var/indexes
 
-COPY --chown=www-data:www-data infra/docker/php/Caddyfile /etc/caddy/Caddyfile
+COPY --chown=www-data:www-data infra/docker/php/Caddyfile /etc/frankenphp/Caddyfile
 COPY --chown=www-data:www-data infra/docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
@@ -103,7 +103,7 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
 
 HEALTHCHECK CMD curl -f http://localhost:2019/metrics || exit 1
 
-CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
+CMD [ "frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile" ]
 
 EXPOSE 80
 EXPOSE 443
