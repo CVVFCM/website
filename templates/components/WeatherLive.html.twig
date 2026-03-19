@@ -3,37 +3,30 @@
 
     {% if liveWeather %}
         {% if this.variant == 'homepage' %}
-            {# Homepage weather variant - Date and temperature display #}
-            <div class="HomepageLive__weatherDate">
-                <span class="HomepageLive__weatherDay">{{ 'now'|date('l')|trans }}</span>
-                <span class="HomepageLive__weatherDateNumber">{{ 'now'|date('d') }} {{ 'now'|date('M')|upper }}.</span>
+            {# Homepage weather variant -temperature display #}
+
+            <img class="HomepageLive__weatherIcon" src="{{ asset('images/meteo_icons/eclaircies.svg') }}" alt="meteo d'aujourd'hui eclaircies" />
+
+            <div class="HomepageLive__weatherInfo">
+
+
+                <div class="HomepageLive__weatherTemp">{{ liveWeather.temperature|round(1)|replace({'.': ','}) }}<span class="HomepageLive__weatherTempUnit">°c</span></div>
+                <div class="HomepageLive__weatherCondition">Éclaircies</div>
             </div>
 
-            <div class="HomepageLive__weatherCurrent">
-                <svg class="HomepageLive__weatherIcon" viewBox="0 0 64 64" aria-hidden="true">
-                    <circle cx="26" cy="26" r="10" fill="#f26d4f"></circle>
-                    <path d="M40 38c6 0 11 4 11 10s-5 10-11 10H20c-7 0-12-5-12-11s5-11 12-11c1-6 6-10 12-10 5 0 9 3 11 7 0 0 3-1 5 0 3 1 5 3 5 5z" fill="#fff"></path>
-                </svg>
-                <span class="HomepageLive__weatherTemp">{{ liveWeather.temperature|round(1)|replace({'.': ','}) }}°c</span>
-            </div>
 
-            <div class="HomepageLive__weatherCondition">Éclaircies</div>
-
-            <div class="HomepageLive__weatherPrev">
-                Prev. 20°c Nuageux
-            </div>
 
         {% elseif this.variant == 'homepage-wind' %}
             {# Homepage wind variant - Lake map with wind info #}
-            <div class="HomepageLive__lakeMap">
-                <svg class="HomepageLive__lakeShape" viewBox="0 0 200 120" fill="none" aria-hidden="true">
-                    <path d="M10 60 Q30 20, 80 30 Q120 10, 160 40 Q190 60, 170 80 Q140 110, 100 100 Q50 110, 20 90 Q0 80, 10 60Z" fill="#fff" stroke="#1a1a2e" stroke-width="1"></path>
-                </svg>
 
-                <svg class="HomepageLive__compass" viewBox="0 0 50 50" aria-label="Direction du vent: {{ liveWeather.windDirectionAsCardinal.value }}">
-                    <circle class="HomepageLive__compassCircle" cx="25" cy="25" r="20"></circle>
-                    <polygon class="HomepageLive__compassArrow" points="25,5 30,25 25,20 20,25" style="transform: rotate({{ liveWeather.windDirection|default(135) }}deg)"></polygon>
-                </svg>
+            <div class="HomepageLive__lakeMap">
+                <div class="HomepageLive__pictureContainer">
+                     <img class="HomepageLive__lakeShape" src="{{ asset('images/carte des vieilles forges.svg') }}" alt="carte du lac des vieilles forges" />
+                </div>
+                <div class="HomepageLive__compass">
+                 <img class="HomepageLive__cadranPicture" src="{{ asset('images/cadran.svg') }}" alt="carte du lac des vieilles forges" />
+                 <img class="HomepageLive__arrowWindPicture" src="{{ asset('images/wind arrow.svg') }}" alt="carte du lac des vieilles forges" />
+                </div>
 
                 <div class="HomepageLive__windInfo">
                     <div class="HomepageLive__windKnots">
@@ -44,9 +37,6 @@
                     </div>
                     <div class="HomepageLive__windDirection">
                         {{ liveWeather.windDirectionAsCardinal.value }}
-                    </div>
-                    <div class="HomepageLive__windPrev">
-                        Prev. 20km/h SUD
                     </div>
                 </div>
             </div>

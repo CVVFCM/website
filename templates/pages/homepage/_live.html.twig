@@ -1,35 +1,48 @@
 <section class="HomepageLive sectionPadded">
-    <h2 class="HomepageLive__title">{{ block.title }}</h2>
-    <div class="HomepageLive__description">{{ block.description|raw }}</div>
+    <header class="HomepageLive__header">
+          <h2 class="HomepageLive__title">{{ block.title }}</h2>
+          <div class="HomepageLive__description">{{ block.description|raw }}</div>
+          <div class="HomepageLive__weatherDate">
+              <span class="HomepageLive__weatherDay">{{ 'now'|date('l')|trans }}</span>
+              <span class="HomepageLive__weatherDateNumber">{{ 'now'|date('d') }} {{ 'now'|date('M')|upper }}.</span>
+          </div>
+    </header>
+
+    {# Wind Column #}
+    <twig:WeatherLive class="HomepageLive__wind" variant="homepage-wind" />
+
+    {# Weather Column #}
+    <twig:WeatherLive class="HomepageLive__weather" variant="homepage" />
 
     {# Webcam Column #}
     <div class="HomepageLive__webcam">
         <div class="HomepageLive__webcamWrapper">
             <twig:Webcam url="{{ block.webcam_stream_url }}" link="{{ block.webcam_stream_page_link }}" />
         </div>
-        <div class="HomepageLive__webcamControls">
-            <button type="button" class="HomepageLive__webcamNav" aria-label="Précédent">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
-                </svg>
-            </button>
-            <a href="{{ block.webcam_stream_page_link.url|default('#') }}" class="HomepageLive__liveButton">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M8 5v14l11-7z"></path>
-                </svg>
-                En direct
-            </a>
-            <button type="button" class="HomepageLive__webcamNav" aria-label="Suivant">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
-                </svg>
-            </button>
+        <div class="HomepageLive__webcamWrapper">
+            <twig:Webcam url="{{ block.webcam_stream_url }}" link="{{ block.webcam_stream_page_link }}" />
         </div>
+
+        <a href="{{ block.webcam_stream_page_link.url|default('#') }}" class="HomepageLive__liveButton">
+
+            <img src="{{ asset('images/livecam_picto.svg') }}" alt="live cam du lac des vieilles forges" />
+            En direct
+        </a>
+
     </div>
-
-    {# Weather Column #}
-    <twig:WeatherLive class="HomepageLive__weather" variant="homepage" />
-
-    {# Wind Column #}
-    <twig:WeatherLive class="HomepageLive__wind" variant="homepage-wind" />
+    <div class="HomepageLive__prevision">
+        <h3 class="HomepageLive__previsionTitle">
+            Prévisions
+        </h3>
+        <p class="HomepageLive__prevision-label">Matin</p>
+        <p class="HomepageLive__prevision-value">
+            <span class="HomepageLive__prevision-air">20 km/h SE - 22°c</span>
+            <span class="HomepageLive__prevision-cloud"> Eclaircies</span>
+        </p>
+        <p class="HomepageLive__prevision-label">Aprem</p>
+        <p class="HomepageLive__prevision-value">
+            <span class="HomepageLive__prevision-air">28 km/h E - 26°c</span>
+            <span class="HomepageLive__prevision-cloud"> beau</span>
+        </p>
+    </div>
 </section>
