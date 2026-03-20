@@ -9,6 +9,7 @@
     grid-template-columns: 1fr;
     column-gap: 2rem;
     background-color: var(--color-bg-light);
+    align-items: center;
 }
 
 .HomepageLive__header {
@@ -157,23 +158,26 @@ HomepageLive__weatherInfo {
 
 /* Webcam Section */
 .HomepageLive__webcam {
-    flex-direction: column;
+    display: flex;
     align-items: center;
+    justify-content: space-around;
     gap: 0.5rem;
     position: relative;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-
 }
 
-.HomepageLive__webcamWrapper {
-
+.HomepageLive__webcamWrapper,
+.HomepageLive__webcamWrapper-right {
     position: relative;
     max-width: none;
     width: var(--videoWidth);
     height: var(--videoWidth);
     border-radius: 20em;
     overflow: hidden;
+}
+
+HomepageLive__webcamWrapper-right {
+    position: relative;
+    left:-2rem;
 }
 
 
@@ -223,7 +227,7 @@ HomepageLive__weatherInfo {
 
 .HomepageLive__prevision {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 8em auto;
     color: var(--blueNote-text);
     font-size: 1rem;
     gap: .8em;
@@ -263,19 +267,47 @@ HomepageLive__weatherInfo {
     text-transform: uppercase;
 }
 
-.HomepageLive__header {
+
+/* grid rules */
+
+
+.HomepageLive__wind,
+.HomepageLive__header,
+.HomepageLive__webcam,
+.HomepageLive__prevision {
     grid-column: 1;
 }
 
-@media (min-width: 45rem) {
+@media (min-width: 36rem) and (max-width: calc(40rem - 1px)) {
+    .HomepageLive__header,
+    .HomepageLive__webcam,
+    .HomepageLive__prevision {
+        grid-column: span 2;
+    }
+
+}
+
+@media (min-width: 40rem) and (max-width: calc(80rem - 1px)) {
     .HomepageLive__header {
         grid-column: 1 / span 2;
     }
+
+    .HomepageLive__wind,
+    .HomepageLive__webcam,
+    .HomepageLive__prevision {
+        grid-column: span 1;
+    }
 }
 
-@media (min-width: 90rem) {
+@media (min-width: 80rem) {
+
     .HomepageLive__header {
         grid-column: 1 / span 4;
+    }
+    .HomepageLive__wind,
+    .HomepageLive__webcam,
+    .HomepageLive__prevision {
+        grid-column: span 1;
     }
 }
 
