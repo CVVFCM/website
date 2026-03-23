@@ -3,7 +3,7 @@ services:
         volumes:
             - '.:/app:rw'
             - './infra/docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini:ro'
-        depends_on: [ database, mailer, localstack ]
+        depends_on: [ database, mailer, s3 ]
         environment:
             CADDY_SERVER_EXTRA_DIRECTIVES: ${CADDY_SERVER_EXTRA_DIRECTIVES:-tls /app/infra/tls/cert.pem /app/infra/tls/key.pem}
             PHP_SERVER_CONFIG: hot_reload
@@ -13,7 +13,7 @@ services:
                 }
             FRANKENPHP_WORKER_CONFIG: watch
             APP_ENV: ${APP_ENV:-dev}
-            S3_ENDPOINT: http://localstack:4566
+            S3_ENDPOINT: http://s3:9090
         extra_hosts:
             - host.docker.internal:host-gateway
         tty: true
@@ -36,13 +36,13 @@ services:
         volumes:
             - database_data:/var/lib/mysql
 
-    localstack:
-        image: localstack/localstack:latest
+    s3:
+        image: adobe/s3mock:latest
         environment:
-            S3_BUCKET: ${S3_BUCKET:-cvvfcm}
+            COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: ${S3_BUCKET:-cvvfcm}
+            COM_ADOBE_TESTING_S3MOCK_STORE_RETAIN_FILES_ON_EXIT: true
         volumes:
-            - localstack_data:/var/lib/localstack
-            - ./infra/docker/localstack/create-bucket.sh:/etc/localstack/init/ready.d/create-bucket.sh:ro
+            - s3_data:/s3mockroot
 
     ml:
         environment:
@@ -55,11 +55,14 @@ services:
     consumer:
         volumes:
             - '.:/app:rw'
-        depends_on: [ database, mailer, localstack, php ]
+        depends_on: [ database, mailer, s3, php ]
         environment:
             APP_ENV: ${APP_ENV:-dev}
         tty: true
 
+    rtsp-to-web:
+        ports:
+            - '${RTSP_TO_WEB_PORT:-8083}:8083'
 volumes:
     database_data:
-    localstack_data:
+    s3_data:

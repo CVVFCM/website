@@ -48,18 +48,25 @@
             </meta>
         </property>
 
-        <section name="webcam">
+        <block name="webcams">
             <meta>
-                <title lang="fr">Webcam</title>
+                <title lang="fr">Webcams</title>
             </meta>
 
-            <properties>
-                <property name="webcam_stream_url" type="url">
+            <types>
+                <type name="webcam">
                     <meta>
-                        <title lang="fr">URL du flux</title>
+                        <title lang="fr">Webcam</title>
                     </meta>
-                </property>
-            </properties>
-        </section>
+                    <properties>
+                        <property name="webcam_stream_url" type="url">
+                            <meta>
+                                <title lang="fr">URL du flux</title>
+                            </meta>
+                        </property>
+                    </properties>
+                </type>
+            </types>
+        </block>
     </properties>
 </template>
