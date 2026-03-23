@@ -22,7 +22,6 @@
         </header>
 
         <section class="LivePage__webcam">
-            {{ dump(content.webcams) }}
             {% for webcam_block in content.webcams %}
                 <twig:Webcam url="{{ webcam_block.webcam_stream_url }}" />
             {% endfor %}
