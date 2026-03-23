@@ -201,7 +201,7 @@ jobs:
             -   name: Install dependencies
                 run: npm ci
 
-            -   name: ESLint
+            -   name: StyleLint
                 run: npx stylelint assets/website/**/*.css
 
     python_cs:
