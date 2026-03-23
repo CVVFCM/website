@@ -1,9 +1,31 @@
 .MainNavigation {
-    background-color: var(--color-dark);
+
     position: fixed;
+    z-index: 1000;
+    width: 100%;
+}
+
+.MainNavigation__toggle {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--color-white);
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    z-index: 1000;
+}
+
+.MainNavigation__container {
+    background-color: var(--color-dark);
+    display: block;
     height: 0;
     overflow: hidden;
-    display: block;
+    width: 100%;
+}
+
+.MainNavigation.is-open .MainNavigation__container {
+    height: 80vh;
 }
 
 .MainNavigation__list {
@@ -21,16 +43,16 @@
     padding: 0.5rem 1rem;
     display: block;
     transition: background-color 0.2s ease;
-}
 
-.MainNavigation__link:hover,
-.MainNavigation__link:focus {
-    background-color: rgba(255, 255, 255, 0.1);
-}
+    &:hover,
+    &:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
 
-@media (min-width: 48rem) {
-    .MainNavigation__list {
-        flex-direction: row;
-        justify-content: center;
+    &:focus-visible {
+        outline: 0.125rem solid var(--color-white);
+        outline-offset: -0.125rem;
     }
 }
+
+

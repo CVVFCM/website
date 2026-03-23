@@ -3,22 +3,38 @@
 
 {% set navigation_root = sulu_page_navigation_root_tree(navigation_context_name, navigation_max_depth) %}
 
-<nav class="MainNavigation">
-    <ul class="MainNavigation__list">
-        <li>
-            <a href="{{ sulu_content_root_path() }}">Homepage</a>
-        </li>
+<nav class="MainNavigation"
+     aria-label="Navigation principale"
+     data-controller="main-navigation"
+     data-action="keydown.esc->main-navigation#closeOnEscape">
+    <button class="MainNavigation__toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="main-navigation-menu"
+            aria-label="Ouvrir le menu de navigation"
+            data-main-navigation-target="toggle"
+            data-action="click->main-navigation#toggle">
+        Menu
+    </button>
+    <div class="MainNavigation__container"
+         id="main-navigation-menu"
+         data-main-navigation-target="menu">
+        <ul class="MainNavigation__list">
+            <li>
+                <a class="MainNavigation__link" href="{{ sulu_content_root_path() }}">Homepage</a>
+            </li>
 
-        {% if navigation_root %}
-            {{ _self.display_navigation_nodes(navigation_root|first) }}
-        {% endif %}
-    </ul>
+            {% if navigation_root %}
+                {{ _self.display_navigation_nodes(navigation_root|first) }}
+            {% endif %}
+        </ul>
+    </div>
 </nav>
 
 {% macro display_navigation_nodes(root) %}
     {% for item in root.children %}
         <li>
-            <a href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}">
+            <a class="MainNavigation__link" href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}">
                 {{ item.title }}
             </a>
 
