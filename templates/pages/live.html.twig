@@ -22,7 +22,10 @@
         </header>
 
         <section class="LivePage__webcam">
-            <twig:Webcam url="{{ content.webcam_stream_url }}" />
+            {{ dump(content.webcams) }}
+            {% for webcam_block in content.webcams %}
+                <twig:Webcam url="{{ webcam_block.webcam_stream_url }}" />
+            {% endfor %}
         </section>
 
         <section class="LivePage__weather" id="WeatherLive">

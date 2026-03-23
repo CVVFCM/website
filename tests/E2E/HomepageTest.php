@@ -32,7 +32,7 @@ final class HomepageTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/');
 
-        $client->clickLink('Webcam');
+        $client->clickLink('En direct');
 
         $this->assertResponseIsSuccessful();
     }

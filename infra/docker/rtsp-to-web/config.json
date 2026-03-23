@@ -26,6 +26,27 @@
                     "status": 0
                 }
             }
+        },
+        "mouillages-2": {
+            "name": "Mouillages 2",
+            "channels": {
+                "0": {
+                    "name": "SD",
+                    "url": "rtsp://CVVFCM:VFSailing08@cvvfcm.bounceme.net:555/stream2",
+                    "on_demand": true,
+                    "debug": false,
+                    "audio": false,
+                    "status": 0
+                },
+                "1": {
+                    "name": "HD",
+                    "url": "rtsp://CVVFCM:VFSailing08@cvvfcm.bounceme.net:555/stream1",
+                    "on_demand": true,
+                    "debug": false,
+                    "audio": false,
+                    "status": 0
+                }
+            }
         }
     }
 }

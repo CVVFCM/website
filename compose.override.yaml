@@ -60,6 +60,9 @@ services:
             APP_ENV: ${APP_ENV:-dev}
         tty: true
 
+    rtsp-to-web:
+        ports:
+            - '${RTSP_TO_WEB_PORT:-8083}:8083'
 volumes:
     database_data:
     localstack_data:
