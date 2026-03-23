@@ -48,6 +48,12 @@ jobs:
                 uses: docker/setup-compose-action@v1
                 with:
                     version: latest
+            -   name: Cache Composer dependencies
+                uses: actions/cache@v4
+                with:
+                    path: vendor
+                    key: composer-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
             -   name: Composer install
                 run: |
                     mkdir -p var/cache/dev var/cache/test var/log
@@ -66,7 +72,7 @@ jobs:
                 env:
                     CADDY_SERVER_EXTRA_DIRECTIVES: ' '
                     CADDY_EXTRA_CONFIG: ' '
-                run: docker compose up --wait --no-build || (docker compose logs && exit 1)
+                run: docker compose up --wait php --wait consumer --no-build || (docker compose logs && exit 1)
             -   name: Create test database
                 run: docker compose exec -T php composer reset-test
             -   name: Run PHPUnit
@@ -105,6 +111,13 @@ jobs:
                 with:
                     php-version: '8.5'
 
+            -   name: Cache Composer dependencies
+                uses: actions/cache@v4
+                with:
+                    path: vendor
+                    key: composer-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
+
             -   name: Install dependencies
                 uses: ramsey/composer-install@v3
 
@@ -135,6 +148,13 @@ jobs:
                 with:
                     php-version: '8.5'
 
+            -   name: Cache Composer dependencies
+                uses: actions/cache@v4
+                with:
+                    path: vendor
+                    key: composer-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
+
             -   name: Install dependencies
                 uses: ramsey/composer-install@v3
 
@@ -143,6 +163,26 @@ jobs:
 
             -   name: Twig CS Fixer
                 run: ./vendor/bin/twig-cs-fixer lint --report=github
+
+    eslint:
+        runs-on: ubuntu-latest
+        name: ESLint
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Cache NPM dependencies
+                uses: actions/cache@v4
+                with:
+                    path: node_modules
+                    key: npm-root-${{ hashFiles('package-lock.json') }}
+                    restore-keys: npm-root-
+
+            -   name: Install dependencies
+                run: npm ci
+
+            -   name: ESLint
+                run: npx eslint assets/website
 
     python_cs:
         runs-on: ubuntu-latest
