@@ -184,6 +184,26 @@ jobs:
             -   name: ESLint
                 run: npx eslint assets/website
 
+    stylelint:
+        runs-on: ubuntu-latest
+        name: StyleLint
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Cache NPM dependencies
+                uses: actions/cache@v4
+                with:
+                    path: node_modules
+                    key: npm-root-${{ hashFiles('package-lock.json') }}
+                    restore-keys: npm-root-
+
+            -   name: Install dependencies
+                run: npm ci
+
+            -   name: StyleLint
+                run: npx stylelint assets/website/**/*.css
+
     python_cs:
         runs-on: ubuntu-latest
         name: Python Code Style

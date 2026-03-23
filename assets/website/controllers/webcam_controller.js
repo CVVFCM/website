@@ -20,7 +20,7 @@ export default class extends Controller {
     mseQueue = [];
 
     connect() {
-        if (!this.element instanceof HTMLVideoElement) {
+        if (!(this.element instanceof HTMLVideoElement)) {
             throw new Error('Element is not a video element');
         }
 
@@ -38,14 +38,8 @@ export default class extends Controller {
             ws.onmessage = (event) => {
                 const data = new Uint8Array(event.data);
                 if (data[0] === 9) {
-                    let mimeCodec;
                     const decodedArr = data.slice(1);
-
-                    if (window.TextDecoder) {
-                        mimeCodec = new TextDecoder('utf-8').decode(decodedArr);
-                    } else {
-                        mimeCodec = Utf8ArrayToStr(decodedArr);
-                    }
+                    const mimeCodec = new TextDecoder('utf-8').decode(decodedArr);
 
                     this.mseSourceBuffer = this.mse.addSourceBuffer('video/mp4; codecs="' + mimeCodec + '"');
                     this.mseSourceBuffer.mode = 'segments';
