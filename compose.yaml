@@ -62,9 +62,19 @@ services:
                 EXTERNAL_USER_ID: ${EXTERNAL_USER_ID}
         environment: *php-env
 
+    database:
+        image: postgres:18
+        environment:
+            POSTGRES_DB: ${POSTGRES_DB:-cvvfcm}
+            POSTGRES_USER: ${POSTGRES_USER:-cvvfcm}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cvvfcm}
+        volumes:
+            - database_data:/var/lib/mysql
+
 volumes:
     caddy_data:
     caddy_config:
+    database_data:
+    ml_data:
     search_indexes:
     thumbnails:
-    ml_data:

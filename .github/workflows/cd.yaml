@@ -79,7 +79,7 @@ jobs:
             DOCKER_HOST: 'ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}'
             APP_ENV: ${{ vars.APP_ENV }}
             APP_SECRET: ${{ secrets.APP_SECRET }}
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
             SERVER_NAME: ${{ vars.SERVER_NAME }}
             MAILER_DSN: ${{ secrets.MAILER_DSN }}
             SULU_ADMIN_EMAIL: ${{ vars.SULU_ADMIN_EMAIL }}
@@ -119,7 +119,7 @@ jobs:
             DOCKER_HOST: 'ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}'
             APP_ENV: ${{ vars.APP_ENV }}
             APP_SECRET: ${{ secrets.APP_SECRET }}
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
             SERVER_NAME: ${{ vars.SERVER_NAME }}
             MAILER_DSN: ${{ secrets.MAILER_DSN }}
             SULU_ADMIN_EMAIL: ${{ vars.SULU_ADMIN_EMAIL }}
