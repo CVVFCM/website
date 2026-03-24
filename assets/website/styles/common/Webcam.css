@@ -1,7 +1,6 @@
 .Webcam {
     width: 100%;
-    max-width: 50rem;
-    margin: 0 auto;
+    min-width: 0;
 }
 
 .Webcam video {

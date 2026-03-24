@@ -21,9 +21,9 @@
             <div>{{ content.description|raw }}</div>
         </header>
 
-        <section class="LivePage__webcam">
+        <section class="LivePage__webcams">
             {% for webcam_block in content.webcams %}
-                <twig:Webcam url="{{ webcam_block.webcam_stream_url }}" />
+                <twig:Webcam class="LivePage__webcam" url="{{ webcam_block.webcam_stream_url }}" />
             {% endfor %}
         </section>
 

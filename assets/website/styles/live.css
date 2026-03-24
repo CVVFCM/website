@@ -3,3 +3,25 @@
 @import './pages/homepage/HomepageLive.css';
 @import './common/Webcam.css';
 @import './common/WeatherLive.css';
+
+.LivePage {
+    .LivePage__webcams {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+
+        @media (min-width: 48rem) {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+    }
+
+    .LivePage__webcam {
+        min-width: 0;
+
+        video {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    }
+}
