@@ -105,7 +105,7 @@ jobs:
             -   name: Docker login
                 run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             -   name: Deploy to staging
-                run: docker compose -f compose.yaml up -d --pull always --wait php --wait consumer --force-recreate --no-build --remove-orphans || (docker compose logs && exit 1)
+                run: docker compose -p cvvfcm-preprod -f compose.yaml up -d --pull always --wait php --wait consumer --force-recreate --no-build --remove-orphans || (docker compose logs && exit 1)
             -   name: Prune server
                 run: docker system prune -f --all --volumes
 
@@ -145,6 +145,6 @@ jobs:
             -   name: Docker login
                 run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             -   name: Deploy to staging
-                run: docker compose -f compose.yaml up -d --pull always --wait php --wait consumer --force-recreate --no-build --remove-orphans || (docker compose logs && exit 1)
+                run: docker compose -p cvvfcm -f compose.yaml up -d --pull always --wait php --wait consumer --force-recreate --no-build --remove-orphans || (docker compose logs && exit 1)
             -   name: Prune server
                 run: docker system prune -f --all --volumes

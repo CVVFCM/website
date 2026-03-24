@@ -18,6 +18,16 @@ services:
             - host.docker.internal:host-gateway
         tty: true
         command: [ "frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile", "--watch" ]
+        ports:
+            -   target: 80
+                published: ${HTTP_PORT:-80}
+                protocol: tcp
+            -   target: 443
+                published: ${HTTPS_PORT:-443}
+                protocol: tcp
+            -   target: 443
+                published: ${HTTP3_PORT:-443}
+                protocol: udp
 
     mailer:
         image: axllent/mailpit
