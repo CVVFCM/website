@@ -1,4 +1,7 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
+parameters:
+    env(SERVER_NAME): 'localhost'
+
 framework:
     secret: '%env(APP_SECRET)%'
     csrf_protection: true
