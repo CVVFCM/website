@@ -79,3 +79,8 @@ volumes:
     ml_data:
     search_indexes:
     thumbnails:
+
+networks:
+    default:
+        external: ${NETWORK_EXTERNAL:-false}
+        name: ${NETWORK_NAME:-${COMPOSE_PROJECT_NAME}_default}
