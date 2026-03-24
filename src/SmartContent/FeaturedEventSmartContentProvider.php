@@ -82,7 +82,5 @@ final readonly class FeaturedEventSmartContentProvider extends PageSmartContentP
             ->setParameter('featured_template_key', 'event')
             ->setParameter('featured_current_date', now()->format('Y-m-d'))
             ->setParameter('featured_value', 'true')
-            ->addOrderBy('JSON_GET_TEXT(filterDimensionContent.templateData, \'begin_date\')', 'ASC')
-            ->setMaxResults(1);
     }
 }
