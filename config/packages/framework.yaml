@@ -9,7 +9,6 @@ framework:
 
     trusted_proxies: '127.0.0.1,PRIVATE_SUBNETS'
     trusted_headers: [ 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix' ]
-    trusted_hosts: [ '%env(SERVER_NAME)%' ]
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
     # Remove or comment this section to explicitly disable session support.

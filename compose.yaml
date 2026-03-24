@@ -23,9 +23,12 @@ services:
         labels:
             - 'traefik.enable=true'
             - 'traefik.docker.network=${NETWORK_NAME:-${COMPOSE_PROJECT_NAME}_default}'
-            - 'traefik.tcp.routers.${COMPOSE_PROJECT_NAME}.rule=HostSNI(`${SERVER_NAME:-localhost}`)'
-            - 'traefik.tcp.routers.${COMPOSE_PROJECT_NAME}.tls.passthrough=true'
-            - 'traefik.tcp.services.${COMPOSE_PROJECT_NAME}-php.loadbalancer.server.port=443'
+            - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${SERVER_NAME:-localhost}`)'
+            - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls=true'
+            - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=letsencrypt'
+            - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.domains[0].main=${SERVER_NAME:-localhost}'
+            - 'traefik.http.services.${COMPOSE_PROJECT_NAME}-php.loadbalancer.server.scheme=h2c'
+            - 'traefik.http.services.${COMPOSE_PROJECT_NAME}-php.loadbalancer.server.port=80'
         volumes:
             - caddy_data:/data
             - caddy_config:/config
