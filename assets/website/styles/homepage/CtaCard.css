@@ -42,6 +42,9 @@
     color: var(--color-dark);
     box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.2);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    display: grid;
+    grid-template-columns: 40% auto;
 }
 
 
@@ -53,11 +56,9 @@
 }
 
 .CtaCard__image {
-    position: absolute;
-    top: 50%;
-    left: -5%;
-    transform: translateY(-50%);
-    width: var(--CtaCard-pictureWidth);
+    position: relative;
+    transform: translate(-30%,0);
+    width: 120%;
     height: auto;
     border-radius: 120em;
     object-fit: cover;
@@ -66,7 +67,6 @@
 .CtaCard__content {
     display: flex;
     flex-direction: column;
-    padding-left: var(--CtaCard-pictureWidth);
     color: var(--blueNote-text);
 }
 
