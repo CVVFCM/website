@@ -22,6 +22,7 @@ services:
             S3_BUCKET: ${S3_BUCKET:-cvvfcm}
         labels:
             - 'traefik.enable=true'
+            - 'traefik.docker.network=${NETWORK_NAME:-${COMPOSE_PROJECT_NAME}_default}'
             - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${SERVER_NAME:-localhost}`)'
             - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls=true'
             - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=letsencrypt'
