@@ -24,7 +24,7 @@
     width: 100%;
 }
 
-.MainNavigation.is-open .MainNavigation__container {
+.MainNavigation--open .MainNavigation__container {
     height: 80vh;
 }
 

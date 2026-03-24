@@ -4,7 +4,7 @@ export default class extends Controller {
     static targets = ['toggle', 'menu'];
 
     toggle() {
-        if (this.element.classList.contains('is-open')) {
+        if (this.element.classList.contains('MainNavigation--open')) {
             this.close();
         } else {
             this.open();
@@ -12,20 +12,20 @@ export default class extends Controller {
     }
 
     open() {
-        this.element.classList.add('is-open');
+        this.element.classList.add('MainNavigation--open');
         this.toggleTarget.setAttribute('aria-expanded', 'true');
         this.toggleTarget.setAttribute('aria-label', 'Fermer le menu de navigation');
     }
 
     close() {
-        this.element.classList.remove('is-open');
+        this.element.classList.remove('MainNavigation--open');
         this.toggleTarget.setAttribute('aria-expanded', 'false');
         this.toggleTarget.setAttribute('aria-label', 'Ouvrir le menu de navigation');
         this.toggleTarget.focus();
     }
 
     closeOnEscape(event) {
-        if (event.key === 'Escape' && this.element.classList.contains('is-open')) {
+        if (event.key === 'Escape' && this.element.classList.contains('MainNavigation--open')) {
             this.close();
         }
     }
