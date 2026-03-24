@@ -1,0 +1,35 @@
+{% types {
+    content: 'array',
+    title: 'string',
+    links: 'array'
+} %}
+
+{% if content.links is defined and content.links is not empty %}
+    <ul class="NavigationLinks__list" aria-label="{{ content.title }}">
+        {% for link in content.links %}
+            <li class="NavigationLinks__item">
+                {% if link.type == 'internal' and link.page is defined %}
+                    <a class="NavigationLinks__link"
+                       href="{{ sulu_content_path(link.page.url) }}"
+                       title="{{ link.label }}">
+                        {% if link.media is defined and link.media %}
+                            <img src="{{ link.media.url }}" alt="{{ link.label }}" class="NavigationLinks__media" />
+                        {% endif %}
+                        {{ link.label }}
+                    </a>
+                {% elseif link.type == 'external' and link.url is defined %}
+                    <a class="NavigationLinks__link"
+                       href="{{ link.url }}"
+                       title="{{ link.label }}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        {% if link.media is defined and link.media %}
+                            <img src="{{ link.media.url }}" alt="{{ link.label }}" class="NavigationLinks__media" />
+                        {% endif %}
+                        {{ link.label }}
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
