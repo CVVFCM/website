@@ -1,7 +1,7 @@
 services:
     php:
         image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}php:${IMAGE_TAG:-latest}
-        depends_on: [ rtsp-to-web ]
+        depends_on: [ database, rtsp-to-web ]
         restart: unless-stopped
         build:
             target: php
@@ -55,6 +55,7 @@ services:
 
     consumer:
         image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}consumer:${IMAGE_TAG:-latest}
+        depends_on: [ database ]
         restart: unless-stopped
         build:
             target: consumer

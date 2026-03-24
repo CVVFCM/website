@@ -3,7 +3,7 @@ services:
         volumes:
             - '.:/app:rw'
             - './infra/docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini:ro'
-        depends_on: [ database, mailer, s3 ]
+        depends_on: [ mailer, s3 ]
         environment:
             CADDY_SERVER_EXTRA_DIRECTIVES: ${CADDY_SERVER_EXTRA_DIRECTIVES:-tls /app/infra/tls/cert.pem /app/infra/tls/key.pem}
             PHP_SERVER_CONFIG: hot_reload
@@ -58,7 +58,7 @@ services:
     consumer:
         volumes:
             - '.:/app:rw'
-        depends_on: [ database, mailer, s3, php ]
+        depends_on: [ mailer, s3, php ]
         environment:
             APP_ENV: ${APP_ENV:-dev}
         tty: true
