@@ -104,7 +104,7 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
-        "reset": [
+        "minimal-reset": [
             "php bin/console doctrine:schema:drop --force --full-database",
             "php bin/console doctrine:schema:create",
             "php bin/console cmsig:seal:index-drop --force",
@@ -115,7 +115,10 @@
             "php bin/console sulu:page:initialize",
             "php bin/console sulu:form:generate-form",
             "php bin/console doctrine:fixtures:load --no-interaction --append",
-            "php bin/console cmsig:seal:reindex",
+            "php bin/console cmsig:seal:reindex"
+        ],
+        "reset": [
+            "composer minimal-reset",
             "php bin/console app:import:live-weather-csv",
             "php bin/console app:import:weather-forecast-csv"
         ],

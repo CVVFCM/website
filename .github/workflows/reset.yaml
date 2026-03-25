@@ -4,8 +4,8 @@ on:
     workflow_dispatch:
 
 jobs:
-    deploy-preprod:
-        name: Deploy to PREPROD
+    reset-preprod:
+        name: Reset Preprod Database
         runs-on: ubuntu-latest
         environment: PREPROD
         env:
@@ -31,7 +31,7 @@ jobs:
             -   name: Reset database
                 run: |
                     docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer install
-                    docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer reset
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer minimal-reset
                     docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer install --no-dev
 
             -   name: Restore weather tables
