@@ -23,10 +23,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN usermod -u ${EXTERNAL_USER_ID} www-data; \
-    groupmod -g ${EXTERNAL_USER_ID} www-data; \
+RUN sed -i -r s/"(www-data:x:)([[:digit:]]+):([[:digit:]]+):"/""\\1${EXTERNAL_USER_ID}:${EXTERNAL_USER_ID}:/g /etc/passwd; \
+    sed -i -r s/"(www-data:x:)([[:digit:]]+):"/\\1${EXTERNAL_USER_ID}:/g /etc/group; \
     mkdir -p /app/ml /var/www /app/data/weather/ml; \
-    chown -R www-data:www-data /app /var/www /app/data/weather/ml
+    chown -R ${EXTERNAL_USER_ID}:${EXTERNAL_USER_ID} /app /var/www /app/data/weather/ml
 
 USER www-data
 WORKDIR /app/ml
@@ -41,3 +41,5 @@ ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 RUN poetry install --only main
 
 ENV PATH="/app/ml/.venv/bin:$PATH"
+
+COPY --chown=www-data:www-data src /app/ml/src

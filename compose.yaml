@@ -32,7 +32,6 @@ services:
             - caddy_config:/config
             - search_indexes:/app/var/indexes
             - thumbnails:/app/public/uploads
-            - ml_data:/app/data/weather/ml
 
     rtsp-to-web:
         image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}rtsp-to-web:${IMAGE_TAG:-latest}
@@ -46,8 +45,6 @@ services:
 
     ml:
         image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}ml:${IMAGE_TAG:-latest}
-        volumes:
-            - ml_data:/app/data/weather/ml
         build:
             context: ml
             target: python
@@ -77,7 +74,6 @@ volumes:
     caddy_data:
     caddy_config:
     database_data:
-    ml_data:
     search_indexes:
     thumbnails:
 
