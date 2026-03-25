@@ -80,6 +80,7 @@ jobs:
             APP_ENV: ${{ vars.APP_ENV }}
             APP_SECRET: ${{ secrets.APP_SECRET }}
             POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+            SERVER_SCHEME: ${{ vars.SERVER_SCHEME }}
             SERVER_NAME: ${{ vars.SERVER_NAME }}
             MAILER_DSN: ${{ secrets.MAILER_DSN }}
             SULU_ADMIN_EMAIL: ${{ vars.SULU_ADMIN_EMAIL }}
@@ -122,6 +123,7 @@ jobs:
             APP_ENV: ${{ vars.APP_ENV }}
             APP_SECRET: ${{ secrets.APP_SECRET }}
             POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+            SERVER_SCHEME: ${{ vars.SERVER_SCHEME }}
             SERVER_NAME: ${{ vars.SERVER_NAME }}
             MAILER_DSN: ${{ secrets.MAILER_DSN }}
             SULU_ADMIN_EMAIL: ${{ vars.SULU_ADMIN_EMAIL }}
