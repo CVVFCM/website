@@ -1,5 +1,13 @@
 /* Global CSS Custom Properties */
 :root {
+    /* Typography */
+    --font-family-base: 'DM Sans', sans-serif;
+
+    --whiteCard-radius: 1.2rem;
+
+    --blueNote-text:#01529B;
+    --redAct-text: #FF512D;
+
     /* Colors - Neutral */
     --color-white: #fff;
     --color-black: #000;

@@ -1,6 +1,5 @@
 .HomepagePartners {
     background-color: #e8e5df;
-    padding: 3rem 1rem;
 }
 
 .HomepagePartners__header {
@@ -86,7 +85,6 @@
 
 @media (min-width: 48rem) {
     .HomepagePartners {
-        padding: 4rem 2rem;
         display: grid;
         grid-template-columns: minmax(15rem, auto) 1fr;
         gap: 3rem;
@@ -98,8 +96,3 @@
     }
 }
 
-@media (min-width: 64rem) {
-    .HomepagePartners {
-        padding: 5rem 3rem;
-    }
-}

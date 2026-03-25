@@ -49,6 +49,12 @@
                     <tag name="sulu.search.field" role="description" />
                 </property>
 
+                <property name="featured" type="checkbox">
+                    <meta>
+                        <title lang="fr">Mettre en avant</title>
+                    </meta>
+                </property>
+
                 <property name="event_type" mandatory="false" type="single_select">
                     <meta>
                         <title lang="fr">Type d'événement</title>

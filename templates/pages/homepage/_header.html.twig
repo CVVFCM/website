@@ -1,4 +1,4 @@
-<header class="Header">
+<header class="Header sectionPadded">
     <div class="Header__background">
         {% if block.header_media.thumbnails is defined and block.header_media.thumbnails['sulu-1920x'] is defined %}
             <img src="{{ block.header_media.thumbnails['sulu-1920x'] }}" alt="" class="Header__backgroundImage" />
@@ -9,22 +9,27 @@
         {% endif %}
     </div>
 
-    <div class="Header__logoPlaceholder" aria-label="Logo CVVFCM"></div>
+    <div class="Header__titleContainer">
+        <div class="Header__logoPlaceholder" aria-label="Logo CVVFCM">
+            <img src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
+        </div>
+        <h1 class="Header__title">{{ content.title }}</h1>
+    </div>
 
-    <h1 class="Header__title">{{ content.title }}</h1>
-
-    <div class="Header__ctas">
-        {% for cta in block.header_ctas %}
-            <a href="{{ cta.url }}" class="CtaCard">
-                {% if cta.image is defined and cta.image %}
-                    <img src="{{ cta.image.thumbnails['sulu-400x400'] ?? cta.image.url }}" alt="" class="CtaCard__image" />
-                {% endif %}
-                <div class="CtaCard__content">
-                    <h2 class="CtaCard__title">{{ cta.title }}</h2>
-                    <p class="CtaCard__description">{{ cta.description }}</p>
-                    <span class="CtaCard__link">En savoir +</span>
-                </div>
-            </a>
-        {% endfor %}
+    <div class="Header__ctasContainer">
+        <div class="Header__ctas">
+            {% for cta in block.header_ctas %}
+                <a href="{{ cta.url }}" class="CtaCard">
+                    {% if cta.image is defined and cta.image %}
+                        <img src="{{ cta.image.thumbnails['sulu-400x400'] ?? cta.image.url }}" alt="" class="CtaCard__image" />
+                    {% endif %}
+                    <div class="CtaCard__content">
+                        <h2 class="CtaCard__title">{{ cta.title }}</h2>
+                        <p class="CtaCard__description">{{ cta.description }}</p>
+                        <span class="CtaCard__link">En savoir +</span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
     </div>
 </header>

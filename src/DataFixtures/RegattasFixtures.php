@@ -79,7 +79,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
         $manager->flush();
         $this->setReference('regattas', $regattas);
 
-        $this->createRegatta($manager, 'Trophée du Coeur de l\'Europe', new \DateTimeImmutable('third saturday of june next year'));
+        $this->createRegatta($manager, 'Trophée du Coeur de l\'Europe', new \DateTimeImmutable('third saturday of june next year'), featured: true);
         $this->createRegatta($manager, 'Coupe Bernard Bozier', new \DateTimeImmutable('first saturday of may next year'));
         $this->createRegatta($manager, 'Tour des Lacs Yole OK', new \DateTimeImmutable('third saturday of may next year'));
         $this->createRegatta($manager, 'Femmes à la Barre - L\'Ardennaise', new \DateTimeImmutable('third saturday of july next year'));
@@ -88,7 +88,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
         $manager->flush();
     }
 
-    private function createRegatta(ObjectManager $manager, string $name, \DateTimeImmutable $begin): void
+    private function createRegatta(ObjectManager $manager, string $name, \DateTimeImmutable $begin, bool $featured = false): void
     {
         $regattas = $this->getReference('regattas', Page::class);
 
@@ -150,6 +150,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                 $editionDimensionContent->setTemplateData([
                     'url' => $url,
                     'title' => $editionName,
+                    'featured' => $featured && 0 === $i,
                     'main_media' => ['id' => $medias[array_rand($medias)]->getId()],
                     'media' => [
                         'displayOption' => null,

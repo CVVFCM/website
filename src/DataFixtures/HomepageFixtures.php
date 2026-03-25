@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Sulu\Bundle\MediaBundle\Entity\Media;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Page\Domain\Model\Page;
@@ -46,7 +47,7 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                 'content' => [
                     [
                         'type' => 'header',
-                        'header_media' => ['id' => $medias[array_rand($medias)]->getId()],
+                        'header_media' => ['id' => $this->getReference('media_background_header', Media::class)->getId()],
                         'header_ctas' => [
                             [
                                 'type' => 'cta',
@@ -80,10 +81,15 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                         'description' => '<p>Retrouvez nous tout au long de l\'année</p>',
                         'link_text' => 'Tous les événements',
                         'link_target' => $events->getUuid(),
+                        'featured_event' => [
+                            'dataSource' => $events->getUuid(),
+                            'includeSubFolders' => true,
+                            'limitResult' => 1,
+                        ],
                         'events' => [
                             'dataSource' => $events->getUuid(),
                             'includeSubFolders' => true,
-                            'limitResult' => 3,
+                            'limitResult' => 5,
                         ],
                     ],
                     [
