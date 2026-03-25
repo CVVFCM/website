@@ -60,8 +60,6 @@ cc: ## Clear Symfony cache (website + admin)
 	@$(DOCKER_COMPOSE) exec php bin/websiteconsole cache:clear
 	@$(DOCKER_COMPOSE) exec php bin/adminconsole cache:clear
 
-css: cc ## Clear cache after CSS changes
-
 logs: ## Show live logs, pass the parameter "c=" to specify a container, example: make logs c=php
 	@$(eval c ?= 'php')
 	@$(eval tail ?= 100)
