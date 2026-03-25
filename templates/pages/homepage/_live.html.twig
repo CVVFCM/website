@@ -16,18 +16,16 @@
 
     {# Webcam Column #}
     <div class="HomepageLive__webcam">
-        <div class="HomepageLive__webcamWrapper">
-            <twig:Webcam url="{{ block.webcam_stream_url }}" link="{{ block.webcam_stream_page_link }}" />
-        </div>
-        <div class="HomepageLive__webcamWrapper-right ">
-            <twig:Webcam url="{{ block.webcam_stream_url }}" link="{{ block.webcam_stream_page_link }}" />
-        </div>
+        {% for webcam in block.webcams %}
+            <div class="HomepageLive__webcamWrapper">
+                <twig:Webcam url="{{ webcam.webcam_stream_url }}" link="{{ block.webcam_stream_page_link }}" />
+            </div>
+        {% endfor %}
 
         <a href="{{ block.webcam_stream_page_link.url|default('#') }}" class="HomepageLive__liveButton">
             <img src="{{ asset('images/livecam_picto.svg') }}" alt="live cam du lac des vieilles forges" />
             En direct
         </a>
-
     </div>
     <div class="HomepageLive__prevision">
         <h3 class="HomepageLive__previsionTitle">
