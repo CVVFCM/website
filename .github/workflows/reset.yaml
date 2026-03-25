@@ -10,6 +10,8 @@ jobs:
         environment: PREPROD
         env:
             DOCKER_HOST: 'ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}'
+            SERVER_SCHEME: ${{ vars.SERVER_SCHEME }}
+            SERVER_NAME: ${{ vars.SERVER_NAME }}
             SYMFONY_DECRYPTION_SECRET: ${{ secrets.SYMFONY_DECRYPTION_SECRET }}
             EXTERNAL_USER_ID: 33
         steps:
