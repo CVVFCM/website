@@ -33,7 +33,7 @@ jobs:
                 run: |
                     docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer install
                     docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer minimal-reset
-                    docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer install --no-dev
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec php composer install --no-dev
 
             -   name: Restore weather tables
                 run: |
