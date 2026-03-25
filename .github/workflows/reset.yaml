@@ -28,8 +28,8 @@ jobs:
 
             -   name: Backup weather tables
                 run: |
-                    docker compose -p cvvfcm-preprod -f compose.yaml exec database pg_dump -U cvvfcm -t weather_forecast_record > ./weather_forecast_record.sql
-                    docker compose -p cvvfcm-preprod -f compose.yaml exec database pg_dump -U cvvfcm -t live_weather_record > ./live_weather_record.sql
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec database pg_dump -U cvvfcm --no-schema -t weather_forecast_record > ./weather_forecast_record.sql
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec database pg_dump -U cvvfcm --no-schema -t live_weather_record > ./live_weather_record.sql
 
             -   name: Reset database
                 run: |
