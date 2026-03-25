@@ -33,6 +33,8 @@ jobs:
 
             -   name: Reset database
                 run: |
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec php bin/console secrets:decrypt-to-local
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec mv .env.prod.local .env.local
                     docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer install
                     docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer minimal-reset
                     docker compose -p cvvfcm-preprod -f compose.yaml exec php composer install --no-dev
