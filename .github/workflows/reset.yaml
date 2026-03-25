@@ -1,0 +1,40 @@
+name: Reset Preprod Database
+
+on:
+    workflow_dispatch:
+
+jobs:
+    deploy-preprod:
+        name: Deploy to PREPROD
+        runs-on: ubuntu-latest
+        environment: PREPROD
+        env:
+            DOCKER_HOST: 'ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}'
+            EXTERNAL_USER_ID: 33
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+            -   name: Set up Docker Compose
+                uses: docker/setup-compose-action@v2
+                with:
+                    version: latest
+            -   name: Set up private key
+                run: mkdir -p ~/.ssh && echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+            -   name: Trust remote host
+                run: ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+            -   name: Backup weather tables
+                run: |
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec database pg_dump -U cvvfcm -t weather_forecast_record > ./weather_forecast_record.sql
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec database pg_dump -U cvvfcm -t live_weather_record > ./live_weather_record.sql
+
+            -   name: Reset database
+                run: |
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer install
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer reset
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec -e APP_ENV=dev php composer install --no-dev
+
+            -   name: Restore weather tables
+                run: |
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec -T database psql -U cvvfcm < ./weather_forecast_record.sql
+                    docker compose -p cvvfcm-preprod -f compose.yaml exec -T database psql -U cvvfcm < ./live_weather_record.sql
