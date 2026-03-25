@@ -13,6 +13,7 @@ use Sulu\Bundle\AdminBundle\SmartContent\SmartContentQueryEnhancer;
 use Sulu\Bundle\SecurityBundle\AccessControl\AccessControlQueryEnhancer;
 use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
 use Sulu\Content\Infrastructure\Doctrine\DimensionContentQueryEnhancer;
+use Sulu\Page\Domain\Model\PageInterface;
 use Sulu\Page\Infrastructure\Sulu\Content\PageSmartContentProvider;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
@@ -61,6 +62,8 @@ final readonly class FeaturedEventSmartContentProvider extends PageSmartContentP
     public function getConfiguration(): ProviderConfigurationInterface
     {
         return Builder::create()
+            ->enableLimit()
+            ->enableDatasource(PageInterface::RESOURCE_KEY, PageInterface::RESOURCE_KEY, 'column_list')
             ->getConfiguration();
     }
 
@@ -81,6 +84,6 @@ final readonly class FeaturedEventSmartContentProvider extends PageSmartContentP
             ->andWhere("JSON_GET_TEXT(filterDimensionContent.templateData, 'featured') = :featured_value")
             ->setParameter('featured_template_key', 'event')
             ->setParameter('featured_current_date', now()->format('Y-m-d'))
-            ->setParameter('featured_value', 'true')
+            ->setParameter('featured_value', 'true');
     }
 }

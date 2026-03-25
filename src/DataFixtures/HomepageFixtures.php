@@ -81,10 +81,15 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                         'description' => '<p>Retrouvez nous tout au long de l\'année</p>',
                         'link_text' => 'Tous les événements',
                         'link_target' => $events->getUuid(),
+                        'featured_event' => [
+                            'dataSource' => $events->getUuid(),
+                            'includeSubFolders' => true,
+                            'limitResult' => 1,
+                        ],
                         'events' => [
                             'dataSource' => $events->getUuid(),
                             'includeSubFolders' => true,
-                            'limitResult' => 3,
+                            'limitResult' => 5,
                         ],
                     ],
                     [

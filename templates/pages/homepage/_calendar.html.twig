@@ -4,13 +4,12 @@
         <p class="HomepageCalendar__description">{{ block.description|striptags }}</p>
     </header>
 
-    {% set eventTypeLabels = { 'regatta': 'Régate', 'sea_trip': 'Sortie en mer', 'default': 'Événement' } %}
-    {% set featuredEvent = next_featured_event() %}
-    {% set featuredEventUrl = featuredEvent ? featuredEvent.url : null %}
-
+    {% set eventTypeLabels = {regatta: 'Régate', sea_trip: 'Sortie en mer', default: 'Événement'} %}
+    {% set featuredEvent = block.featured_event|first %}
     <div class="HomepageCalendar__grid">
-        <div class="HomepageCalendar__featuredBlock">
-            {% if featuredEvent %}
+
+        {% if featuredEvent %}
+            <div class="HomepageCalendar__featuredBlock">
                 {% set daysRemaining = (featuredEvent.begin_date|date('U') - 'now'|date('U')) // 86400 %}
                 <article class="HomepageCalendar__event HomepageCalendar__event--featured">
                     {% if featuredEvent.main_media is defined and featuredEvent.main_media %}
@@ -31,20 +30,18 @@
                         <time class="HomepageCalendar__eventDate" datetime="{{ featuredEvent.begin_date|date('Y-m-d') }}">
                             {{ featuredEvent.begin_date|format_date(pattern: 'd') }}–{{ featuredEvent.end_date|format_date(pattern: 'd MMMM Y')|upper }}
                         </time>
-                        <a href="{{ featuredEvent.url }}" class="HomepageCalendar__eventLink" aria-label="Voir {{ featuredEvent.title }}">
+                        <a href="#" class="HomepageCalendar__eventLink" aria-label="Voir {{ featuredEvent.title }}">
                             <svg class="HomepageCalendar__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                 <path d="M8 5v14l11-7z"/>
                             </svg>
                         </a>
                     </div>
                 </article>
-            {% endif %}
-        </div>
-
-        {% set listEvents = next_list_events(4, featuredEventUrl) %}
+            </div>
+        {% endif %}
 
         <ul class="HomepageCalendar__events">
-            {% for event in listEvents %}
+             {% for event in block.events|filter(event => event.url not in block.featured_event|map(e => e.url))|slice(0,4) %}
                 {% set daysRemaining = (event.begin_date|date('U') - 'now'|date('U')) // 86400 %}
 
                 <li class="HomepageCalendar__eventItem">
