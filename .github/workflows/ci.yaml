@@ -19,11 +19,11 @@ jobs:
             EXTERNAL_USER_ID: 1001
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
             -   name: Set up Docker Buildx
-                uses: docker/setup-buildx-action@v3
+                uses: docker/setup-buildx-action@v4
             -   name: Build Docker images
-                uses: docker/bake-action@v6
+                uses: docker/bake-action@v7
                 with:
                     pull: true
                     load: true
@@ -45,11 +45,11 @@ jobs:
                         rtsp-to-web.cache-from=type=gha,scope=rtsp-${{ github.ref_name }}
                         rtsp-to-web.cache-to=type=gha,scope=rtsp-${{ github.ref_name }},mode=max
             -   name: Set up Docker Compose
-                uses: docker/setup-compose-action@v1
+                uses: docker/setup-compose-action@v2
                 with:
                     version: latest
             -   name: Cache Composer dependencies
-                uses: actions/cache@v4
+                uses: actions/cache@v5
                 with:
                     path: vendor
                     key: composer-${{ hashFiles('composer.lock') }}
@@ -59,7 +59,7 @@ jobs:
                     mkdir -p var/cache/dev var/cache/test var/log
                     docker compose run --rm php composer install
             -   name: Cache NPM dependencies
-                uses: actions/cache@v4
+                uses: actions/cache@v5
                 with:
                     path: assets/admin/node_modules
                     key: npm-admin-${{ hashFiles('assets/admin/package-lock.json') }}
@@ -89,7 +89,7 @@ jobs:
         name: Static Analysis
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Psalm
                 uses: docker://ghcr.io/psalm/psalm-github-actions
@@ -104,7 +104,7 @@ jobs:
         name: Lint
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -112,7 +112,7 @@ jobs:
                     php-version: '8.5'
 
             -   name: Cache Composer dependencies
-                uses: actions/cache@v4
+                uses: actions/cache@v5
                 with:
                     path: vendor
                     key: composer-${{ hashFiles('composer.lock') }}
@@ -141,7 +141,7 @@ jobs:
         name: Code Style
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -149,7 +149,7 @@ jobs:
                     php-version: '8.5'
 
             -   name: Cache Composer dependencies
-                uses: actions/cache@v4
+                uses: actions/cache@v5
                 with:
                     path: vendor
                     key: composer-${{ hashFiles('composer.lock') }}
@@ -169,10 +169,10 @@ jobs:
         name: ESLint
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Cache NPM dependencies
-                uses: actions/cache@v4
+                uses: actions/cache@v5
                 with:
                     path: node_modules
                     key: npm-root-${{ hashFiles('package-lock.json') }}
@@ -189,10 +189,10 @@ jobs:
         name: StyleLint
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Cache NPM dependencies
-                uses: actions/cache@v4
+                uses: actions/cache@v5
                 with:
                     path: node_modules
                     key: npm-root-${{ hashFiles('package-lock.json') }}
@@ -209,7 +209,7 @@ jobs:
         name: Python Code Style
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Setup Python
                 uses: actions/setup-python@v4
