@@ -67,8 +67,8 @@ final class LiveFixtures extends Fixture implements DependentFixtureInterface
                 'description' => '<p>Retrouvez le direct du lac</p>',
                 'media' => ['id' => $medias[array_rand($medias)]->getId()],
                 'webcams' => [
-                    ['type' => 'webcam', 'webcam_stream_url' => 'https://'.$this->serverName.'/stream/mouillages/channel/1/mse'],
-                    ['type' => 'webcam', 'webcam_stream_url' => 'https://'.$this->serverName.'/stream/mouillages-2/channel/1/mse'],
+                    ['type' => 'webcam', 'webcam_stream_url' => $this->serverName.'/stream/mouillages-2/channel/1/mse'],
+                    ['type' => 'webcam', 'webcam_stream_url' => $this->serverName.'/stream/mouillages/channel/1/mse'],
                 ],
             ]);
         }
