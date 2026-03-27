@@ -1,21 +1,19 @@
 {
-	{$CADDY_GLOBAL_OPTIONS}
-
 	skip_install_trust
+
+	{$CADDY_GLOBAL_OPTIONS}
 
 	frankenphp {
 		{$FRANKENPHP_CONFIG}
-
-		worker {
-			file ./public/index.php
-			{$FRANKENPHP_WORKER_CONFIG}
-		}
 	}
+
+	admin localhost:2019
+	metrics
 }
 
 {$CADDY_EXTRA_CONFIG}
 
-(common) {
+php:80, localhost:80, {$SERVER_NAME:localhost} {
 	log {
 		{$CADDY_SERVER_LOG_OPTIONS}
 
@@ -36,22 +34,17 @@
 
 	@frontController path index.php
 	php @frontController {
-		{$PHP_SERVER_CONFIG}
+		{$FRANKENPHP_SITE_CONFIG}
+
+		worker {
+			file ./public/index.php
+			{$FRANKENPHP_WORKER_CONFIG}
+		}
 	}
 
 	file_server {
 		hide *.php
 	}
 
-	{$COMMON_EXTRA_CONFIG}
-}
-
-php:80, localhost:80 {
-	import common
-}
-
-{$SERVER_NAME:localhost} {
-	{$CADDY_SERVER_EXTRA_DIRECTIVES}
-
-	import common
+	{$SITE_EXTRA_CONFIG}
 }

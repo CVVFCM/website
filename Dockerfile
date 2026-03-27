@@ -101,6 +101,8 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
     php bin/console asset-map:compile; \
     sync
 
+COPY --from=ghcr.io/alexandre-daubois/ember:latest /ember /usr/local/bin/ember
+
 HEALTHCHECK CMD curl -f http://localhost:2019/metrics || exit 1
 
 CMD [ "frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile" ]

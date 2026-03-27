@@ -48,6 +48,14 @@ jobs:
                 uses: docker/setup-compose-action@v2
                 with:
                     version: latest
+            -   name: Install mkcert & Generate SSL certificates
+                run: |
+                    sudo apt-get install libnss3-tools
+                    wget https://dl.filippo.io/mkcert/latest?for=linux/amd64
+                    sudo mv mkcert-* /usr/local/bin/mkcert
+                    sudo chmod +x /usr/local/bin/mkcert
+                    mkcert -install
+                    mkcert -key-file infra/tls/key.pem -cert-file infra/tls/cert.pem localhost
             -   name: Cache Composer dependencies
                 uses: actions/cache@v5
                 with:
@@ -69,9 +77,6 @@ jobs:
                     docker run --rm -v ${PWD}:/app -w /app/assets/admin node:22-bookworm-slim npm install
                     docker run --rm -v ${PWD}:/app -w /app/assets/admin node:22-bookworm-slim npm run build
             -   name: Start services
-                env:
-                    CADDY_SERVER_EXTRA_DIRECTIVES: ' '
-                    CADDY_EXTRA_CONFIG: ' '
                 run: docker compose up --wait php --wait consumer --no-build || (docker compose logs && exit 1)
             -   name: Create test database
                 run: docker compose exec -T php composer reset-test

@@ -5,24 +5,22 @@ services:
             - './infra/docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini:ro'
         depends_on: [ mailer, s3 ]
         environment:
-            CADDY_SERVER_EXTRA_DIRECTIVES: ${CADDY_SERVER_EXTRA_DIRECTIVES:-tls /app/infra/tls/cert.pem /app/infra/tls/key.pem}
-            PHP_SERVER_CONFIG: hot_reload
-            COMMON_EXTRA_CONFIG: |
+            CADDY_EXTRA_CONFIG: |
+                https:// {
+                    tls /app/infra/tls/cert.pem /app/infra/tls/key.pem
+                }
+            SITE_EXTRA_CONFIG: |
                 mercure {
                     anonymous
                 }
-                @assets path_regexp \.(css|js)$
-                header @assets Cache-Control "no-store, no-cache"
-            FRANKENPHP_WORKER_CONFIG: |
-                watch /app/src
-                watch /app/templates
-                watch /app/config
+            FRANKENPHP_SITE_CONFIG: hot_reload assets/**/*.{css,js} src/**/*.php templates/**/*.html.twig
+            FRANKENPHP_WORKER_CONFIG: watch
             APP_ENV: ${APP_ENV:-dev}
             S3_ENDPOINT: http://s3:9090
         extra_hosts:
             - host.docker.internal:host-gateway
         tty: true
-        command: [ "frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile", "--watch" ]
+        command: [ "frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile" ]
         ports:
             -   target: 80
                 published: ${HTTP_PORT:-80}
