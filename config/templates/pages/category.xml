@@ -6,7 +6,7 @@
     <key>category</key>
 
     <view>pages/category</view>
-    <controller>Sulu\Bundle\WebsiteBundle\Controller\ErrorController</controller>
+    <controller>Sulu\Content\UserInterface\Controller\Website\ContentController::indexAction</controller>
     <cacheLifetime>604800</cacheLifetime>
 
     <meta>
