@@ -1,28 +1,80 @@
 {% extends 'base.html.twig' %}
 
+{% block pageclass 'EventPage' %}
+
 {% block styles %}
     <link rel="stylesheet" href="{{ asset('styles/event.css') }}" />
 {% endblock %}
 
 {% block content %}
 
-    <header>
-        <h1>{{ content.title }}</h1>
-        <h2>
-            Le {{ content.begin_date|format_date }}
-        </h2>
+    {% set parent = sulu_page_load(resource.parent.uuid, {url: 'url', title: 'title'}) %}
+    {% set days_diff = ((content.begin_date|date('U') - "now"|date('U')) / 86400)|round(0, 'floor') %}
 
-        {% if content.main_media %}
-            <div>
+    <header class="EventPage__header">
 
-                <img
-                    src="{{ content.main_media.formats['sulu-400x400.webp'] }}"
-                    alt="{{ content.main_media.title }}"
-                    title="{{ content.main_media.description|default(content.main_media.title) }}" />
+        <div class="EventPage__headerTopBar">
+            <a class="EventPage__headerLogoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
+                <img class="EventPage__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
+                <span class="EventPage__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
+            </a>
+        </div>
+
+        <div class="EventPage__headerMain">
+            {% if content.main_media %}
+                <div class="EventPage__headerImageWrapper" aria-hidden="true">
+                    <img
+                        class="EventPage__headerImage"
+                        src="{{ content.main_media.formats['sulu-400x400.webp'] }}"
+                        alt="{{ content.main_media.title }}"
+                        title="{{ content.main_media.description|default(content.main_media.title) }}" />
+                </div>
+            {% endif %}
+
+            <div class="EventPage__headerBody">
+                <div class="EventPage__headerNav">
+                    <ul class="BreadCrumb" aria-label="Fil d'Ariane">
+                        {% for item in sulu_page_breadcrumb(resource.uuid)|slice(0, -1) %}
+                            <li><a href="{{ sulu_content_path(item.url) }}">{{ item.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <a class="EventPage__headerSaveDate" href="#">
+                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        Enregistrer la date
+                    </a>
+                </div>
+
+                <div class="EventPage__headerMeta">
+                    {% if days_diff > 0 %}
+                        <span class="EventPage__headerCountdown">J-{{ days_diff }}</span>
+                    {% endif %}
+                    {% if parent %}
+                        <span class="EventPage__headerType">{{ parent.title|upper }}</span>
+                    {% endif %}
+                </div>
+
+                <h1 class="EventPage__headerTitle">{{ content.title }}</h1>
+
+                <div class="EventPage__headerDates">
+                    <span class="EventPage__headerDay">
+                        {{ content.begin_date|format_date(pattern='EEEE d MMMM yyyy', locale='fr')|upper }}
+                    </span>
+                    {% if content.end_date %}
+                        <span class="EventPage__headerTime">
+                            DE {{ content.begin_date|format_datetime(pattern="HH'H'mm") }} À {{ content.end_date|format_datetime(pattern="HH'H'mm") }}
+                        </span>
+                    {% else %}
+                        <span class="EventPage__headerTime">
+                            À {{ content.begin_date|format_datetime(pattern="HH'H'mm") }}
+                        </span>
+                    {% endif %}
+                </div>
             </div>
-        {% endif %}
+            <div class="EventPage__headerDescription">
+                {{ content.description|raw }}
+            </div>
+        </div>
 
-        <div>{{ content.description|raw }}</div>
     </header>
 
     {% if content.location %}
@@ -106,6 +158,63 @@
                 </li>
             {% endfor %}
         </ul>
+    {% endif %}
+
+    {% if content.block_title or content.block_description or content.block_services or content.content_links or content.cta_text %}
+        <section class="EventContentBlock">
+            {% if content.block_title %}
+                <h2 class="EventContentBlock__title">{{ content.block_title }}</h2>
+            {% endif %}
+
+            {% if content.block_description %}
+                <div class="EventContentBlock__description">{{ content.block_description|raw }}</div>
+            {% endif %}
+
+              {{ dump(content.block_services) }}
+
+            {% if content.block_services %}
+                <ul class="EventContentBlock__services">
+                    {% for service in content.block_services %}
+                        <li class="EventContentBlock__service">
+                            <span class="EventContentBlock__serviceName">{{ service.name }}</span>
+                            <span class="EventContentBlock__serviceAvailability EventContentBlock__serviceAvailability--{{ service.available ? 'yes' : 'no' }}">
+                                {{ service.available ? 'OUI' : 'NON' }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if content.links_title or content.content_links %}
+                <div class="EventContentBlock__linksSection">
+                    {% if content.links_title %}
+                        <h3 class="EventContentBlock__linksTitle">{{ content.links_title }}</h3>
+                    {% endif %}
+                    {% if content.content_links %}
+                        <ul class="EventContentBlock__linksList">
+                            {% for link in content.content_links %}
+                                <li>
+                                    <a href="{{ link.url }}" class="EventContentBlock__link">{{ link.text }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if content.cta_title or content.cta_text %}
+                <div class="EventContentBlock__ctaSection">
+                    {% if content.cta_title %}
+                        <h3 class="EventContentBlock__ctaTitle">{{ content.cta_title }}</h3>
+                    {% endif %}
+                    {% if content.cta_text %}
+                        <a href="{{ content.cta_url|default('#') }}" class="EventContentBlock__ctaButton">
+                            {{ content.cta_text }}
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </section>
     {% endif %}
 
 {% endblock %}

@@ -96,14 +96,14 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                         [
                             'type' => 'boat',
                             'boat_type' => 'Habitable',
-                            'captain' => ['c'.$contacts[array_rand($contacts)]->getId()],
+                            'captain' => [$contacts[array_rand($contacts)]->getId()],
                             'available_seats' => (string) random_int(2, 6),
                             'approximative_price' => random_int(10, 30).'€',
                         ],
                         [
                             'type' => 'boat',
                             'boat_type' => 'Dériveur',
-                            'captain' => ['c'.$contacts[array_rand($contacts)]->getId()],
+                            'captain' => [$contacts[array_rand($contacts)]->getId()],
                             'available_seats' => (string) random_int(1, 3),
                             'approximative_price' => random_int(5, 15).'€',
                         ],

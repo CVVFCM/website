@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <article>
+        <header>
+            <h1>{{ content.title }}</h1>
+
+            {% if content.media %}
+                <img src="{{ content.media.formats['sulu-400x400.webp'] }}"
+                     alt="{{ content.media.title }}" />
+            {% endif %}
+
+            <div>{{ content.description|raw }}</div>
+        </header>
+    </article>
+{% endblock %}

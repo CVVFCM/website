@@ -54,7 +54,7 @@ final class LiveFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ),
             ),
-        );
+        );-
         $live->setWebspaceKey($root->getWebspaceKey());
         $live->setParent($root);
         $manager->persist($live);
