@@ -50,7 +50,7 @@
             </ul>
         </section>
 
-        {% if list_view.paginated %}
+        {% if list_view is not empty and list_view.paginated %}
             <footer>
                 {{ include('_pager.html.twig', {content: content, list_view: list_view}, with_context: false) }}
             </footer>
