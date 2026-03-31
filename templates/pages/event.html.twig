@@ -13,7 +13,7 @@
 
     <header class="EventPage__header">
 
-        <div class="EventPage__headerTopBar">
+        <div class="EventPage__headerTopBar sectionPadded">
             <a class="EventPage__headerLogoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
                 <img class="EventPage__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
                 <span class="EventPage__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
@@ -21,6 +21,14 @@
         </div>
 
         <div class="EventPage__headerMain">
+             <div class="EventPage__headerNav">
+                <ul class="BreadCrumb" aria-label="Fil d'Ariane">
+                    {% for item in sulu_page_breadcrumb(resource.uuid)|slice(0, -1) %}
+                        <li><a href="{{ sulu_content_path(item.url) }}">{{ item.title }}</a></li>
+                    {% endfor %}
+                </ul>
+
+            </div>
             {% if content.main_media %}
                 <div class="EventPage__headerImageWrapper" aria-hidden="true">
                     <img
@@ -32,17 +40,7 @@
             {% endif %}
 
             <div class="EventPage__headerBody">
-                <div class="EventPage__headerNav">
-                    <ul class="BreadCrumb" aria-label="Fil d'Ariane">
-                        {% for item in sulu_page_breadcrumb(resource.uuid)|slice(0, -1) %}
-                            <li><a href="{{ sulu_content_path(item.url) }}">{{ item.title }}</a></li>
-                        {% endfor %}
-                    </ul>
-                    <a class="EventPage__headerSaveDate" href="#">
-                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        Enregistrer la date
-                    </a>
-                </div>
+
 
                 <div class="EventPage__headerMeta">
                     {% if days_diff > 0 %}
@@ -70,151 +68,155 @@
                     {% endif %}
                 </div>
             </div>
+            <a class="EventPage__headerSaveDate" href="#">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Enregistrer la date
+            </a>
             <div class="EventPage__headerDescription">
+
                 {{ content.description|raw }}
             </div>
         </div>
 
     </header>
-
-    {% if content.location %}
-        <div>
-            <twig:Map
-                latitude="{{ content.location.lat }}"
-                longitude="{{ content.location.long }}"
-                title="{{ content.location.title }}"
-                zoom="{{ content.location.zoom }}"
-            />
-        </div>
-    {% endif %}
-
-    {% if content.series or content.services or content.regatta_informations %}
-        {% if content.series %}
-            <ul>
-                {% for series_with_rank in content.series %}
-                    <li>
-                        <strong>{{ series_with_rank.series }}</strong> : {{ series_with_rank.rank }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        {% if content.services %}
-            <ul>
-                {% for service in content.services %}
-                    <li>
-                        <strong>{{ service.name }}</strong> : {{ service.availability ? 'Oui' : 'Non' }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-        {% if content.regatta_informations %}
-            <div>
-
-                {{ content.regatta_informations|raw }}
+    <main class="EventPage__mainContent sectionPadded">
+        {% if content.location %}
+            <div class="EventPage__map EventContentBlock">
+                <twig:Map
+                    latitude="{{ content.location.lat }}"
+                    longitude="{{ content.location.long }}"
+                    title="{{ content.location.title }}"
+                    zoom="{{ content.location.zoom }}"
+                />
             </div>
         {% endif %}
-    {% endif %}
 
-    {% set parent = sulu_page_load(resource.parent.uuid, {url: 'url', title: 'title'}) %}
-    <a href="{{ parent.url }}">{{ parent.title }}</a>
-
-    {% if content.media %}
-        <section>
-            <ul>
-                {% for media in content.media %}
-                    <li>
-                        <img
-                            src="{{ media.formats['sulu-400x400.webp'] }}"
-                            alt="{{ media.title }}"
-                            title="{{ media.description|default(media.title) }}" />
-                    </li>
-                {% endfor %}
-            </ul>
-        </section>
-    {% endif %}
-
-    {% if content.links %}
-        <h2>Liens utiles</h2>
-        <ul>
-            {% for link in content.links %}
-                <li>
-                    <a href="{{ link.url }}" title="{{ link.title }}"{{ link.target_blank ? ' target="_blank"' }}>
-                        {{ link.title }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    {% if content.contact %}
-        <h2>Contacts</h2>
-        <ul>
-            {% for contact in content.contact %}
-                <li>
-                    {{ contact.fullName }}<br />
-                    {{ contact.positionName }}<br />
-                    {{ contact.contactDetails.emails[0].email }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    {% if content.block_title or content.block_description or content.block_services or content.content_links or content.cta_text %}
-        <section class="EventContentBlock">
-            {% if content.block_title %}
-                <h2 class="EventContentBlock__title">{{ content.block_title }}</h2>
+        {% if content.series or content.services or content.regatta_informations %}
+            {% if content.series %}
+                <div class="EventPage__seriesBloc EventContentBlock">
+                    <ul>
+                        {% for series_with_rank in content.series %}
+                            <li>
+                                <strong>{{ series_with_rank.series }}</strong> : {{ series_with_rank.rank }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+            </div>
             {% endif %}
 
-            {% if content.block_description %}
-                <div class="EventContentBlock__description">{{ content.block_description|raw }}</div>
-            {% endif %}
-
-              {{ dump(content.block_services) }}
-
-            {% if content.block_services %}
-                <ul class="EventContentBlock__services">
-                    {% for service in content.block_services %}
-                        <li class="EventContentBlock__service">
-                            <span class="EventContentBlock__serviceName">{{ service.name }}</span>
-                            <span class="EventContentBlock__serviceAvailability EventContentBlock__serviceAvailability--{{ service.available ? 'yes' : 'no' }}">
-                                {{ service.available ? 'OUI' : 'NON' }}
-                            </span>
+            {% if content.services %}
+                <ul class="EventPage__servicesBloc EventContentBlock">
+                    {% for service in content.services %}
+                        <li>
+                            <strong>{{ service.name }}</strong> : {{ service.availability ? 'Oui' : 'Non' }}
                         </li>
                     {% endfor %}
                 </ul>
             {% endif %}
+            {% if content.regatta_informations %}
+                <div>
 
-            {% if content.links_title or content.content_links %}
-                <div class="EventContentBlock__linksSection">
-                    {% if content.links_title %}
-                        <h3 class="EventContentBlock__linksTitle">{{ content.links_title }}</h3>
-                    {% endif %}
-                    {% if content.content_links %}
-                        <ul class="EventContentBlock__linksList">
-                            {% for link in content.content_links %}
-                                <li>
-                                    <a href="{{ link.url }}" class="EventContentBlock__link">{{ link.text }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
+                    {{ content.regatta_informations|raw }}
                 </div>
             {% endif %}
+        {% endif %}
 
-            {% if content.cta_title or content.cta_text %}
-                <div class="EventContentBlock__ctaSection">
-                    {% if content.cta_title %}
-                        <h3 class="EventContentBlock__ctaTitle">{{ content.cta_title }}</h3>
-                    {% endif %}
-                    {% if content.cta_text %}
-                        <a href="{{ content.cta_url|default('#') }}" class="EventContentBlock__ctaButton">
-                            {{ content.cta_text }}
+        {% if content.media %}
+            <section class="EventPage__mediasBloc EventContentBlock">
+                <ul>
+                    {% for media in content.media %}
+                        <li>
+                            <img
+                                src="{{ media.thumbnails['x800'] }}"
+                                alt="{{ media.title }}"
+                                title="{{ media.description|default(media.title) }}" />
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+
+        {% if content.links %}
+            <h2 class="EventContentBlock__title">Liens utiles</h2>
+            <ul>
+                {% for link in content.links %}
+                    <li>
+                        <a href="{{ link.url }}" title="{{ link.title }}"{{ link.target_blank ? ' target="_blank"' }}>
+                            {{ link.title }}
                         </a>
-                    {% endif %}
-                </div>
-            {% endif %}
-        </section>
-    {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
+        {% if content.contact %}
+        <div class="EventContentBlock">
+            <h2 class="EventContentBlock__title">Contacts</h2>
+            <ul>
+                {% for contact in content.contact %}
+                    <li>
+                        {{ contact.fullName }}<br />
+                        {{ contact.positionName }}<br />
+                        {{ contact.contactDetails.emails[0].email }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if content.block_title or content.block_description or content.block_services or content.content_links or content.cta_text %}
+            <section class="EventContentBlock">
+                {% if content.block_title %}
+                    <h2 class="EventContentBlock__title">{{ content.block_title }}</h2>
+                {% endif %}
+
+                {% if content.block_description %}
+                    <div class="EventContentBlock__description">{{ content.block_description|raw }}</div>
+                {% endif %}
+
+                {% if content.block_services %}
+                    <ul class="EventContentBlock__services">
+                        {% for service in content.block_services %}
+                            <li class="EventContentBlock__service">
+                                <span class="EventContentBlock__serviceName">{{ service.name }}</span>
+                                <span class="EventContentBlock__serviceAvailability EventContentBlock__serviceAvailability--{{ service.available ? 'yes' : 'no' }}">
+                                    {{ service.available ? 'OUI' : 'NON' }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if content.links_title or content.content_links %}
+                    <div class="EventContentBlock__linksSection">
+                        {% if content.links_title %}
+                            <h3 class="EventContentBlock__linksTitle">{{ content.links_title }}</h3>
+                        {% endif %}
+                        {% if content.content_links %}
+                            <ul class="EventContentBlock__linksList">
+                                {% for link in content.content_links %}
+                                    <li>
+                                        <a href="{{ link.url }}" class="EventContentBlock__link">{{ link.text }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if content.cta_title or content.cta_text %}
+                    <div class="EventContentBlock__ctaSection">
+                        {% if content.cta_title %}
+                            <h3 class="EventContentBlock__ctaTitle">{{ content.cta_title }}</h3>
+                        {% endif %}
+                        {% if content.cta_text %}
+                            <a href="{{ content.cta_url|default('#') }}" class="EventContentBlock__ctaButton">
+                                {{ content.cta_text }}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </section>
+        {% endif %}
+    </main>
 {% endblock %}

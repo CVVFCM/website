@@ -20,6 +20,8 @@ H1 {
 
 p {
     font-family: var(--font-family-base);
-    font-size: 1rem;
+    font-size: 1em;
     line-height: 1.5;
+    font-weight: 450;
+    color: var(--base-text-color);
 }
