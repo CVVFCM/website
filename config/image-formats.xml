@@ -21,4 +21,11 @@
 
     <img src="{{ image.thumbnails['300x'] }}" alt="{{ image.title }}" title="{{ image.description|default(image.title) }}">
     -->
+
+    <format key="x800">
+        <meta>
+            <title lang="fr">Hauteur 800px</title>
+        </meta>
+        <scale y="800" forceRatio="false" />
+    </format>
 </formats>
