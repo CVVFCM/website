@@ -49,6 +49,14 @@
                     <tag name="sulu.search.field" role="description" />
                 </property>
 
+                <property name="main_media" type="single_media_selection">
+                    <meta>
+                        <title lang="fr">Média principal</title>
+                    </meta>
+
+                    <tag name="sulu.search.field" role="image" />
+                </property>
+
                 <property name="featured" type="checkbox">
                     <meta>
                         <title lang="fr">Mettre en avant</title>
@@ -231,14 +239,6 @@
             </meta>
 
             <properties>
-                <property name="main_media" type="single_media_selection">
-                    <meta>
-                        <title lang="fr">Média principal</title>
-                    </meta>
-
-                    <tag name="sulu.search.field" role="image" />
-                </property>
-
                 <property name="media" type="media_selection">
                     <meta>
                         <title lang="fr">Médias additionnels</title>
