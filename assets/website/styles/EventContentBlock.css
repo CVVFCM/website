@@ -3,9 +3,8 @@
     border-left: 1px dashed var(--redAct-text);
     padding-left: 2rem;
     padding-right: 0.5rem;
-    max-width: 30rem;
+    max-width: 26rem;
     font-size: 1rem;
-    font-family: var(--font-family-base);
     display: flex;
     flex-direction: column;
 

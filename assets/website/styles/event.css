@@ -9,7 +9,6 @@
 }
 
 
-
 .EventPage__headerTopBar {
     font-size: 1rem;
 }
@@ -35,38 +34,30 @@
 }
 
 .EventPage__headerMain {
+    box-sizing: border-box;
     justify-content: start;
     font-size: 1rem;
     position: relative;
-    display: inline-grid;
-    flex-direction: row;
     background-color: var(--color-white);
     color: var(--base-text-color);
-    grid-template-columns: 15vw 18em 22em;
-    grid-template-rows: 3rem auto;
-    padding : 2em;
-    gap: 4em;
+
     z-index: 0;
 
     &:before {
         z-index: -1;
         position: absolute;
         top: 0;
-        right: 0;
+        left: 100%;
         display: block;
         content: ' ';
         height: 100%;
-        width : 30em;
-        transform: skew(15deg) translateX(8rem);
+        width : 20rem;
+        transform: translateX(-11rem) skew(15deg) ;
         background-color: var(--color-white);
     }
 }
 
 .EventPage__headerImageWrapper {
-    grid-column: 1 ;
-    grid-row: 1 ;
-    width: 35vw;
-    height: 35vw;
     border-radius: 40rem;
     overflow: hidden;
     position: relative;
@@ -74,7 +65,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    left: -20vw;
+    left: -17vw;
     top: -5vw;
 }
 
@@ -87,9 +78,6 @@
 }
 
 .EventPage__headerBody {
-
-    grid-column: 2;
-    grid-row: 2;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -99,18 +87,12 @@
 
 .EventPage__headerDescription {
 
-    grid-column: 3 ;
-    grid-row: 2;
     font-size: 1.2rem;
     color: var(--base-text-color);
     line-height: 1.5;
-    max-width: 30em;
 }
 
-.EventPage__headerNav {
-    grid-column: 2 ;
-    grid-row: 1;
-}
+
 
 .BreadCrumb {
     padding: 0;
@@ -150,10 +132,8 @@
 }
 
 .EventPage__headerSaveDate {
-    align-self: center;
-    grid-column: 3;
-    grid-row: 1;
-    display: block;
+
+    display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     font-size: 0.8rem;
@@ -164,7 +144,6 @@
     border-radius: 2rem;
     white-space: nowrap;
     transition: background-color 0.2s ease, border-color 0.2s ease;
-    vertical-align: middle;
 
     &:hover {
         background-color: rgba(255, 255, 255, 0.15);
@@ -196,10 +175,6 @@
     line-height: 1.15;
     margin: 0;
     color: var(--blueNote-text);
-
-    @media (min-width: 768px) {
-        font-size: 2.5rem;
-    }
 }
 
 .EventPage__headerDates {
@@ -213,15 +188,105 @@
     letter-spacing: 0.05em;
 }
 
+/*------------------------------------  HEADER GRID & responsive    */
+
+.EventPage__headerMain {
+    box-sizing: border-box;
+    display: inline-grid;
+    grid-template-columns: 13vw fit-content(75%);
+    grid-template-rows: 3rem auto;
+    gap:1.5rem;
+    padding : 2em;
+    max-width: 80vw;
+    justify-items: start;
+}
+
+.EventPage__headerDescription,
+.EventPage__headerNav,
+.EventPage__headerSaveDate {
+    grid-column: 1/span 2 ;
+}
+.EventPage__headerNav {
+    align-self: center;
+}
+
+.EventPage__headerDescription {
+    max-width: 22em;
+}
+
+.EventPage__headerSaveDate {
+    justify-self: end;
+    align-self: center;
+}
+
+.EventPage__headerBody {
+    grid-column: 2 ;
+    grid-row: 2 ;
+}
+
+.EventPage__headerImageWrapper {
+    grid-column: 1 ;
+    grid-row: 2 ;
+    width: 30vw;
+    height: 30vw;
+}
 
 
-/*------------------------------------  CONTENT    */
+
+@media (width > 65rem) {
+    .EventPage__headerMain {
+        grid-template-columns: 13vw 15em 22em;
+        grid-template-rows: 3rem auto;
+        gap: 4em;
+    }
+
+    .EventPage__headerImageWrapper {
+        grid-column: 1 ;
+        grid-row: 1 ;
+    }
+
+    .EventPage__headerNav {
+        grid-column: 2 ;
+        grid-row: 1;
+    }
+
+    .EventPage__headerBody {
+
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+
+
+    .EventPage__headerDescription {
+
+        grid-column: 3;
+        grid-row: 2;
+    }
+
+
+    .EventPage__headerSaveDate {
+        align-self: center;
+        grid-column: 3;
+        grid-row: 1;
+    }
+}
+
+
+/*------------------------------------  MAIN CONTENT    */
 
 .EventPage__mainContent {
-    display: grid;
+    display: flex;
     align-items: flex-start;
     gap: 2rem;
+    flex-wrap: wrap;
+    max-width: 100%;
     position: relative;
+}
+
+.EventContentBlock {
+    flex: 22rem;
+
 }
 
 .EventPage__map {
@@ -229,17 +294,24 @@
 }
 
 .EventPage__mediasBloc {
-    width: 100%;
+    max-width: 100%;
     display: block;
     flex: 100%;
 
     & ul {
         display: flex;
         flex-direction: row;
+        max-width: 100%;
+        flex-wrap: wrap;
+
     }
 
     & img {
-        max-height: 40vh;
-        width: auto;
+        height: 33vh;
+        max-width: 80vh;
+        object-fit: contain;
     }
 }
+
+/*------------------------------------  MAIN CONTENT RESPONSIVE    */
+
