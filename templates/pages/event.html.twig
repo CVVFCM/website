@@ -93,29 +93,32 @@
 
         {% if content.series or content.services or content.regatta_informations %}
             {% if content.series %}
-                <div class="EventPage__seriesBloc EventContentBlock">
-                    <ul>
-                        {% for series_with_rank in content.series %}
-                            <li>
-                                <strong>{{ series_with_rank.series }}</strong> : {{ series_with_rank.rank }}
-                            </li>
-                        {% endfor %}
-                    </ul>
+            <div class="EventPage__seriesBloc EventContentBlock">
+                <h2 class="EventContentBlock__title">Series </h2>
+                <ul>
+                    {% for series_with_rank in content.series %}
+                        <li>
+                            <strong>{{ series_with_rank.series }}</strong> : {{ series_with_rank.rank }}
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
             {% endif %}
 
             {% if content.services %}
-                <ul class="EventPage__servicesBloc EventContentBlock">
-                    {% for service in content.services %}
-                        <li>
-                            <strong>{{ service.name }}</strong> : {{ service.availability ? 'Oui' : 'Non' }}
-                        </li>
-                    {% endfor %}
-                </ul>
+                <div class="EventContentBlock">
+                    <h2 class="EventContentBlock__title">Services </h2>
+                    <ul class="EventPage__servicesBloc ">
+                        {% for service in content.services %}
+                            <li>
+                                <strong>{{ service.name }}</strong> : {{ service.availability ? 'Oui' : 'Non' }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             {% endif %}
             {% if content.regatta_informations %}
-                <div>
-
+                <div class="EventContentBlock">
                     {{ content.regatta_informations|raw }}
                 </div>
             {% endif %}
@@ -137,16 +140,18 @@
         {% endif %}
 
         {% if content.links %}
+        <div class="EventContentBlock">
             <h2 class="EventContentBlock__title">Liens utiles</h2>
-            <ul>
+            <ul class="EventContentBlock__linksList">
                 {% for link in content.links %}
                     <li>
-                        <a href="{{ link.url }}" title="{{ link.title }}"{{ link.target_blank ? ' target="_blank"' }}>
+                        <a class="EventContentBlock__link" href="{{ link.url }}" title="{{ link.title }}"{{ link.target_blank ? ' target="_blank"' }}>
                             {{ link.title }}
                         </a>
                     </li>
                 {% endfor %}
             </ul>
+        </div>
         {% endif %}
 
         {% if content.contact %}
@@ -171,7 +176,9 @@
                 {% endif %}
 
                 {% if content.block_description %}
-                    <div class="EventContentBlock__description">{{ content.block_description|raw }}</div>
+                    <div class="EventContentBlock__description">
+                        {{ content.block_description|raw }}
+                    </div>
                 {% endif %}
 
                 {% if content.block_services %}

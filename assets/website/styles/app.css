@@ -34,6 +34,10 @@ p {
     font-weight: 450;
     color: var(--base-text-color);
 }
+
+a {
+    color: var(--redAct-text);
+}
 /*_________________________ commons header */
 
 .Logo__headerTopBar {
