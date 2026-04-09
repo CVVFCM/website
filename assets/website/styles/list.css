@@ -1,3 +1,85 @@
 /* List page styles */
 @import './app.css';
+@import './default.css';
 @import './common/Pager.css';
+
+
+.ListPage__list {
+    background: var(--utility-grey);
+    display: flex;
+    list-style: none;
+    gap: 1rem;
+    max-width: 100%;
+    flex-wrap: wrap;
+    align-items: stretch;
+    align-content: stretch;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.ListPage__listItem {
+    flex: .5 6 8em;
+    min-width: 18em;
+    display: flex;
+    align-items: stretch;
+
+}
+
+.ListPage__article {
+    max-width: 100%;
+    background: var(--color-white);
+    color: var(--base-text-color);
+    padding: 3.5em 2em;
+    border-radius: 2rem;
+
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.ListPage__articleTitle {
+    max-width: 18em;
+    flex: .2 2 8em;
+    min-width: 8em;
+    margin: 0;
+}
+
+.ListPage__articleMedia {
+    box-sizing: content-box;
+    flex: .2 2 4vw;
+    min-width: 2em;
+    height: auto;
+    border-radius: 20rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    order: -1;
+
+    & img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.ListPage__articleDescription {
+    max-height: 3.4lh;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    & p {
+        margin: 0;
+    }
+}
+
+.ListPage__MoreInfoLink {
+    color: var(--redAct-text);
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

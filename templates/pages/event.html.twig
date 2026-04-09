@@ -13,10 +13,10 @@
 
     <header class="EventPage__header">
 
-        <div class="EventPage__headerTopBar sectionPadded">
-            <a class="EventPage__headerLogoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
-                <img class="EventPage__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
-                <span class="EventPage__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
+        <div class="Logo__headerTopBar sectionPadded">
+            <a class="Logo__headerLogoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
+                <img class="Logo__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
+                <span class="Logo__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
             </a>
         </div>
 
@@ -27,8 +27,8 @@
                         <li><a href="{{ sulu_content_path(item.url) }}">{{ item.title }}</a></li>
                     {% endfor %}
                 </ul>
-
             </div>
+
             {% if content.main_media %}
                 <div class="EventPage__headerImageWrapper" aria-hidden="true">
                     <img
