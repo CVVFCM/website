@@ -24,7 +24,9 @@
                     </ul>
                 </div>
                 <h1 class="Page__headerTitle">{{ content.title }}</h1>
-                <div class="Page__headerDescription">{{ content.description|raw }}</div>
+                    {% if content.description is defined %}
+                        <div class="Page__headerDescription">{{ content.description|raw }}</div>
+                    {% endif %}
             </div>
             {% if content.media %}
                 <div class="Page__headerMedia">
