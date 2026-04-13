@@ -1,5 +1,6 @@
 /* Default page styles - minimal common blocks only */
 @import './app.css';
+@import './list.css';
 
 
 .Page__header {

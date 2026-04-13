@@ -1,11 +1,14 @@
 /* List page styles */
 @import './app.css';
-@import './default.css';
 @import './common/Pager.css';
+
+.ListPage__MainContent,
+.ContentBlock--list {
+    background: var(--utility-grey);
+}
 
 
 .ListPage__list {
-    background: var(--utility-grey);
     display: flex;
     list-style: none;
     gap: 1rem;

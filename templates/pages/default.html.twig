@@ -40,6 +40,93 @@
     </header>
     {% block MainContent %}
         {{ content.article|raw }}
+
+        {% if content.blocks is defined and content.blocks is not empty %}
+            <div class="DefaultPage__blocks">
+                {% for block in content.blocks %}
+                    {% if block.type == 'title_image_text' %}
+                        <div class="ContentBlock ContentBlock--titleImageText">
+                            <h2 class="ContentBlock__title">{{ block.title }}</h2>
+                            <img class="ContentBlock__image"
+                                 src="{{ block.media.thumbnails['x800'] }}"
+                                 alt="{{ block.media.title }}" />
+                            <div class="ContentBlock__text">{{ block.text|raw }}</div>
+                        </div>
+
+                    {% elseif block.type == 'gallery' %}
+                        <div class="ContentBlock ContentBlock--gallery">
+                            {% for item in block.medias %}
+                                <img class="ContentBlock__galleryItem"
+                                     src="{{ item.thumbnails['x800'] }}"
+                                     alt="{{ item.title }}" />
+                            {% endfor %}
+                        </div>
+
+                    {% elseif block.type == 'list' %}
+                        <section class="ContentBlock ContentBlock--list">
+                            <h2 class="ContentBlock__title">{{ block.title }}</h2>
+                            {% if block.description %}
+                                <div class="ContentBlock__description">{{ block.description|raw }}</div>
+                            {% endif %}
+                            {% if block.pages is defined and block.pages is not empty %}
+                                <ul class="ListPage__list ListPage__list--page sectionPadded">
+                                    {% for item in block.pages %}
+                                        <li class="ListPage__listItem">
+                                            <article class="ListPage__article">
+                                                {% if item.event_type is defined and item.event_type %}
+                                                    {% set eventTypeLabels = {
+                                                        'default': 'Événement',
+                                                        'regatta': 'Régate',
+                                                        'sea_trip': 'Sortie en mer'
+                                                    } %}
+                                                    {% set daysRemaining = (item.begin_date|date('U') - 'now'|date('U')) // 86400 %}
+                                                    <div clas="ListPage__eventContent">
+                                                        <div class="HomepageCalendar__eventMeta">
+                                                            <span class="HomepageCalendar__eventCountdown">J-{{ daysRemaining }}</span>
+                                                            <span class="HomepageCalendar__eventType">{{ eventTypeLabels[item.event_type|default('default')]|default('Événement') }}</span>
+                                                        </div>
+                                                        <h3 class="HomepageCalendar__eventTitle">{{ item.title }}</h3>
+                                                        <time class="HomepageCalendar__eventDate" datetime="{{ item.begin_date|date('Y-m-d') }}">
+                                                            {{ item.begin_date|format_date(pattern: 'd') }}–{{ item.end_date|format_date(pattern: 'd MMMM Y')|upper }}
+                                                        </time>
+                                                        <a href="{{ item.url }}" class="HomepageCalendar__eventLink" aria-label="Voir {{ item.title }}">
+                                                            <svg class="HomepageCalendar__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                                <path d="M8 5v14l11-7z"/>
+                                                            </svg>
+                                                        </a>
+                                                    </div>
+                                                {% else %}
+                                                    <h3 class="ListPage__articleTitle">{{ item.title }}</h3>
+                                                    {% if item.description is defined and item.description %}
+                                                        <div class="ListPage__articleDescription">{{ item.description|raw }}</div>
+                                                    {% endif %}
+                                                    <a class="ListPage__MoreInfoLink" href="{{ item.url }}">En savoir +</a>
+                                                {% endif %}
+                                                {% if item.media is defined and item.media %}
+                                                    {% set media = item.media.formats is defined ? item.media : item.media[0] %}
+                                                    <div class="ListPage__articleMedia">
+                                                        <img src="{{ media.formats['sulu-400x400.webp'] }}" alt="{{ media.title }}" />
+                                                    </div>
+                                                {% endif %}
+
+                                            </article>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+
+                        </section>
+
+                    {% elseif block.type == 'cta' %}
+                        <div class="ContentBlock ContentBlock--cta">
+                            <h2 class="ContentBlock__title">{{ block.title }}</h2>
+                            <div class="ContentBlock__description">{{ block.description|raw }}</div>
+                            <a class="ContentBlock__cta" href="{{ block.cta_url }}">{{ block.cta_label }}</a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
     {% endblock %}
 
     {% if content.form is defined and content.form %}

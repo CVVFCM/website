@@ -3,7 +3,7 @@
 {% block pageclass 'EventListPage' %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ asset('styles/list.css') }}" />
+    <link rel="stylesheet" href="{{ asset('styles/default.css') }}" />
 {% endblock %}
 
 {% block MainContent %}
@@ -12,7 +12,7 @@
     {% set list_view = content.list_type == 'page' ? view.page_list : view.event_list %}
 
 
-        <section>
+        <section class="ListPage__MainContent">
             <ul class="ListPage__list ListPage__list--{{ content.list_type }} sectionPadded">
                 {% for item in list %}
                     <li class="ListPage__listItem">
@@ -38,11 +38,10 @@
                     </li>
                 {% endfor %}
             </ul>
+            {% if list_view is not empty and list_view.paginated %}
+                <footer>
+                    {{ include('_pager.html.twig', {content: content, list_view: list_view}, with_context: false) }}
+                </footer>
+            {% endif %}
         </section>
-
-        {% if list_view is not empty and list_view.paginated %}
-            <footer>
-                {{ include('_pager.html.twig', {content: content, list_view: list_view}, with_context: false) }}
-            </footer>
-        {% endif %}
 {% endblock %}
