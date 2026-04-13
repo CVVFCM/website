@@ -80,11 +80,12 @@ final class MediaFixtures extends Fixture implements DependentFixtureInterface
 
         $finder = Finder::create()->in(__DIR__.'/stubs/pictos')->files()->depth(0);
         foreach ($finder as $fileInfo) {
-            $this->mediaManager->save(
+            $media = $this->mediaManager->save(
                 new UploadedFile($fileInfo->getPathname(), $fileInfo->getFilename()),
                 ['locale' => 'fr', 'collection' => $pictosCollection->getId()],
                 1,
             );
+            $this->addReference('media_picto_'.$fileInfo->getFilenameWithoutExtension(), $manager->find(Media::class, $media->getId()));
         }
     }
 
