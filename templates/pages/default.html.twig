@@ -39,14 +39,14 @@
         </div>
     </header>
     {% block MainContent %}
-        {{ content.article|raw }}
-
         {% if content.blocks is defined and content.blocks is not empty %}
             <div class="DefaultPage__blocks">
                 {% for block in content.blocks %}
                     {% if block.type == 'title_image_text' %}
-                        <div class="ContentBlock ContentBlock--titleImageText">
+                        <div class="ContentBlock ContentBlock--titleImageText sectionPadded">
                             <h2 class="ContentBlock__title">{{ block.title }}</h2>
+                            {% if block.type == 'title_image_text' %}
+                            {% endif %}
                             <img class="ContentBlock__image"
                                  src="{{ block.media.thumbnails['x800'] }}"
                                  alt="{{ block.media.title }}" />
@@ -54,7 +54,7 @@
                         </div>
 
                     {% elseif block.type == 'gallery' %}
-                        <div class="ContentBlock ContentBlock--gallery">
+                        <div class="ContentBlock ContentBlock--gallery sectionPadded">
                             {% for item in block.medias %}
                                 <img class="ContentBlock__galleryItem"
                                      src="{{ item.thumbnails['x800'] }}"
@@ -63,11 +63,13 @@
                         </div>
 
                     {% elseif block.type == 'list' %}
-                        <section class="ContentBlock ContentBlock--list">
-                            <h2 class="ContentBlock__title">{{ block.title }}</h2>
-                            {% if block.description %}
-                                <div class="ContentBlock__description">{{ block.description|raw }}</div>
-                            {% endif %}
+                        <article class="ContentBlock ContentBlock--list sectionPadded">
+                            <header class="ContentBlock__header">
+                                <h2 class="ContentBlock__title">{{ block.title }}</h2>
+                                {% if block.description %}
+                                    <div class="ContentBlock__description">{{ block.description|raw }}</div>
+                                {% endif %}
+                            </header>
                             {% if block.pages is defined and block.pages is not empty %}
                                 <ul class="ListPage__list ListPage__list--page sectionPadded">
                                     {% for item in block.pages %}
@@ -81,16 +83,16 @@
                                                     } %}
                                                     {% set daysRemaining = (item.begin_date|date('U') - 'now'|date('U')) // 86400 %}
                                                     <div clas="ListPage__eventContent">
-                                                        <div class="HomepageCalendar__eventMeta">
-                                                            <span class="HomepageCalendar__eventCountdown">J-{{ daysRemaining }}</span>
-                                                            <span class="HomepageCalendar__eventType">{{ eventTypeLabels[item.event_type|default('default')]|default('Événement') }}</span>
+                                                        <div class="ListPage__eventMeta">
+                                                            <span class="ListPage__eventCountdown">J-{{ daysRemaining }}</span>
+                                                            <span class="ListPage__eventType">{{ eventTypeLabels[item.event_type|default('default')]|default('Événement') }}</span>
                                                         </div>
-                                                        <h3 class="HomepageCalendar__eventTitle">{{ item.title }}</h3>
-                                                        <time class="HomepageCalendar__eventDate" datetime="{{ item.begin_date|date('Y-m-d') }}">
+                                                        <h3 class="ListPage__eventTitle">{{ item.title }}</h3>
+                                                        <time class="ListPage__eventDate" datetime="{{ item.begin_date|date('Y-m-d') }}">
                                                             {{ item.begin_date|format_date(pattern: 'd') }}–{{ item.end_date|format_date(pattern: 'd MMMM Y')|upper }}
                                                         </time>
-                                                        <a href="{{ item.url }}" class="HomepageCalendar__eventLink" aria-label="Voir {{ item.title }}">
-                                                            <svg class="HomepageCalendar__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                        <a href="{{ item.url }}" class="ListPage__eventLink" aria-label="Voir {{ item.title }}">
+                                                            <svg class="ListPage__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                                                 <path d="M8 5v14l11-7z"/>
                                                             </svg>
                                                         </a>
@@ -115,13 +117,13 @@
                                 </ul>
                             {% endif %}
 
-                        </section>
+                        </article>
 
                     {% elseif block.type == 'cta' %}
-                        <div class="ContentBlock ContentBlock--cta">
+                        <div class="ContentBlock ContentBlock--cta sectionPadded">
                             <h2 class="ContentBlock__title">{{ block.title }}</h2>
                             <div class="ContentBlock__description">{{ block.description|raw }}</div>
-                            <a class="ContentBlock__cta" href="{{ block.cta_url }}">{{ block.cta_label }}</a>
+                            <a class="ContentBlock__cta CallToAction--btn " href="{{ block.cta_url }}">{{ block.cta_label }}</a>
                         </div>
                     {% endif %}
                 {% endfor %}

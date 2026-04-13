@@ -39,9 +39,9 @@
             </meta>
         </property>
 
-        <property name="article" type="text_editor">
+        <property name="description" type="text_editor">
             <meta>
-                <title lang="fr">Article</title>
+                <title lang="fr">Description</title>
             </meta>
         </property>
 
