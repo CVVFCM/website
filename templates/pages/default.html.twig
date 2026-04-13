@@ -54,12 +54,19 @@
                         </div>
 
                     {% elseif block.type == 'gallery' %}
-                        <div class="ContentBlock ContentBlock--gallery sectionPadded">
-                            {% for item in block.medias %}
-                                <img class="ContentBlock__galleryItem"
-                                     src="{{ item.thumbnails['x800'] }}"
-                                     alt="{{ item.title }}" />
-                            {% endfor %}
+                        <div class="ContentBlock ContentBlock--gallery splide sectionPadded"
+                             data-controller="gallery">
+                            <div class="splide__track">
+                                <ul class="splide__list">
+                                    {% for item in block.medias %}
+                                        <li class="splide__slide">
+                                            <img class="ContentBlock__galleryItem"
+                                                 src="{{ item.thumbnails['x800'] }}"
+                                                 alt="{{ item.title }}" />
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </div>
 
                     {% elseif block.type == 'list' %}

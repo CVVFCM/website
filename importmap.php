@@ -38,4 +38,11 @@ return [
     '@symfony/ux-live-component' => [
         'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
     ],
+    '@splidejs/splide' => [
+        'version' => '4.1.4',
+    ],
+    '@splidejs/splide/dist/css/splide.min.css' => [
+        'version' => '4.1.4',
+        'type' => 'css',
+    ],
 ];
