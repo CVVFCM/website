@@ -1,0 +1,158 @@
+.EventContentBlock {
+    list-style-type: none;
+    border-left: 1px dashed var(--redAct-text);
+    padding-left: 2rem;
+    padding-right: 0.5rem;
+    max-width: 26rem;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+
+    & ul {
+        list-style: none;
+        padding-left: 0;
+    }
+}
+
+.EventContentBlock__title {
+    color: var(--redAct-text);
+    font-size: 1em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 0.75rem;
+}
+
+.EventContentBlock__description {
+    color: var(--color-dark);
+    margin: 0 0 1.5rem;
+}
+
+.EventContentBlock__description p:last-child {
+    margin-bottom: 0;
+}
+
+.EventContentBlock__services {
+    list-style: none;
+    margin: 0 0 1.5rem;
+    padding: 0;
+}
+
+.EventContentBlock__service {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 0.55rem;
+    border-bottom: 1px dashed var(--color-gray-300);
+}
+
+.EventContentBlock__service:first-child {
+    border-top: 1px dashed var(--color-gray-300);
+}
+
+.EventContentBlock__serviceName {
+    font-family: var(--font-family-base);
+    font-weight: 400;
+    color: var(--color-dark);
+}
+
+.EventContentBlock__serviceAvailability {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    font-family: var(--font-family-base);
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+.EventContentBlock__serviceAvailability--yes {
+    color: var(--blueNote-text);
+}
+
+.EventContentBlock__serviceAvailability--yes::before {
+    content: url(../images/pictos/validate.svg);
+}
+
+.EventContentBlock__serviceAvailability--no {
+    color: var(--redAct-text);
+}
+
+.EventContentBlock__serviceAvailability--no::before {
+    content: url(../images/pictos/close.svg);
+}
+
+.EventContentBlock__linksSection {
+    margin-bottom: 1.5rem;
+}
+
+.EventContentBlock__linksTitle {
+    font-size: 1em;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+}
+
+.EventContentBlock__linksList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.EventContentBlock__link {
+    font-family: var(--font-family-base);
+    font-size: 1em;
+    font-weight: 500;
+    color: var(--blueNote-text);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.EventContentBlock__link::after {
+    content: url(../images/pictos/arrow_link.svg);
+}
+
+.EventContentBlock__link:hover {
+    text-decoration: underline;
+}
+
+.EventContentBlock__ctaSection {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+}
+
+.EventContentBlock__ctaTitle {
+    font-family: var(--font-family-base);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0;
+}
+
+.EventContentBlock__ctaButton {
+    display: inline-block;
+    background-color: var(--redAct-text);
+    color: var(--color-white);
+    text-decoration: none;
+    padding: 0.55rem 1.25rem;
+    border-radius: 2rem;
+    font-family: var(--font-family-base);
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    transition: background-color 0.2s ease;
+}
+
+.EventContentBlock__ctaButton:hover {
+    background-color: var(--color-accent-hover);
+}
+
+.EventContentBlock__ctaButton:active {
+    background-color: var(--redAct-text);
+}

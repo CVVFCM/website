@@ -1,15 +1,144 @@
 {% extends 'base.html.twig' %}
 
+{% block pageclass 'DefaultPage' %}
+
 {% block styles %}
     <link rel="stylesheet" href="{{ asset('styles/default.css') }}" />
 {% endblock %}
 
 {% block content %}
-    <h1>{{ content.title }}</h1>
+    <header class="Page__header">
+        <div class="Logo__headerTopBar sectionPadded">
+            <a class="Logo__headerLogoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
+                <img class="Logo__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
+                <span class="Logo__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
+            </a>
+        </div>
+        <div class="Page__headerMain">
+            <div class="Page__headerBody">
+                 <div class="Page__headerNav">
+                    <ul class="BreadCrumb" aria-label="Fil d'Ariane">
+                        {% for item in sulu_page_breadcrumb(resource.uuid)|slice(0, -1) %}
+                            <li><a href="{{ sulu_content_path(item.url) }}">{{ item.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <h1 class="Page__headerTitle">{{ content.title }}</h1>
+                    {% if content.description is defined %}
+                        <div class="Page__headerDescription">{{ content.description|raw }}</div>
+                    {% endif %}
+            </div>
+            {% if content.media %}
+                <div class="Page__headerMedia">
+                    <img    class="Page__headerImage"
+                            src="{{ content.media.thumbnails['x800'] }}"
+                            alt="{{ content.media.title }}"
+                            title="{{ content.media.description|default(content.media.title) }}"/>
+                </div>
+            {% endif %}
+        </div>
+    </header>
+    {% block MainContent %}
+        {% if content.blocks is defined and content.blocks is not empty %}
+            <div class="DefaultPage__blocks">
+                {% for block in content.blocks %}
+                    {% if block.type == 'title_image_text' %}
+                        <div class="ContentBlock ContentBlock--titleImageText sectionPadded">
+                            <h2 class="ContentBlock__title">{{ block.title }}</h2>
+                            {% if block.type == 'title_image_text' %}
+                            {% endif %}
+                            <img class="ContentBlock__image"
+                                 src="{{ block.media.thumbnails['x800'] }}"
+                                 alt="{{ block.media.title }}" />
+                            <div class="ContentBlock__text">{{ block.text|raw }}</div>
+                        </div>
 
-    {{ content.article|raw }}
+                    {% elseif block.type == 'gallery' %}
+                        <div class="ContentBlock ContentBlock--gallery splide sectionPadded"
+                             data-controller="gallery">
+                            <div class="splide__track">
+                                <ul class="splide__list">
+                                    {% for item in block.medias %}
+                                        <li class="splide__slide">
+                                            <img class="ContentBlock__galleryItem"
+                                                 src="{{ item.thumbnails['x800'] }}"
+                                                 alt="{{ item.title }}" />
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
 
-    {% if content.form %}
+                    {% elseif block.type == 'list' %}
+                        <article class="ContentBlock ContentBlock--list sectionPadded">
+                            <header class="ContentBlock__header">
+                                <h2 class="ContentBlock__title">{{ block.title }}</h2>
+                                {% if block.description %}
+                                    <div class="ContentBlock__description">{{ block.description|raw }}</div>
+                                {% endif %}
+                            </header>
+                            {% if block.pages is defined and block.pages is not empty %}
+                                <ul class="ListPage__list ListPage__list--page sectionPadded">
+                                    {% for item in block.pages %}
+                                        <li class="ListPage__listItem">
+                                            <article class="ListPage__article">
+                                                {% if item.event_type is defined and item.event_type %}
+                                                    {% set eventTypeLabels = {
+                                                        'default': 'Événement',
+                                                        'regatta': 'Régate',
+                                                        'sea_trip': 'Sortie en mer'
+                                                    } %}
+                                                    {% set daysRemaining = (item.begin_date|date('U') - 'now'|date('U')) // 86400 %}
+                                                    <div clas="ListPage__eventContent">
+                                                        <div class="ListPage__eventMeta">
+                                                            <span class="ListPage__eventCountdown">J-{{ daysRemaining }}</span>
+                                                            <span class="ListPage__eventType">{{ eventTypeLabels[item.event_type|default('default')]|default('Événement') }}</span>
+                                                        </div>
+                                                        <h3 class="ListPage__eventTitle">{{ item.title }}</h3>
+                                                        <time class="ListPage__eventDate" datetime="{{ item.begin_date|date('Y-m-d') }}">
+                                                            {{ item.begin_date|format_date(pattern: 'd') }}–{{ item.end_date|format_date(pattern: 'd MMMM Y')|upper }}
+                                                        </time>
+                                                        <a href="{{ item.url }}" class="ListPage__eventLink" aria-label="Voir {{ item.title }}">
+                                                            <svg class="ListPage__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                                <path d="M8 5v14l11-7z"/>
+                                                            </svg>
+                                                        </a>
+                                                    </div>
+                                                {% else %}
+                                                    <h3 class="ListPage__articleTitle">{{ item.title }}</h3>
+                                                    {% if item.description is defined and item.description %}
+                                                        <div class="ListPage__articleDescription">{{ item.description|raw }}</div>
+                                                    {% endif %}
+                                                    <a class="ListPage__MoreInfoLink" href="{{ item.url }}">En savoir +</a>
+                                                {% endif %}
+                                                {% if item.media is defined and item.media %}
+                                                    {% set media = item.media.formats is defined ? item.media : item.media[0] %}
+                                                    <div class="ListPage__articleMedia">
+                                                        <img src="{{ media.formats['sulu-400x400.webp'] }}" alt="{{ media.title }}" />
+                                                    </div>
+                                                {% endif %}
+
+                                            </article>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+
+                        </article>
+
+                    {% elseif block.type == 'cta' %}
+                        <div class="ContentBlock ContentBlock--cta sectionPadded">
+                            <h2 class="ContentBlock__title">{{ block.title }}</h2>
+                            <div class="ContentBlock__description">{{ block.description|raw }}</div>
+                            <a class="ContentBlock__cta CallToAction--btn " href="{{ block.cta_url }}">{{ block.cta_label }}</a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endblock %}
+
+    {% if content.form is defined and content.form %}
         {% set form = sulu_form_build(content.form, 'page', resource.id) %}
 
         {% form_theme form '@SuluForm/themes/basic.html.twig' %}

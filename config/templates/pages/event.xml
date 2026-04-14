@@ -49,6 +49,14 @@
                     <tag name="sulu.search.field" role="description" />
                 </property>
 
+                <property name="main_media" type="single_media_selection">
+                    <meta>
+                        <title lang="fr">Média principal</title>
+                    </meta>
+
+                    <tag name="sulu.search.field" role="image" />
+                </property>
+
                 <property name="featured" type="checkbox">
                     <meta>
                         <title lang="fr">Mettre en avant</title>
@@ -231,17 +239,109 @@
             </meta>
 
             <properties>
-                <property name="main_media" type="single_media_selection">
-                    <meta>
-                        <title lang="fr">Média principal</title>
-                    </meta>
-
-                    <tag name="sulu.search.field" role="image" />
-                </property>
-
                 <property name="media" type="media_selection">
                     <meta>
                         <title lang="fr">Médias additionnels</title>
+                    </meta>
+                </property>
+            </properties>
+        </section>
+
+        <section name="content_block">
+            <meta>
+                <title lang="fr">Bloc de contenu</title>
+            </meta>
+
+            <properties>
+                <property name="block_title" type="text_line">
+                    <meta>
+                        <title lang="fr">Titre</title>
+                    </meta>
+                </property>
+
+                <property name="block_description" type="text_editor">
+                    <meta>
+                        <title lang="fr">Description</title>
+                    </meta>
+                </property>
+
+                <block name="block_services" default-type="service" minOccurs="0">
+                    <meta>
+                        <title lang="fr">Services</title>
+                    </meta>
+
+                    <types>
+                        <type name="service">
+                            <meta>
+                                <title lang="fr">Service</title>
+                            </meta>
+
+                            <properties>
+                                <property name="name" type="text_line" mandatory="true" colspan="9">
+                                    <meta>
+                                        <title lang="fr">Nom</title>
+                                    </meta>
+                                </property>
+
+                                <property name="available" type="checkbox" colspan="3">
+                                    <meta>
+                                        <title lang="fr">Disponible</title>
+                                    </meta>
+                                </property>
+                            </properties>
+                        </type>
+                    </types>
+                </block>
+
+                <property name="links_title" type="text_line">
+                    <meta>
+                        <title lang="fr">Surtitre de liste liens</title>
+                    </meta>
+                </property>
+
+                <block name="content_links" default-type="link" minOccurs="0">
+                    <meta>
+                        <title lang="fr">Liens</title>
+                    </meta>
+
+                    <types>
+                        <type name="link">
+                            <meta>
+                                <title lang="fr">Lien</title>
+                            </meta>
+
+                            <properties>
+                                <property name="text" type="text_line" mandatory="true" colspan="8">
+                                    <meta>
+                                        <title lang="fr">Texte</title>
+                                    </meta>
+                                </property>
+
+                                <property name="url" type="url" mandatory="true" colspan="4">
+                                    <meta>
+                                        <title lang="fr">URL</title>
+                                    </meta>
+                                </property>
+                            </properties>
+                        </type>
+                    </types>
+                </block>
+
+                <property name="cta_title" type="text_line">
+                    <meta>
+                        <title lang="fr">Surtitre CTA</title>
+                    </meta>
+                </property>
+
+                <property name="cta_text" type="text_line">
+                    <meta>
+                        <title lang="fr">Texte du bouton CTA</title>
+                    </meta>
+                </property>
+
+                <property name="cta_url" type="url">
+                    <meta>
+                        <title lang="fr">URL du CTA</title>
                     </meta>
                 </property>
             </properties>

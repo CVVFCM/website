@@ -46,7 +46,29 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
         $slugger = new AsciiSlugger();
 
         $seaTrips = [
-            ['name' => 'Traversée du Lac des Vieilles Forges', 'date' => 'second saturday of july next year', 'featured' => true],
+            [
+                'name' => 'Traversée du Lac des Vieilles Forges',
+                'date' => 'second saturday of july next year',
+                'featured' => true,
+                'content_block' => [
+                    'block_title' => 'Informations pratiques',
+                    'block_description' => '<p>La traversée du Lac des Vieilles Forges est l\'événement phare de notre saison estivale. Ouverte à tous les niveaux, cette sortie collective traverse le lac dans sa longueur, encadrée par nos moniteurs diplômés.</p><p>Chaque équipage dispose d\'un chef de bord expérimenté. Les débutants sont les bienvenus à bord des habitables.</p>',
+                    'block_services' => [
+                        ['type' => 'service', 'name' => 'Gilets de sauvetage fournis', 'available' => true],
+                        ['type' => 'service', 'name' => 'Encadrement par moniteur diplômé', 'available' => true],
+                        ['type' => 'service', 'name' => 'Restauration à bord', 'available' => true],
+                        ['type' => 'service', 'name' => 'Hébergement sur place', 'available' => false],
+                    ],
+                    'links_title' => 'Liens utiles',
+                    'content_links' => [
+                        ['type' => 'link', 'text' => 'Règlement de la traversée', 'url' => 'https://cvvfcm.fr'],
+                        ['type' => 'link', 'text' => 'Plan d\'accès au lac', 'url' => 'https://cvvfcm.fr'],
+                    ],
+                    'cta_title' => 'Rejoignez-nous sur l\'eau',
+                    'cta_text' => 'S\'inscrire à la traversée',
+                    'cta_url' => 'https://cvvfcm.fr',
+                ],
+            ],
             ['name' => 'Sortie découverte Optimist', 'date' => 'first saturday of august next year', 'featured' => false],
             ['name' => 'Balade nautique au crépuscule', 'date' => 'third saturday of september next year', 'featured' => false],
         ];
@@ -72,7 +94,7 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
             );
 
             foreach ($seaTrip->getDimensionContents() as $dimensionContent) {
-                $dimensionContent->setTemplateData([
+                $dimensionContent->setTemplateData(array_merge([
                     'url' => $url,
                     'title' => $trip['name'],
                     'main_media' => ['id' => $medias[array_rand($medias)]->getId()],
@@ -96,14 +118,14 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                         [
                             'type' => 'boat',
                             'boat_type' => 'Habitable',
-                            'captain' => ['c'.$contacts[array_rand($contacts)]->getId()],
+                            'captain' => [$contacts[array_rand($contacts)]->getId()],
                             'available_seats' => (string) random_int(2, 6),
                             'approximative_price' => random_int(10, 30).'€',
                         ],
                         [
                             'type' => 'boat',
                             'boat_type' => 'Dériveur',
-                            'captain' => ['c'.$contacts[array_rand($contacts)]->getId()],
+                            'captain' => [$contacts[array_rand($contacts)]->getId()],
                             'available_seats' => (string) random_int(1, 3),
                             'approximative_price' => random_int(5, 15).'€',
                         ],
@@ -120,7 +142,7 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                         'zoom' => 17,
                     ],
                     'contact' => ['c'.$contacts[array_rand($contacts)]->getId()],
-                ]);
+                ], $trip['content_block'] ?? []));
             }
 
             $manager->flush();

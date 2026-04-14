@@ -175,11 +175,27 @@
                             </meta>
 
                             <properties>
-                                <property name="webcam_stream_url" type="url">
+                                <block name="webcams" default-type="webcam">
                                     <meta>
-                                        <title lang="fr">URL du flux</title>
+                                        <title lang="fr">Webcams</title>
                                     </meta>
-                                </property>
+
+                                    <types>
+                                        <type name="webcam">
+                                            <meta>
+                                                <title lang="fr">Webcam</title>
+                                            </meta>
+
+                                            <properties>
+                                                <property name="webcam_stream_url" type="url">
+                                                    <meta>
+                                                        <title lang="fr">URL du flux</title>
+                                                    </meta>
+                                                </property>
+                                            </properties>
+                                        </type>
+                                    </types>
+                                </block>
 
                                 <property name="webcam_stream_page_link" type="single_page_selection" mandatory="false">
                                     <meta>

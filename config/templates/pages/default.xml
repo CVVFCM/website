@@ -39,11 +39,97 @@
             </meta>
         </property>
 
-        <property name="article" type="text_editor">
+        <property name="description" type="text_editor">
             <meta>
-                <title lang="fr">Article</title>
+                <title lang="fr">Description</title>
             </meta>
         </property>
+
+        <block name="blocks" default-type="title_image_text" minOccurs="0">
+            <meta>
+                <title lang="fr">Blocs de contenu</title>
+            </meta>
+
+            <types>
+                <type name="title_image_text">
+                    <meta>
+                        <title lang="fr">Titre + Image + Paragraphe</title>
+                    </meta>
+                    <properties>
+                        <property name="title" type="text_line" mandatory="true">
+                            <meta><title lang="fr">Titre</title></meta>
+                        </property>
+                        <property name="media" type="single_media_selection" mandatory="true">
+                            <meta><title lang="fr">Image</title></meta>
+                        </property>
+                        <property name="text" type="text_editor" mandatory="true">
+                            <meta><title lang="fr">Paragraphe</title></meta>
+                        </property>
+                    </properties>
+                </type>
+
+                <type name="gallery">
+                    <meta>
+                        <title lang="fr">Galerie de médias</title>
+                    </meta>
+                    <properties>
+                        <property name="medias" type="media_selection" mandatory="true">
+                            <meta><title lang="fr">Médias</title></meta>
+                        </property>
+                    </properties>
+                </type>
+
+                <type name="list">
+                    <meta>
+                        <title lang="fr">Liste de pages</title>
+                    </meta>
+                    <properties>
+                        <property name="title" type="text_line" mandatory="true">
+                            <meta><title lang="fr">Titre</title></meta>
+                        </property>
+                        <property name="pages" type="smart_content" mandatory="true">
+                            <meta><title lang="fr">Pages / Événements enfants</title></meta>
+                            <params>
+                                <param name="max_per_page" value="100"/>
+                                <param name="page_parameter" value="p"/>
+                                <param name="properties" type="collection">
+                                    <param name="title" value="title"/>
+                                    <param name="url" value="url"/>
+                                    <param name="description" value="description"/>
+                                    <param name="media" value="media"/>
+                                    <param name="begin_date" value="begin_date"/>
+                                    <param name="end_date" value="end_date"/>
+                                    <param name="event_type" value="event_type"/>
+                                </param>
+                            </params>
+                        </property>
+                        <property name="description" type="text_editor">
+                            <meta><title lang="fr">Description</title></meta>
+                        </property>
+                    </properties>
+                </type>
+
+                <type name="cta">
+                    <meta>
+                        <title lang="fr">Titre + Description + Call to action</title>
+                    </meta>
+                    <properties>
+                        <property name="title" type="text_line" mandatory="true">
+                            <meta><title lang="fr">Titre</title></meta>
+                        </property>
+                        <property name="description" type="text_editor" mandatory="true">
+                            <meta><title lang="fr">Description</title></meta>
+                        </property>
+                        <property name="cta_label" type="text_line" mandatory="true">
+                            <meta><title lang="fr">Libellé du bouton</title></meta>
+                        </property>
+                        <property name="cta_url" type="url" mandatory="true">
+                            <meta><title lang="fr">URL du bouton</title></meta>
+                        </property>
+                    </properties>
+                </type>
+            </types>
+        </block>
 
         <section name="form">
             <meta>

@@ -1,3 +1,163 @@
 /* List page styles */
 @import './app.css';
 @import './common/Pager.css';
+
+.ListPage__MainContent,
+.ContentBlock--list {
+    background: var(--utility-grey);
+}
+
+
+.ListPage__list {
+    display: flex;
+    list-style: none;
+    gap: 1rem;
+    max-width: 100%;
+    flex-wrap: wrap;
+    align-items: stretch;
+    align-content: stretch;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.ListPage__listItem {
+    flex: .5 6 8em;
+    min-width: 18em;
+    display: flex;
+    align-items: stretch;
+    position: relative;
+}
+
+.ListPage__article {
+    max-width: 100%;
+    background: var(--color-white);
+    color: var(--base-text-color);
+    padding: 3.5em 2em;
+    border-radius: 2rem;
+
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.ListPage__articleTitle {
+    max-width: 18em;
+    flex: .2 2 8em;
+    min-width: 8em;
+    margin: 0;
+}
+
+.ListPage__articleMedia {
+    box-sizing: content-box;
+    flex: .2 2 4vw;
+    min-width: 2em;
+    height: auto;
+    border-radius: 20rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    order: -1;
+
+    & img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.ListPage__articleDescription {
+    max-height: 3.4lh;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    & p {
+        margin: 0;
+    }
+}
+
+.ListPage__MoreInfoLink {
+    color: var(--redAct-text);
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+/* ______________________________ item type event */
+
+.ListPage__eventContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.ListPage__eventMeta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.ListPage__eventCountdown {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--blueNote-text);
+    letter-spacing: 0.03em;
+}
+
+.ListPage__eventType {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--calendar-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.ListPage__eventTitle {
+    margin: 0.2em 0;
+    color: var(--blueNote-text);
+    line-height: 1;
+    font-size: 1.75em;
+    font-weight: 900;
+    letter-spacing: .01em;
+    max-width: 8em;
+}
+
+.ListPage__eventDate {
+    font-size: 0.75rem;
+    color: var(--calendar-accent);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+}
+
+.ListPage__eventLink {
+    position: absolute;
+    right: .5em;
+    bottom: .5em;
+    width: 2rem;
+    height: 2rem;
+    background-color: var(--color-gray-200);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blueNote-text);
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+
+    &:hover,
+    &:focus {
+        background-color: var(--calendar-accent);
+        color: var(--color-white);
+        transform: scale(1.05);
+    }
+}
+
+

@@ -65,6 +65,28 @@ final class MediaFixtures extends Fixture implements DependentFixtureInterface
                 1,
             );
         }
+
+        $pictosCollection = new Collection();
+        $pictosCollection->setType($manager->find(CollectionType::class, 1));
+        $manager->persist($pictosCollection);
+
+        $pictosCollectionMeta = new CollectionMeta();
+        $pictosCollectionMeta->setLocale('fr');
+        $pictosCollectionMeta->setTitle('Logos / Partenaires');
+        $pictosCollectionMeta->setDescription('Logos et visuels partenaires');
+        $pictosCollectionMeta->setCollection($pictosCollection);
+        $manager->persist($pictosCollectionMeta);
+        $manager->flush();
+
+        $finder = Finder::create()->in(__DIR__.'/stubs/pictos')->files()->depth(0);
+        foreach ($finder as $fileInfo) {
+            $media = $this->mediaManager->save(
+                new UploadedFile($fileInfo->getPathname(), $fileInfo->getFilename()),
+                ['locale' => 'fr', 'collection' => $pictosCollection->getId()],
+                1,
+            );
+            $this->addReference('media_picto_'.$fileInfo->getFilenameWithoutExtension(), $manager->find(Media::class, $media->getId()));
+        }
     }
 
     #[\Override]

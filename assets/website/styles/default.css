@@ -1,2 +1,114 @@
 /* Default page styles - minimal common blocks only */
 @import './app.css';
+@import './list.css';
+
+
+.Page__header {
+    background: linear-gradient(240deg, #1D68A0 0%, #06315A 100%);
+    color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+}
+
+
+.Page__headerMain {
+    color: var(--base-text-color);
+    display: inline-flex;
+    position: relative;
+    z-index: 0;
+    gap: 0;
+    word-break: break-all;
+    p, h1, h2 {
+        color: inherit;
+    }
+}
+
+.Page__headerBody {
+    padding: 2em;
+    position: relative;
+    display: block;
+    max-width: 22em;
+
+    &::before {
+        background: var(--color-white);
+        position: absolute;
+        top: 0;
+        left: -50%;
+        right: -50%;
+        bottom: 0;
+        content: '';
+        z-index: -1;
+        transform: skewX(-15deg);
+    }
+}
+
+.Page__headerDescription {
+
+    & p:first-of-type {
+        font-size: 1.2rem;
+        line-height: 2;
+        margin-bottom: 2em;
+    }
+}
+
+.Page__headerMedia {
+    position: relative;
+    margin-top: 10%;
+    left: -8vh;
+    order: -1;
+    max-height: 60vh;
+    min-height: 33vh;
+    max-width: 55vw;
+    transform:  skewX(15deg) ;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.Page__headerImage {
+    object-fit: cover;
+    transform:  skewX(-15deg) ;
+}
+
+
+/* ______________________________________ ContentBlock  */
+
+.ContentBlock p {
+    max-width: 36em;
+}
+
+.ContentBlock__header, .ContentBlock--cta {
+    text-align: center;
+
+    h2 {
+        font-size: 2.2em;
+        margin: 0;
+        color: var(--redAct-text);
+    }
+
+    .ContentBlock__description {
+        max-width: 36em;
+        margin: 0 auto;
+    }
+}
+
+.ContentBlock--cta {
+    text-align: center;
+    background: linear-gradient(240deg, #1D68A0 0%, #06315A 100%);
+    color: var(--color-white);
+    p {
+        color: inherit;
+    }
+}
+
+.ContentBlock--gallery {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.ContentBlock__galleryItem {
+    flex: 0 1 auto;
+    max-height: 30vh;
+}
+
+

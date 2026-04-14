@@ -1,59 +1,47 @@
-{% extends 'base.html.twig' %}
+{% extends 'pages/default.html.twig' %}
+
+{% block pageclass 'EventListPage' %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ asset('styles/list.css') }}" />
+    <link rel="stylesheet" href="{{ asset('styles/default.css') }}" />
 {% endblock %}
 
-{% block content %}
+{% block MainContent %}
+
     {% set list = content.list_type == 'page' ? content.page_list : content.event_list %}
     {% set list_view = content.list_type == 'page' ? view.page_list : view.event_list %}
 
-    <article>
-        <header>
-            <h1>{{ content.title }}</h1>
-            {% if content.media %}
-                <div>
-                    <img
-                        src="{{ content.media.formats['sulu-400x400.webp'] }}"
-                        alt="{{ content.media.title }}"
-                        title="{{ content.media.description|default(content.media.title) }}"/>
-                </div>
-            {% endif %}
 
-            <div>{{ content.description|raw }}</div>
-        </header>
-
-        <section>
-            <ul class="ListPage__list ListPage__list--{{ content.list_type }}">
+        <section class="ListPage__MainContent">
+            <ul class="ListPage__list ListPage__list--{{ content.list_type }} sectionPadded">
                 {% for item in list %}
-                    <li>
-                        <div class="ListPage__listItem">
-                            <div class="HomepageCalendar__eventTitle">
-                                {{ item.title }}
-                            </div>
+                    <li class="ListPage__listItem">
+                        <article class="ListPage__article">
+                            <h2 class="ListPage__articleTitle">{{ item.title }}</h2>
 
                             {% if item.media %}
                                 {% set media = item.media.formats is defined ? item.media : item.media[0] %}
-                                <img
-                                    src="{{ media.formats['sulu-400x400.webp'] }}"
-                                    alt="{{ media.title }}" />
+                                <div class="ListPage__articleMedia">
+                                    <img
+                                        src="{{ media.formats['sulu-400x400.webp'] }}"
+                                        alt="{{ media.title }}" />
+                                </div>
+
                             {% endif %}
 
-                            <div class="HomepageCalendar__eventDescription">
+                            <div class="ListPage__articleDescription">
                                 {{ item.description|raw }}
                             </div>
 
-                            <a href="{{ item.url }}">Plus d'informations</a>
-                        </div>
+                            <a class="ListPage__MoreInfoLink" href="{{ item.url }}">En savoir +</a>
+                        </article>
                     </li>
                 {% endfor %}
             </ul>
+            {% if list_view is not empty and list_view.paginated %}
+                <footer>
+                    {{ include('_pager.html.twig', {content: content, list_view: list_view}, with_context: false) }}
+                </footer>
+            {% endif %}
         </section>
-
-        {% if list_view.paginated %}
-            <footer>
-                {{ include('_pager.html.twig', {content: content, list_view: list_view}, with_context: false) }}
-            </footer>
-        {% endif %}
-    </article>
 {% endblock %}

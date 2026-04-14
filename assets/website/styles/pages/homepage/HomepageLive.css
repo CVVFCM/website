@@ -175,13 +175,14 @@ HomepageLive__weatherInfo {
     overflow: hidden;
 }
 
-HomepageLive__webcamWrapper-right {
-    position: relative;
-    left:-2rem;
+.HomepageLive__webcamWrapper-right {
+    left: -2rem;
 }
 
 
-.HomepageLive__webcamWrapper video {
+.HomepageLive__webcamWrapper video,
+.HomepageLive__webcamWrapper-right video {
+
     width: 100%;
     height: auto;
     display: block;
