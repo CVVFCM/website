@@ -2,6 +2,7 @@ services:
     php:
         image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}php:${IMAGE_TAG:-latest}
         depends_on: [ database, rtsp-to-web ]
+        networks: [ default, public ]
         restart: unless-stopped
         build:
             target: php
@@ -78,6 +79,6 @@ volumes:
     thumbnails:
 
 networks:
-    default:
+    public:
         external: ${NETWORK_EXTERNAL:-false}
-        name: ${NETWORK_NAME:-${COMPOSE_PROJECT_NAME}_default}
+        name: ${NETWORK_NAME:-${COMPOSE_PROJECT_NAME}_public}
