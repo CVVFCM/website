@@ -55,7 +55,6 @@ final class PageFixtures extends Fixture implements DependentFixtureInterface
         $events->setParent($root);
 
         foreach ($events->getDimensionContents() as $eventsDimensionContent) {
-            $eventsDimensionContent->addNavigationContext('main');
             $eventsDimensionContent->setTemplateData([
                 'title' => 'Adhérer',
                 'url' => '/adherer',

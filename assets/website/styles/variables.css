@@ -1,5 +1,7 @@
 /* Global CSS Custom Properties */
 :root {
+
+    --site-layout-rowPadding: 8vw;
     /* Typography */
     --font-family-base: 'DM Sans', sans-serif;
 

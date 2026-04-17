@@ -6,17 +6,19 @@ body {
     margin: 0;
     padding: 0;
     font-family: var(--font-family-base), sans-serif;
-
+    scrollbar-gutter: stable;
 }
 
+
 .sectionPadded {
-    padding: 5rem 8vw;
+    padding: 5rem var(--site-layout-rowPadding);
     box-sizing: border-box;
 }
 
 .Main__container {
     max-width: 100%;
     overflow-x: hidden;
+    margin-top: -8vh;
 }
 
 H1 {
@@ -35,7 +37,11 @@ p {
 }
 
 a {
-    color: var(--redAct-text);
+    color: var(--blueNote-text);
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .CallToAction--btn {

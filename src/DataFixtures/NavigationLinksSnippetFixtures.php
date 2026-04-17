@@ -7,13 +7,19 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Sulu\Bundle\MediaBundle\Entity\Collection;
+use Sulu\Bundle\MediaBundle\Entity\CollectionMeta;
+use Sulu\Bundle\MediaBundle\Entity\CollectionType;
 use Sulu\Bundle\MediaBundle\Entity\Media;
+use Sulu\Bundle\MediaBundle\Media\Manager\MediaManagerInterface;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Page\Domain\Model\Page;
 use Sulu\Snippet\Application\Message\ApplyWorkflowTransitionSnippetMessage;
 use Sulu\Snippet\Application\Message\CreateSnippetMessage;
 use Sulu\Snippet\Application\Message\ModifySnippetAreaMessage;
 use Sulu\Snippet\Domain\Model\SnippetInterface;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -24,23 +30,47 @@ final class NavigationLinksSnippetFixtures extends Fixture implements DependentF
 
     private MessageBusInterface $messageBus;
 
-    public function __construct(MessageBusInterface $messageBus)
-    {
+    public function __construct(
+        MessageBusInterface $messageBus,
+        private readonly MediaManagerInterface $mediaManager,
+    ) {
         $this->messageBus = $messageBus;
     }
 
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $homepage = $this->getReference('homepage', Page::class);
+        $pictosCollection = new Collection();
+        $pictosCollection->setType($manager->find(CollectionType::class, 1));
+        $manager->persist($pictosCollection);
+
+        $pictosCollectionMeta = new CollectionMeta();
+        $pictosCollectionMeta->setLocale('fr');
+        $pictosCollectionMeta->setTitle('Pictogrammes navigation');
+        $pictosCollectionMeta->setDescription('Pictogrammes utilisés dans les liens de navigation');
+        $pictosCollectionMeta->setCollection($pictosCollection);
+        $manager->persist($pictosCollectionMeta);
+        $manager->flush();
+
+        $pictos = [];
+        $finder = Finder::create()->in(__DIR__.'/stubs/pictos')->files()->depth(0);
+        foreach ($finder as $fileInfo) {
+            $media = $this->mediaManager->save(
+                new UploadedFile($fileInfo->getPathname(), $fileInfo->getFilename()),
+                ['locale' => 'fr', 'collection' => $pictosCollection->getId()],
+                1,
+            );
+            $pictos[$fileInfo->getFilenameWithoutExtension()] = $manager->find(Media::class, $media->getId());
+        }
+
         $events = $this->getReference('events', Page::class);
         $live = $this->getReference('live', Page::class);
         $regattas = $this->getReference('regattas', Page::class);
 
-        $pictoEvent = $this->getReference('media_picto_event', Media::class);
-        $pictoLive = $this->getReference('media_picto_live', Media::class);
-        $pictoMember = $this->getReference('media_picto_member', Media::class);
-        $pictoBoutique = $this->getReference('media_picto_boutique', Media::class);
+        $pictoEvent = $pictos['event'];
+        $pictoLive = $pictos['live'];
+        $pictoMember = $pictos['member'];
+        $pictoBoutique = $pictos['boutique'];
 
         /** @var SnippetInterface $snippet */
         $snippet = $this->handle(
@@ -115,11 +145,9 @@ final class NavigationLinksSnippetFixtures extends Fixture implements DependentF
     public function getDependencies(): array
     {
         return [
-            HomepageFixtures::class,
             EventsFixtures::class,
             LiveFixtures::class,
             RegattasFixtures::class,
-            MediaFixtures::class,
         ];
     }
 }
