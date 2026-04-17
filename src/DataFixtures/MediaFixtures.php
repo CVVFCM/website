@@ -72,8 +72,8 @@ final class MediaFixtures extends Fixture implements DependentFixtureInterface
 
         $pictosCollectionMeta = new CollectionMeta();
         $pictosCollectionMeta->setLocale('fr');
-        $pictosCollectionMeta->setTitle('Logos / Partenaires');
-        $pictosCollectionMeta->setDescription('Logos et visuels partenaires');
+        $pictosCollectionMeta->setTitle('Pictogrammes');
+        $pictosCollectionMeta->setDescription('Différents pictogramme');
         $pictosCollectionMeta->setCollection($pictosCollection);
         $manager->persist($pictosCollectionMeta);
         $manager->flush();
