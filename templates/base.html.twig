@@ -27,36 +27,6 @@
         <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
         <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
     {% endif %}
-    {% if app.environment == 'dev' %}
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const meta = document.querySelector('meta[name="frankenphp-hot-reload:url"]');
-        if (!meta) return;
-
-        new EventSource(meta.content).onmessage = async ({ data }) => {
-            const events = JSON.parse(data);
-            const hasCss = events.some(e => (e.associated_path_name ?? e.path_name ?? '').endsWith('.css'));
-            if (!hasCss) return;
-
-            const url = new URL(location.href);
-            url.searchParams.set('frankenphp_hot_reloading', 'true');
-            url.searchParams.set('reload', Date.now());
-            const html = await fetch(url, { headers: { Accept: 'text/html' } }).then(r => r.text());
-            const newLinks = new DOMParser()
-                .parseFromString(html, 'text/html')
-                .querySelectorAll('link[rel="stylesheet"]');
-            const oldLinks = document.querySelectorAll('link[rel="stylesheet"]');
-
-            newLinks.forEach((newLink, i) => {
-                const oldLink = oldLinks[i];
-                if (oldLink && oldLink.href !== newLink.href) {
-                    oldLink.replaceWith(newLink.cloneNode());
-                }
-            });
-        };
-    });
-    </script>
-    {% endif %}
 </head>
 <body>
     <header class="SiteHeader">
