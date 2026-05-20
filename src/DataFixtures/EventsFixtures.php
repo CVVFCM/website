@@ -59,7 +59,6 @@ final class EventsFixtures extends Fixture implements DependentFixtureInterface
 
         foreach ($events->getDimensionContents() as $eventsDimensionContent) {
             /* @var PageDimensionContent $eventsDimensionContent */
-            $eventsDimensionContent->addNavigationContext('main');
             $eventsDimensionContent->setTemplateData([
                 'title' => 'Événements',
                 'url' => '/evenements',

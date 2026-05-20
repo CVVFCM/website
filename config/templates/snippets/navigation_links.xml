@@ -12,7 +12,12 @@
     <areas>
         <area key="navigation_links">
             <meta>
-                <title lang="fr">Liens de navigation</title>
+                <title lang="fr">Liens de navigation (colonne 1)</title>
+            </meta>
+        </area>
+        <area key="navigation_links_2">
+            <meta>
+                <title lang="fr">Liens de navigation (colonne 2)</title>
             </meta>
         </area>
     </areas>
@@ -51,6 +56,27 @@
                                 <title lang="fr">Média</title>
                             </meta>
                         </property>
+                        <property name="display" type="select">
+                            <meta>
+                                <title lang="fr">Affichage, menu fermé</title>
+                            </meta>
+                            <params>
+                                <param name="values" type="collection">
+                                    <param name="button">
+                                        <meta><title lang="fr">Style call to action</title></meta>
+                                    </param>
+                                    <param name="header_top">
+                                        <meta><title lang="fr">Visible en header haut</title></meta>
+                                    </param>
+                                    <param name="header_right">
+                                        <meta><title lang="fr">Visible en header droite</title></meta>
+                                    </param>
+                                    <param name="hidden_text">
+                                        <meta><title lang="fr">Texte caché</title></meta>
+                                    </param>
+                                </param>
+                            </params>
+                        </property>
                     </properties>
                 </type>
 
@@ -73,6 +99,27 @@
                             <meta>
                                 <title lang="fr">Média</title>
                             </meta>
+                        </property>
+                        <property name="display" type="select">
+                            <meta>
+                                <title lang="fr">Affichage, menu fermé</title>
+                            </meta>
+                            <params>
+                                <param name="values" type="collection">
+                                    <param name="button">
+                                        <meta><title lang="fr">Style call to action</title></meta>
+                                    </param>
+                                    <param name="header_top">
+                                        <meta><title lang="fr">Visible en header haut</title></meta>
+                                    </param>
+                                    <param name="header_right">
+                                        <meta><title lang="fr">Visible en header droite</title></meta>
+                                    </param>
+                                    <param name="hidden_text">
+                                        <meta><title lang="fr">Texte caché</title></meta>
+                                    </param>
+                                </param>
+                            </params>
                         </property>
                     </properties>
                 </type>

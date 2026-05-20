@@ -1,52 +1,89 @@
 {% set navigation_context_name = 'main' %}
-{% set navigation_max_depth = 3 %}
+{% set navigation_max_depth = 4 %}
 
-{% set navigation_root = sulu_page_navigation_root_tree(navigation_context_name, navigation_max_depth) %}
+{% set navigation_root = sulu_page_navigation_root_tree(navigation_context_name, navigation_max_depth, {'title': 'title', 'url': 'url', 'template': 'object.templateKey'}) %}
 {% set navigation_links = sulu_snippet_load_by_area('navigation_links') %}
+{% set navigation_links_2 = sulu_snippet_load_by_area('navigation_links_2') %}
 
 <nav class="MainNavigation"
      aria-label="Navigation principale"
      data-controller="main-navigation"
      data-action="keydown.esc->main-navigation#closeOnEscape">
-    <button class="MainNavigation__toggle"
-            type="button"
-            aria-expanded="false"
-            aria-controls="main-navigation-menu"
-            aria-label="Ouvrir le menu de navigation"
-            data-main-navigation-target="toggle"
-            data-action="click->main-navigation#toggle">
-        Menu
-    </button>
+
+    <div class="MainNavigation__mainTools">
+            <a class="MainNavigation__searchToggle"
+               href="#searcBar"
+               aria-label="Rechercher">
+                <span class="MainNavigation__searchIcon" aria-hidden="true"></span>
+            </a>
+            <a class="MainNavigation__toggle"
+               href="#main-navigation-menu"
+               role="button"
+               aria-expanded="false"
+               aria-controls="main-navigation-menu"
+               aria-label="Ouvrir le menu de navigation"
+               data-main-navigation-target="toggle"
+               data-action="click->main-navigation#toggle">
+                <span class="MainNavigation__burger" aria-hidden="true"></span>
+            </a>
+    </div>
+
+    {% if navigation_links %}
+        {% include 'snippets/navigation_links.html.twig' with {content: navigation_links.content} %}
+    {% endif %}
+
     <div class="MainNavigation__container"
          id="main-navigation-menu"
          data-main-navigation-target="menu">
         <ul class="MainNavigation__list">
-            <li>
-                <a class="MainNavigation__link" href="{{ sulu_content_root_path() }}">Homepage</a>
-            </li>
-
             {% if navigation_root %}
-                {{ _self.display_navigation_nodes(navigation_root|first) }}
+                {{ _self.display_navigation_nodes(navigation_root|first, 0, app.request.pathinfo) }}
             {% endif %}
-
         </ul>
 
-        {% if navigation_links %}
-            {% include 'snippets/navigation_links.html.twig' with {content: navigation_links.content} %}
+        {% if navigation_links_2 %}
+            <div class="ainNavigation__socialMenu SocialMenu">
+                {% include 'snippets/navigation_links.html.twig' with {content: navigation_links_2.content} %}
+            </div>
         {% endif %}
     </div>
 </nav>
 
-{% macro display_navigation_nodes(root) %}
+{% macro is_active_subtree(item, currentPath) %}
+    {% set itemPath = item.url is not empty ? sulu_content_path(item.url) : null %}
+    {% if itemPath is not null and (currentPath == itemPath or currentPath starts with (itemPath ~ '/')) %}
+        true
+    {% else %}
+        {% for child in item.children %}
+            {% if _self.is_active_subtree(child, currentPath)|trim == 'true' %}true{% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro display_navigation_nodes(root, depth, currentPath) %}
+    {% set depth = depth|default(0) %}
     {% for item in root.children %}
-        <li>
-            <a class="MainNavigation__link" href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}">
-                {{ item.title }}
-            </a>
+        {% set itemPath = item.url is not empty ? sulu_content_path(item.url) : null %}
+        {% set isAncestor = itemPath is not null and (currentPath == itemPath or currentPath starts with (itemPath ~ '/')) %}
+        {% if not isAncestor and item.children is not empty %}
+            {% set isAncestor = _self.is_active_subtree(item, currentPath)|trim == 'true' %}
+        {% endif %}
+
+        {% set liClass = item.template == 'category' ? 'MainNavigation__item--category' : '' %}
+        {% set liClass = isAncestor ? (liClass ~ ' MainNavigation__item--ancestor')|trim : liClass %}
+
+        <li{% if liClass %} class="{{ liClass }}"{% endif %}>
+            {% if item.template == 'category' %}
+                <span class="MainNavigation__link"
+                      title="{{ item.title }}"
+                      {% if depth == 0 and item.children is not empty %}data-action="click->main-navigation#toggleSection"{% endif %}><span class="MainNavigation__link-text">{{ item.title }}</span></span>
+            {% else %}
+                <a class="MainNavigation__link{{ isAncestor ? ' MainNavigation__link--ancestor' : '' }}" href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}">{{ item.title }}</a>
+            {% endif %}
 
             {% if item.children is not empty %}
                 <ul>
-                    {{ _self.display_navigation_nodes(item) }}
+                    {{ _self.display_navigation_nodes(item, depth + 1, currentPath) }}
                 </ul>
             {% endif %}
         </li>

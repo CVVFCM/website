@@ -7,15 +7,31 @@
 {% if content.links is defined and content.links is not empty %}
     <ul class="NavigationLinks__list" aria-label="{{ content.title }}">
         {% for link in content.links %}
-            <li class="NavigationLinks__item">
+            {% set display_modifier = '' %}
+            {% set is_header_positioned = false %}
+            {% if link.display is defined and link.display %}
+                {% for display_value in link.display %}
+                    {% set display_modifier = display_modifier ~ ' NavigationLinks__item--' ~ display_value %}
+                    {% if display_value in ['header_top', 'header_right'] %}
+                        {% set is_header_positioned = true %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if not is_header_positioned %}
+                {% set display_modifier = display_modifier ~ ' NavigationLinks__item--menu_only' %}
+            {% endif %}
+            <li class="NavigationLinks__item{{ display_modifier }}">
                 {% if link.type == 'internal' and link.page is defined %}
                     <a class="NavigationLinks__link"
                        href="{{ sulu_content_path(link.page.url) }}"
                        title="{{ link.label }}">
                         {% if link.media is defined and link.media %}
-                            <img src="{{ link.media.thumbnails['x800'] }}" alt="{{ link.label }}" class="NavigationLinks__media" />
+                            <span
+                                class="NavigationLinks__media"
+                                style="--nav-icon-mask: url('{{ link.media.thumbnails['x800'] }}');"
+                                aria-hidden="true"></span>
                         {% endif %}
-                        {{ link.label }}
+                        <span class="NavigationLinks__label">{{ link.label }}</span>
                     </a>
                 {% elseif link.type == 'external' and link.url is defined %}
                     <a class="NavigationLinks__link"
@@ -24,9 +40,11 @@
                        target="_blank"
                        rel="noopener noreferrer">
                         {% if link.media is defined and link.media %}
-                            <img src="{{ link.media.thumbnails['x800'] }}" alt="{{ link.label }}" class="NavigationLinks__media" />
+                            <span class="NavigationLinks__media"
+                                style="--nav-icon-mask: url('{{ link.media.thumbnails['x800'] }}');"
+                                aria-hidden="true"></span>
                         {% endif %}
-                        {{ link.label }}
+                        <span class="NavigationLinks__label">{{ link.label }}</span>
                     </a>
                 {% endif %}
             </li>

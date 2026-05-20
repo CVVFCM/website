@@ -60,7 +60,6 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
         $manager->persist($regattas);
 
         foreach ($regattas->getDimensionContents() as $regattasDimensionContent) {
-            $regattasDimensionContent->addNavigationContext('main');
             $regattasDimensionContent->setTemplateData([
                 'url' => '/evenements/regates',
                 'title' => 'Régates',
