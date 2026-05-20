@@ -205,12 +205,14 @@
 
 .EventPage__map {
     width: 54rem;
+    max-height: 33vh;
 }
 
 .EventPage__mediasBloc {
     max-width: 100%;
     display: block;
     flex: 100%;
+    order: 4;
 
     & ul {
         display: flex;
