@@ -13,10 +13,20 @@ export default class extends Controller {
         };
         window.addEventListener('scroll', this._onScroll, { passive: true });
         this._onScroll();
+
+        this._onClickOutside = (event) => {
+            if (!this.element.classList.contains('MainNavigation--open')) return;
+            // event.target === this.element when the ::before overlay is clicked
+            if (!this.element.contains(event.target) || event.target === this.element) {
+                this.close();
+            }
+        };
+        document.addEventListener('click', this._onClickOutside);
     }
 
     disconnect() {
         window.removeEventListener('scroll', this._onScroll);
+        document.removeEventListener('click', this._onClickOutside);
     }
 
     toggle(event) {
