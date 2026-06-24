@@ -25,133 +25,32 @@
     margin: 0;
 }
 
-
 .HomepageCalendar__featuredBlock {
     height: 100%;
     display: flex;
 }
-
-
 
 .HomepageCalendar__eventItem {
     width: 100%;
     display: flex;
 }
 
-/* ── Base card ── */
+.HomepageCalendar__grid {
+    --calendar-grid-gap: 2rem;
 
-.HomepageCalendar__event {
-    font-size: 1rem;
-    display: flex;
-    flex-direction: row;
-    background-color: var(--color-white);
-    border-radius: var(--white-card-radius);
-    box-shadow: 0.2em 3em 2em rgb(0 0 50 / 40%);
-    padding: 2em 2em 2em .7em;
-    gap: .7em;
-    width: 100%;
-    align-items: center;
-    position: relative;
-}
-
-.HomepageCalendar__eventImage {
-    width: 4em;
-    height: 4em;
-    border-radius: 50%;
-    overflow: hidden;
-    align-self: center;
-
-    & img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-}
-
-.HomepageCalendar__event--featured .HomepageCalendar__eventImage {
-    width: 12em;
-    height: 12em;
-}
-
-
-/* ── Content ── */
-
-.HomepageCalendar__eventContent {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    gap: var(--calendar-grid-gap);
 }
 
-.HomepageCalendar__eventMeta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.25rem;
-}
-
-.HomepageCalendar__eventCountdown {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--blue-note-text);
-    letter-spacing: 0.03em;
-}
-
-.HomepageCalendar__eventType {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--calendar-accent);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.HomepageCalendar__eventTitle {
-    margin: 0.2em 0;
-    color: var(--blue-note-text);
-    line-height: 1;
-    font-size: 1.75em;
-    font-weight: 900;
-    letter-spacing: .01em;
-    max-width: 8em;
-}
-
-.HomepageCalendar__eventDate {
-    font-size: 0.75rem;
-    color: var(--calendar-accent);
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    margin-top: 0.5rem;
-    text-transform: uppercase;
-}
-
-.HomepageCalendar__eventLink {
-    position: absolute;
-    right: .5em;
-    bottom: .5em;
-    width: 2rem;
-    height: 2rem;
-    background-color: var(--color-gray-200);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
+.HomepageCalendar__events {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: var(--calendar-grid-gap);
     justify-content: center;
-    color: var(--blue-note-text);
-    text-decoration: none;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-
-    &:hover,
-    &:focus {
-        background-color: var(--calendar-accent);
-        color: var(--color-white);
-        transform: scale(1.05);
-    }
-}
-
-.HomepageCalendar__eventIcon {
-    width: 1em;
-    height: 1em;
-    margin-left: 0.1em;
-    color: white;
 }
 
 .HomepageCalendar__footer {
@@ -177,30 +76,6 @@
     }
 }
 
-
-/* ── Events list (2×2 grid on desktop) ── */
-.HomepageCalendar__grid {
-    --calendar-grid-gap: 2rem;
-
-    display: flex;
-    flex-direction: column;
-    grid-template-columns: 1fr;
-    gap: var(--calendar-grid-gap);
-}
-
-
-
-.HomepageCalendar__events {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: var(--calendar-grid-gap);
-    justify-content: center;
-}
-
-
 @container (min-width: 60rem) {
     .HomepageCalendar__grid {
         display: grid;
@@ -208,7 +83,7 @@
         align-items: stretch;
     }
 
-    .HomepageCalendar__event--featured {
+    .EventCard--featured {
         flex-direction: column;
         align-items: stretch;
         padding: 1.5em 3em;
@@ -225,16 +100,14 @@
 }
 
 @container (max-width: calc(40rem - 1px)) {
-    .HomepageCalendar__events .HomepageCalendar__event {
+    .HomepageCalendar__events .EventCard {
         font-size: .8rem;
     }
 
-    .HomepageCalendar__event--featured .HomepageCalendar__eventImage {
+    .EventCard--featured .EventCard__image {
         left: -1em;
         position: relative;
         width: 6em;
         height: 6em;
     }
 }
-
-

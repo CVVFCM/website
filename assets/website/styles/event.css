@@ -221,9 +221,15 @@
 
     }
 
+    & li {
+        max-width: 100%;
+        display: flex;
+    }
+
     & img {
-        height: 33vh;
-        max-width: 80vh;
+        max-height: 33vh;
+        width auto;
+        max-width: 60%;
         object-fit: contain;
     }
 }

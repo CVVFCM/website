@@ -26,6 +26,28 @@
         <meta name="frankenphp-hot-reload:url" content="{{ frankenphp_hot_reload }}">
         <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
         <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
+        <script type="module">
+        // frankenphp-hot-reload does CSS-only swap for <link> elements only.
+        // CSS files loaded via @import have no <link>, so they are silently skipped.
+        // FrankenPHP sends: [{"path_name":"/app/assets/.../Foo.css","effect_type":"modify",...}]
+        // This listener catches those cases and falls back to a full page reload.
+        const url = document.querySelector('meta[name="frankenphp-hot-reload:url"]')?.content;
+        if (url) {
+            new EventSource(url).onmessage = (e) => {
+                try {
+                    const changes = JSON.parse(e.data);
+                    if (!Array.isArray(changes)) return;
+                    for (const { path_name } of changes) {
+                        if (!path_name?.endsWith('.css')) continue;
+                        const filename = path_name.split('/').pop();
+                        const hasLink = [...document.querySelectorAll('link[rel="stylesheet"]')]
+                            .some(l => new URL(l.href).pathname.split('/').pop().replace(/-[a-f0-9]+\.css$/, '.css') === filename);
+                        if (!hasLink) { location.reload(); return; }
+                    }
+                } catch {}
+            };
+        }
+        </script>
     {% endif %}
 </head>
 <body>

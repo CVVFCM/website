@@ -15,7 +15,7 @@ services:
                     subscriber_jwt {env.MERCURE_JWT_SECRET}
                     anonymous
                 }
-            FRANKENPHP_SITE_CONFIG: hot_reload assets/**/*.{css,js} src/**/*.php templates/**/*.html.twig
+            FRANKENPHP_SITE_CONFIG: hot_reload assets/**/*.css assets/**/*.js src/**/*.php templates/**/*.html.twig
             FRANKENPHP_WORKER_CONFIG: watch
             APP_ENV: ${APP_ENV:-dev}
             S3_ENDPOINT: http://s3:9090

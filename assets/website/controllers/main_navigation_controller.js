@@ -7,7 +7,7 @@ export default class extends Controller {
         this.element.classList.add('MainNavigation--close');
 
         const siteHeader = this.element.closest('.SiteHeader');
-        this._stickyThreshold = parseFloat(getComputedStyle(siteHeader).marginTop);
+        this._stickyThreshold = parseFloat(getComputedStyle(siteHeader).top);
         this._onScroll = () => {
             this.element.classList.toggle('MainNavigation--stuck', window.scrollY >= this._stickyThreshold);
         };

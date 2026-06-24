@@ -1,6 +1,7 @@
 .EventContentBlock {
     list-style-type: none;
-    border-left: 1px dashed var(--red-act-text);
+    border: 1px dashed var(--red-act-text);
+    border-width: 0 0 0 1px;
     padding-left: 2rem;
     padding-right: 0.5rem;
     max-width: 26rem;
@@ -12,6 +13,8 @@
         list-style: none;
         padding-left: 0;
     }
+
+
 }
 
 .EventContentBlock__title {
@@ -155,3 +158,13 @@
 .EventContentBlock__ctaButton:active {
     background-color: var(--red-act-text);
 }
+
+@media (width < 65em) {
+    .EventContentBlock {
+        border-width: 1px 0 0 0;
+        padding: 2rem 0 0 0;
+    }
+}
+test change Thu May 28 01:02:29 PM CEST 2026
+/* test Thu May 28 01:04:23 PM CEST 2026 */
+/* modified Thu May 28 01:17:38 PM CEST 2026 */
