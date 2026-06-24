@@ -16,8 +16,7 @@ export default class extends Controller {
 
         this._onClickOutside = (event) => {
             if (!this.element.classList.contains('MainNavigation--open')) return;
-            // event.target === this.element when the ::before overlay is clicked
-            if (!this.element.contains(event.target) || event.target === this.element) {
+            if (!this.element.contains(event.target) || event.target === siteHeader) {
                 this.close();
             }
         };
