@@ -10,6 +10,10 @@
      data-controller="main-navigation"
      data-action="keydown.esc->main-navigation#closeOnEscape">
 
+    <a class="MainNavigation__logo" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM" tabindex="-1" aria-hidden="true">
+        <img src="{{ asset('images/logo_cvvfcm.svg') }}" alt="" width="32" height="32" />
+    </a>
+
     <div class="MainNavigation__mainTools">
             <a class="MainNavigation__searchToggle"
                href="#searcBar"
