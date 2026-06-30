@@ -5,7 +5,7 @@
     overflow: hidden;
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
     .Map {
         height: 37.5rem;
     }

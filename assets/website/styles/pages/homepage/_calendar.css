@@ -45,8 +45,8 @@
     display: flex;
     flex-direction: row;
     background-color: var(--color-white);
-    border-radius: var(--whiteCard-radius);
-    box-shadow: 0.2em 3em 2em rgba(0, 0, 50, 0.4);
+    border-radius: var(--white-card-radius);
+    box-shadow: 0.2em 3em 2em rgb(0 0 50 / 40%);
     padding: 2em 2em 2em .7em;
     gap: .7em;
     width: 100%;
@@ -69,7 +69,6 @@
 }
 
 .HomepageCalendar__event--featured .HomepageCalendar__eventImage {
-
     width: 12em;
     height: 12em;
 }
@@ -94,7 +93,7 @@
 .HomepageCalendar__eventCountdown {
     font-size: 0.75rem;
     font-weight: 500;
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
     letter-spacing: 0.03em;
 }
 
@@ -108,7 +107,7 @@
 
 .HomepageCalendar__eventTitle {
     margin: 0.2em 0;
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
     line-height: 1;
     font-size: 1.75em;
     font-weight: 900;
@@ -136,7 +135,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
     text-decoration: none;
     transition: background-color 0.2s ease, transform 0.2s ease;
 
@@ -181,11 +180,12 @@
 
 /* ── Events list (2×2 grid on desktop) ── */
 .HomepageCalendar__grid {
-    --calendar-gridGap: 2rem;
+    --calendar-grid-gap: 2rem;
+
     display: flex;
     flex-direction: column;
     grid-template-columns: 1fr;
-    gap: var(--calendar-gridGap);
+    gap: var(--calendar-grid-gap);
 }
 
 
@@ -196,7 +196,7 @@
     margin: 0;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
-    gap: var(--calendar-gridGap);
+    gap: var(--calendar-grid-gap);
     justify-content: center;
 }
 

@@ -1,9 +1,9 @@
 /* Homepage page styles - imports only homepage-specific blocks */
-@import './app.css';
-@import './homepage/Header.css';
-@import './homepage/CtaCard.css';
-@import './pages/homepage/HomepageFacebook.css';
-@import './pages/homepage/HomepageLive.css';
-@import './pages/homepage/HomepageInstagram.css';
-@import './pages/homepage/HomepagePartners.css';
-@import './pages/homepage/_calendar.css';
+@import url('./app.css');
+@import url('./homepage/Header.css');
+@import url('./homepage/CtaCard.css');
+@import url('./pages/homepage/HomepageFacebook.css');
+@import url('./pages/homepage/HomepageLive.css');
+@import url('./pages/homepage/HomepageInstagram.css');
+@import url('./pages/homepage/HomepagePartners.css');
+@import url('./pages/homepage/_calendar.css');

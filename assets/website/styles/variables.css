@@ -1,16 +1,13 @@
 /* Global CSS Custom Properties */
 :root {
+    --site-layout-row-padding: 8vw;
 
-    --site-layout-rowPadding: 8vw;
     /* Typography */
     --font-family-base: 'DM Sans', sans-serif;
-
-    --whiteCard-radius: 1.2rem;
-
+    --white-card-radius: 1.2rem;
     --base-text-color: #2A3A48;
-    --blueNote-text:#01529B;
-    --redAct-text: #FF512D;
-
+    --blue-note-text:#01529B;
+    --red-act-text: #FF512D;
     --utility-grey: #CADDE3;
 
     /* Colors - Neutral */

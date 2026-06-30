@@ -34,7 +34,7 @@
     justify-content: start;
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
     .HomepagePartners__grid {
         grid-template-columns: repeat(auto-fill, 8.5em);
         gap: 1.25rem;
@@ -46,7 +46,7 @@
     height: 7em;
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
     .HomepagePartners__item {
         width: 8.5em;
         height: 8.5em;
@@ -63,7 +63,7 @@
     background-color: white;
     border-radius: 0.5rem;
     padding: 0.5em;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 10%);
     transition: transform 0.2s;
 }
 
@@ -83,7 +83,7 @@
     object-fit: contain;
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
     .HomepagePartners {
         display: grid;
         grid-template-columns: minmax(15rem, auto) 1fr;

@@ -12,11 +12,10 @@
 .MainNavigation {
     width: 100%;
     display: flex;
-    flex-direction: row-reverse;
-    flex-wrap: wrap;
+    flex-flow: row-reverse wrap;
     justify-content: flex-start;
     align-items: center;
-    padding: 1rem var(--site-layout-rowPadding);
+    padding: 1rem var(--site-layout-row-padding);
     box-sizing: border-box;
 }
 
@@ -52,7 +51,7 @@
             box-sizing: border-box;
             content: '';
             display: block;
-            border: 0.2em solid currentColor;
+            border: 0.2em solid currentcolor;
             border-radius:10em;
             margin: 0 auto;
             transition: border 0.25s ease-in-out;
@@ -72,7 +71,7 @@
         }
 
         &:hover::before  {
-            border: 0.4em solid currentColor;
+            border: 0.4em solid currentcolor;
         }
     }
 }
@@ -96,7 +95,7 @@
         width: 1.5rem;
         height: 0.2em;
         margin: 0.55rem 0;
-        background-color: currentColor;
+        background-color: currentcolor;
         border-radius: 2px;
         transition: background-color 0.3s ease;
 
@@ -107,7 +106,7 @@
             position: absolute;
             width: 100%;
             height: 0.2em;
-            background-color: currentColor;
+            background-color: currentcolor;
             border-radius: 2px;
             transform-origin: center;
             transition: transform 0.3s ease;
@@ -189,7 +188,7 @@
 
     &:hover,
     &:focus {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: rgb(255 255 255 / 10%);
     }
 
     &:focus-visible {
@@ -200,10 +199,10 @@
 
 .MainNavigation__item--ancestor > .MainNavigation__link,
 .MainNavigation__link--ancestor {
-    color: var(--redAct-text);
+    color: var(--red-act-text);
 }
 
-/*_________________________________ NavigationLinks__list  (action rapide) */
+/* _________________________________ NavigationLinks__list  (action rapide) */
 
 
 
@@ -249,7 +248,7 @@
 }
 
 
-/*_____________________________________________________________ MENU CLOSE */
+/* _____________________________________________________________ MENU CLOSE */
 
 
 
@@ -261,7 +260,7 @@
         background-color: var(--color-white);
         color: var(--base-text-color);
 
-        & .NavigationLinks__item--header_right {
+        & .NavigationLinks__item--headerRight {
             display: none;
         }
     }
@@ -274,11 +273,11 @@
     }
 
     & .NavigationLinks__media {
-        background-color: currentColor;
+        background-color: currentcolor;
     }
 
 
-    & .NavigationLinks__item--header_right {
+    & .NavigationLinks__item--headerRight {
         width: 100%;
         text-align: right;
         order: 10;
@@ -288,7 +287,7 @@
         & .NavigationLinks__media {
             -webkit-mask-image: none;
             mask-image: none;
-            background-color: var(--redAct-text);
+            background-color: var(--red-act-text);
             border-radius: 50%;
             order: 2;
             font-size: 1.5em;
@@ -297,10 +296,7 @@
             &::after {
                 content: '';
                 position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
+                inset: 0;
                 background-color: var(--color-white);
                 -webkit-mask-image: var(--nav-icon-mask);
                 -webkit-mask-size: 55%;
@@ -315,10 +311,9 @@
     }
 
     & .NavigationLinks__item--button {
-
         & .NavigationLinks__link {
             padding: 0.5em 1.5em;
-            background-color: var(--blueNote-text);
+            background-color: var(--blue-note-text);
             color: var(--color-white);
             border-radius: 3em;
             font-weight: 800;
@@ -330,27 +325,27 @@
         }
     }
 
-    & .NavigationLinks__item--hidden_text .NavigationLinks__label {
+    & .NavigationLinks__item--hiddenText .NavigationLinks__label {
         position: absolute;
         max-width: 1px;
         overflow: hidden;
-        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
         white-space: nowrap;
         transition: max-width .3s ease-in-out;
     }
 
     & .NavigationLinks__link:hover .NavigationLinks__label {
         max-width: 15em;
-        clip: auto;
+        clip-path: none;
         position: static;
     }
 
 
-    & .NavigationLinks__item--menu_only {
+    & .NavigationLinks__item--menuOnly {
         display: none;
     }
 
-}/*___________________________________________________________ MENU OPEN */
+}/* ___________________________________________________________ MENU OPEN */
 
 
 .MainNavigation--open::before {
@@ -402,16 +397,16 @@
 
     & .NavigationLinks__media {
         display: block;
-        background-color: var(--redAct-text);
+        background-color: var(--red-act-text);
     }
 
-    & .NavigationLinks__item--hidden_text .NavigationLinks__label {
+    & .NavigationLinks__item--hiddenText .NavigationLinks__label {
         display: revert;
         position: static;
         width: auto;
         height: auto;
         overflow: visible;
-        clip: auto;
+        clip-path: none;
         white-space: normal;
     }
 }
@@ -468,8 +463,8 @@
         height: 0.45em;
         margin-left: 0.4em;
         vertical-align: 0.15em;
-        border-right: 0.15em solid currentColor;
-        border-bottom: 0.15em solid currentColor;
+        border-right: 0.15em solid currentcolor;
+        border-bottom: 0.15em solid currentcolor;
         transform: rotate(45deg);
         transition: transform 0.25s ease;
     }

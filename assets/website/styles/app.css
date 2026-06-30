@@ -1,5 +1,5 @@
-@import './variables.css';
-@import './common/MainNavigation.css';
+@import url('./variables.css');
+@import url('./common/MainNavigation.css');
 
 
 body {
@@ -10,8 +10,8 @@ body {
 }
 
 
-.sectionPadded {
-    padding: 5rem var(--site-layout-rowPadding);
+.SectionPadded {
+    padding: 5rem var(--site-layout-row-padding);
     box-sizing: border-box;
 }
 
@@ -19,10 +19,6 @@ body {
     max-width: 100%;
     overflow-x: hidden;
     margin-top: -8vh;
-}
-
-H1 {
-
 }
 
 h2 {
@@ -37,7 +33,7 @@ p {
 }
 
 a {
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
 
     &:hover {
         text-decoration: underline;
@@ -47,7 +43,7 @@ a {
 .CallToAction--btn {
     display: inline-block;
     padding: .8em 1.8em;
-    background-color: var(--redAct-text);
+    background-color: var(--red-act-text);
     color: var(--color-white);
     text-decoration: none;
     border-radius: 5em;
@@ -57,7 +53,7 @@ a {
 }
 
 
-/*_________________________ commons header */
+/* _________________________ commons header */
 
 .Logo__headerTopBar {
     font-size: 1rem;
@@ -88,8 +84,7 @@ a {
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
     list-style: none;
     font-weight: 700;
     font-size: .8rem;
@@ -111,7 +106,7 @@ a {
     }
 
     & a {
-        color: var(--blueNote-text);
+        color: var(--blue-note-text);
         text-decoration: none;
 
         &:hover {

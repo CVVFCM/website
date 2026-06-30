@@ -1,6 +1,6 @@
 .EventContentBlock {
     list-style-type: none;
-    border-left: 1px dashed var(--redAct-text);
+    border-left: 1px dashed var(--red-act-text);
     padding-left: 2rem;
     padding-right: 0.5rem;
     max-width: 26rem;
@@ -15,7 +15,7 @@
 }
 
 .EventContentBlock__title {
-    color: var(--redAct-text);
+    color: var(--red-act-text);
     font-size: 1em;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -57,7 +57,6 @@
 }
 
 .EventContentBlock__serviceAvailability {
-
     display: inline-flex;
     align-items: center;
     gap: 0.1rem;
@@ -67,19 +66,19 @@
 }
 
 .EventContentBlock__serviceAvailability--yes {
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
 }
 
 .EventContentBlock__serviceAvailability--yes::before {
-    content: url(../images/pictos/validate.svg);
+    content: url("../images/pictos/validate.svg");
 }
 
 .EventContentBlock__serviceAvailability--no {
-    color: var(--redAct-text);
+    color: var(--red-act-text);
 }
 
 .EventContentBlock__serviceAvailability--no::before {
-    content: url(../images/pictos/close.svg);
+    content: url("../images/pictos/close.svg");
 }
 
 .EventContentBlock__linksSection {
@@ -105,7 +104,7 @@
     font-family: var(--font-family-base);
     font-size: 1em;
     font-weight: 500;
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -113,7 +112,7 @@
 }
 
 .EventContentBlock__link::after {
-    content: url(../images/pictos/arrow_link.svg);
+    content: url("../images/pictos/arrow_link.svg");
 }
 
 .EventContentBlock__link:hover {
@@ -137,7 +136,7 @@
 
 .EventContentBlock__ctaButton {
     display: inline-block;
-    background-color: var(--redAct-text);
+    background-color: var(--red-act-text);
     color: var(--color-white);
     text-decoration: none;
     padding: 0.55rem 1.25rem;
@@ -154,5 +153,5 @@
 }
 
 .EventContentBlock__ctaButton:active {
-    background-color: var(--redAct-text);
+    background-color: var(--red-act-text);
 }

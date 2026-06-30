@@ -1,8 +1,8 @@
 /* List page styles */
-@import './app.css';
-@import './common/Pager.css';
+@import url('./app.css');
+@import url('./common/Pager.css');
 
-.ListPage__MainContent,
+.ListPage__mainContent,
 .ContentBlock--list {
     background: var(--utility-grey);
 }
@@ -34,7 +34,6 @@
     color: var(--base-text-color);
     padding: 3.5em 2em;
     border-radius: 2rem;
-
     display: flex;
     align-items: center;
     align-content: center;
@@ -77,8 +76,8 @@
     }
 }
 
-.ListPage__MoreInfoLink {
-    color: var(--redAct-text);
+.ListPage__moreInfoLink {
+    color: var(--red-act-text);
     text-decoration: none;
     font-weight: bold;
 
@@ -106,7 +105,7 @@
 .ListPage__eventCountdown {
     font-size: 0.75rem;
     font-weight: 500;
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
     letter-spacing: 0.03em;
 }
 
@@ -120,7 +119,7 @@
 
 .ListPage__eventTitle {
     margin: 0.2em 0;
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
     line-height: 1;
     font-size: 1.75em;
     font-weight: 900;
@@ -148,7 +147,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
     text-decoration: none;
     transition: background-color 0.2s ease, transform 0.2s ease;
 

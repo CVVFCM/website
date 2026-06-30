@@ -1,8 +1,8 @@
 /* Live page styles */
-@import './app.css';
-@import './pages/homepage/HomepageLive.css';
-@import './common/Webcam.css';
-@import './common/WeatherLive.css';
+@import url('./app.css');
+@import url('./pages/homepage/HomepageLive.css');
+@import url('./common/Webcam.css');
+@import url('./common/WeatherLive.css');
 
 .LivePage {
     .LivePage__webcams {
@@ -10,7 +10,7 @@
         grid-template-columns: 1fr;
         width: 100%;
 
-        @media (min-width: 48rem) {
+        @media (width >= 48rem) {
             grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         }
     }

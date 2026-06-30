@@ -129,15 +129,13 @@
     }
 }
 
-@media (min-width: 30rem) {
+@media (width >= 30rem) {
     .HomepageFacebook__posts {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (min-width: 48rem) {
-
-
+@media (width >= 48rem) {
     .HomepageFacebook__title {
         font-size: 2.25rem;
     }

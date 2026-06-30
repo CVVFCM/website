@@ -25,7 +25,7 @@
     color: var(--color-white);
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
     .FooterNavigation {
         padding: 3rem 2rem;
     }

@@ -1,7 +1,7 @@
 /* Event page styles */
-@import './app.css';
-@import './common/Map.css';
-@import './EventContentBlock.css';
+@import url('./app.css');
+@import url('./common/Map.css');
+@import url('./EventContentBlock.css');
 
 .EventPage__header {
     background: linear-gradient(240deg, #1D68A0 0%, #06315A 100%);
@@ -15,10 +15,16 @@
     position: relative;
     background-color: var(--color-white);
     color: var(--base-text-color);
-
     z-index: 0;
+    display: inline-grid;
+    grid-template-columns: 13vw fit-content(75%);
+    grid-template-rows: 3rem auto;
+    gap: 1.5rem;
+    padding: 2em;
+    max-width: 80vw;
+    justify-items: start;
 
-    &:before {
+    &::before {
         z-index: -1;
         position: absolute;
         top: 0;
@@ -42,6 +48,10 @@
     align-items: flex-end;
     left: -17vw;
     top: -5vw;
+    grid-column: 1 ;
+    grid-row: 2 ;
+    width: 30vw;
+    height: 30vw;
 }
 
 .EventPage__headerImage {
@@ -58,34 +68,36 @@
     flex-direction: column;
     gap: 1rem;
     max-width: 24em;
+    grid-column: 2 ;
+    grid-row: 2 ;
 }
 
 .EventPage__headerDescription {
-
     font-size: 1.2rem;
     color: var(--base-text-color);
     line-height: 1.5;
+    max-width: 22em;
 }
 
 
 
 .EventPage__headerSaveDate {
-
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     font-size: 0.8rem;
     color: var(--base-text-color);
     text-decoration: none;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgb(255 255 255 / 40%);
     padding: 0.35rem 0.85rem;
     border-radius: 2rem;
     white-space: nowrap;
     transition: background-color 0.2s ease, border-color 0.2s ease;
+    place-self: center end;
 
     &:hover {
-        background-color: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.7);
+        background-color: rgb(255 255 255 / 15%);
+        border-color: rgb(255 255 255 / 70%);
     }
 }
 
@@ -99,12 +111,12 @@
 
 .EventPage__headerCountdown {
     font-size: 1em;
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
 }
 
 .EventPage__headerType {
     font-size: 1em;
-    color: var(--redAct-text);
+    color: var(--red-act-text);
 }
 
 .EventPage__headerTitle {
@@ -112,64 +124,30 @@
     font-weight: 800;
     line-height: 1.15;
     margin: 0;
-    color: var(--blueNote-text);
+    color: var(--blue-note-text);
 }
 
 .EventPage__headerDates {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-
     font-size: 1rem;
     font-weight: 700;
-    color: var(--redAct-text);
+    color: var(--red-act-text);
     letter-spacing: 0.05em;
 }
 
-/*------------------------------------  HEADER GRID & responsive    */
-
-.EventPage__headerMain {
-    box-sizing: border-box;
-    display: inline-grid;
-    grid-template-columns: 13vw fit-content(75%);
-    grid-template-rows: 3rem auto;
-    gap:1.5rem;
-    padding : 2em;
-    max-width: 80vw;
-    justify-items: start;
-}
+/* ------------------------------------  HEADER GRID & responsive    */
 
 .EventPage__headerDescription,
 .EventPage__headerNav,
 .EventPage__headerSaveDate {
     grid-column: 1/span 2 ;
 }
+
 .EventPage__headerNav {
     align-self: center;
 }
-
-.EventPage__headerDescription {
-    max-width: 22em;
-}
-
-.EventPage__headerSaveDate {
-    justify-self: end;
-    align-self: center;
-}
-
-.EventPage__headerBody {
-    grid-column: 2 ;
-    grid-row: 2 ;
-}
-
-.EventPage__headerImageWrapper {
-    grid-column: 1 ;
-    grid-row: 2 ;
-    width: 30vw;
-    height: 30vw;
-}
-
-
 
 @media (width > 65rem) {
     .EventPage__headerMain {
@@ -189,7 +167,6 @@
     }
 
     .EventPage__headerBody {
-
         grid-column: 2;
         grid-row: 2;
     }
@@ -197,7 +174,6 @@
 
 
     .EventPage__headerDescription {
-
         grid-column: 3;
         grid-row: 2;
     }
@@ -211,7 +187,7 @@
 }
 
 
-/*------------------------------------  MAIN CONTENT    */
+/* ------------------------------------  MAIN CONTENT    */
 
 .EventPage__mainContent {
     display: flex;
@@ -238,9 +214,8 @@
 
     & ul {
         display: flex;
-        flex-direction: row;
+        flex-flow: row wrap;
         max-width: 100%;
-        flex-wrap: wrap;
 
     }
 
@@ -251,5 +226,5 @@
     }
 }
 
-/*------------------------------------  MAIN CONTENT RESPONSIVE    */
+/* ------------------------------------  MAIN CONTENT RESPONSIVE    */
 

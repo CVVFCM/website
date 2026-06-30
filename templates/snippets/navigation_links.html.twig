@@ -6,19 +6,21 @@
 
 {% if content.links is defined and content.links is not empty %}
     <ul class="NavigationLinks__list" aria-label="{{ content.title }}">
+        {# Map the snake_case display enum (content data) to camelCase BEM modifiers. #}
+        {% set display_class_map = {header_top: 'headerTop', header_right: 'headerRight', hidden_text: 'hiddenText'} %}
         {% for link in content.links %}
             {% set display_modifier = '' %}
             {% set is_header_positioned = false %}
             {% if link.display is defined and link.display %}
                 {% for display_value in link.display %}
-                    {% set display_modifier = display_modifier ~ ' NavigationLinks__item--' ~ display_value %}
+                    {% set display_modifier = display_modifier ~ ' NavigationLinks__item--' ~ (display_class_map[display_value] ?? display_value) %}
                     {% if display_value in ['header_top', 'header_right'] %}
                         {% set is_header_positioned = true %}
                     {% endif %}
                 {% endfor %}
             {% endif %}
             {% if not is_header_positioned %}
-                {% set display_modifier = display_modifier ~ ' NavigationLinks__item--menu_only' %}
+                {% set display_modifier = display_modifier ~ ' NavigationLinks__item--menuOnly' %}
             {% endif %}
             <li class="NavigationLinks__item{{ display_modifier }}">
                 {% if link.type == 'internal' and link.page is defined %}

@@ -1,6 +1,6 @@
 /* Default page styles - minimal common blocks only */
-@import './app.css';
-@import './list.css';
+@import url('./app.css');
+@import url('./list.css');
 
 
 .Page__header {
@@ -18,6 +18,7 @@
     z-index: 0;
     gap: 0;
     word-break: break-all;
+
     p, h1, h2 {
         color: inherit;
     }
@@ -32,10 +33,7 @@
     &::before {
         background: var(--color-white);
         position: absolute;
-        top: 0;
-        left: -50%;
-        right: -50%;
-        bottom: 0;
+        inset: 0 -50%;
         content: '';
         z-index: -1;
         transform: skewX(-15deg);
@@ -43,7 +41,6 @@
 }
 
 .Page__headerDescription {
-
     & p:first-of-type {
         font-size: 1.2rem;
         line-height: 2;
@@ -83,7 +80,7 @@
     h2 {
         font-size: 2.2em;
         margin: 0;
-        color: var(--redAct-text);
+        color: var(--red-act-text);
     }
 
     .ContentBlock__description {
@@ -96,6 +93,7 @@
     text-align: center;
     background: linear-gradient(240deg, #1D68A0 0%, #06315A 100%);
     color: var(--color-white);
+
     p {
         color: inherit;
     }

@@ -11,8 +11,8 @@
     {% set list = content.list_type == 'page' ? content.page_list : content.event_list %}
     {% set list_view = content.list_type == 'page' ? view.page_list : view.event_list %}
 
-        <section class="ListPage__MainContent">
-            <ul class="ListPage__list ListPage__list--{{ content.list_type }} sectionPadded">
+        <section class="ListPage__mainContent">
+            <ul class="ListPage__list ListPage__list--{{ content.list_type }} SectionPadded">
                 {% for item in list %}
                     <li class="ListPage__listItem">
                         <article class="ListPage__article">
@@ -32,7 +32,7 @@
                                 {{ item.description|raw }}
                             </div>
 
-                            <a class="ListPage__MoreInfoLink" href="{{ item.url }}">En savoir +</a>
+                            <a class="ListPage__moreInfoLink" href="{{ item.url }}">En savoir +</a>
                         </article>
                     </li>
                 {% endfor %}

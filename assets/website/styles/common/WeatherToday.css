@@ -10,7 +10,7 @@
     color: var(--color-dark);
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
     .WeatherToday {
         padding: 2rem;
     }
