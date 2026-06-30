@@ -4,7 +4,9 @@ LABEL org.opencontainers.image.source=https://github.com/CVVFCM/website
 LABEL org.opencontainers.image.authors="Yohan Giarelli <yohan@cvvfcm.fr>"
 
 RUN set -eux; \
-    wget https://github.com/a8m/envsubst/releases/download/v1.4.3/envsubst-`uname -s`-`uname -m` -O envsubst; \
+    arch="`uname -m`"; \
+    case "$arch" in aarch64) arch="arm64" ;; esac; \
+    wget "https://github.com/a8m/envsubst/releases/download/v1.4.3/envsubst-`uname -s`-${arch}" -O envsubst; \
     chmod +x envsubst; \
     mv envsubst /usr/local/bin
 
