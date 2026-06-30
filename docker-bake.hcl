@@ -8,6 +8,7 @@ variable "TAGS" {
 
 group "default" {
   targets = ["php", "consumer", "rtsp-to-web", "ml"]
+  platforms = ["linux/amd64", "linux/arm64"]
 }
 
 target "php" {
