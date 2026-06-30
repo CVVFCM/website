@@ -65,14 +65,20 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
 
 FROM node:${NODE_VERSION}-${DEBIAN_VERSION} AS node
 
+# Provided by BuildKit per target platform; used to isolate the npm cache per arch.
+ARG TARGETARCH
+
 COPY --from=base /app /app
 COPY --chown=www-data:www-data assets /app/assets/
 
 WORKDIR /app/assets/admin
 
-RUN --mount=type=cache,target=/app/assets/admin/node_modules \
-    --mount=type=cache,target=/root/.npm \
-    npm install; \
+# No node_modules cache mount: with multi-arch builds it is shared across the amd64/arm64
+# stages and races, and with install-links=true (.npmrc) npm then skips re-materializing the
+# Sulu `file:` deps → "Can't resolve 'sulu-admin-bundle/*'". Install fresh each build (like the
+# local `make` build); keep only the per-arch npm download cache for speed.
+RUN --mount=type=cache,id=npm-cache-${TARGETARCH},target=/root/.npm \
+    npm install && \
     npm run build
 
 FROM base AS php
