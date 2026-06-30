@@ -1,0 +1,21 @@
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "cvvfcm.fullname" . }}-indexes
+  labels:
+    {{- include "cvvfcm.labels" . | nindent 4 }}
+  annotations:
+    # Keep the search index across a `helm uninstall` (it is cheap to rebuild but the
+    # rebuild is not automatic). Remove if you want it garbage-collected with the release.
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- with .Values.persistence.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+{{- end }}

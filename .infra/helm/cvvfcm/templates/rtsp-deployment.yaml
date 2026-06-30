@@ -1,0 +1,53 @@
+{{- if .Values.rtsp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cvvfcm.fullname" . }}-rtsp-to-web
+  labels:
+    {{- include "cvvfcm.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rtsp-to-web
+spec:
+  replicas: {{ .Values.rtsp.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "cvvfcm.rtsp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "cvvfcm.rtsp.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: rtsp-to-web
+          image: "{{ .Values.image.rtsp.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8083
+              protocol: TCP
+          env:
+            - name: HTTP_LOGIN
+              value: {{ .Values.rtsp.httpLogin | quote }}
+            - name: HTTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "cvvfcm.fullname" . }}-secret
+                  key: RTSP_HTTP_PASSWORD
+          resources:
+            {{- toYaml .Values.rtsp.resources | nindent 12 }}
+      {{- with .Values.rtsp.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.rtsp.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.rtsp.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

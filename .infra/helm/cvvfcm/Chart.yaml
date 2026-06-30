@@ -1,0 +1,22 @@
+apiVersion: v2
+name: cvvfcm
+description: CVVFCM sailing-club website — Symfony + Sulu + FrankenPHP (web + scheduler consumer + rtsp-to-web)
+type: application
+version: 0.1.0
+# Matches the application image, not the chart.
+appVersion: "latest"
+home: https://github.com/CVVFCM/website
+sources:
+  - https://github.com/CVVFCM/website
+maintainers:
+  - name: Yohan Giarelli
+    email: yohan@cvvfcm.fr
+# Requires the Gateway API CRDs (gateway.networking.k8s.io/v1) installed in the
+# cluster, with a Gateway named in .Values.gateway (default main/traefik).
+kubeVersion: ">=1.27.0-0"
+
+dependencies:
+  - name: postgresql
+    version: "~18.7"
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: postgresql.enabled

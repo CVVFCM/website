@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cvvfcm.fullname" . }}-consumer
+  labels:
+    {{- include "cvvfcm.labels" . | nindent 4 }}
+    app.kubernetes.io/component: consumer
+spec:
+  replicas: {{ .Values.consumer.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "cvvfcm.consumer.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "cvvfcm.consumer.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: consumer
+          # Reuses the php image (superset of the consumer build target).
+          image: "{{ .Values.image.web.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          command:
+            - php
+            - bin/console
+            - messenger:consume
+            - {{ .Values.consumer.transport | quote }}
+            - --no-debug
+            - -vv
+            # Recycle the worker periodically (memory hygiene); on exit the container
+            # restarts. The worker is PID 1, so a crash also exits the container — no
+            # liveness probe needed (and the image ships no pgrep/ps for one anyway).
+            - --time-limit=3600
+            - --memory-limit=128M
+          envFrom:
+            - configMapRef:
+                name: {{ include "cvvfcm.fullname" . }}-config
+            - secretRef:
+                name: {{ include "cvvfcm.fullname" . }}-secret
+          {{- if .Values.postgresql.enabled }}
+          env:
+            {{- include "cvvfcm.dbEnv" . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.consumer.resources | nindent 12 }}
+      {{- with .Values.consumer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.consumer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.consumer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

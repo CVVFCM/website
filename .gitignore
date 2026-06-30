@@ -55,3 +55,4 @@ build/
 .phpunit.result.cache
 
 data/weather/ml
+.claude/settings.local.json

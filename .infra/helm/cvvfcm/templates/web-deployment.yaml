@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cvvfcm.fullname" . }}-web
+  labels:
+    {{- include "cvvfcm.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  {{- if .Values.persistence.enabled }}
+  # Search-index PVC is RWO — recreate the old pod before starting the new one so the
+  # volume is never double-attached.
+  strategy:
+    type: Recreate
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cvvfcm.web.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "cvvfcm.web.selectorLabels" . | nindent 8 }}
+      annotations:
+        # Roll pods when config/secret change.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: web
+          image: "{{ .Values.image.web.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: admin
+              containerPort: 2019
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "cvvfcm.fullname" . }}-config
+            - secretRef:
+                name: {{ include "cvvfcm.fullname" . }}-secret
+          {{- if .Values.postgresql.enabled }}
+          env:
+            {{- include "cvvfcm.dbEnv" . | nindent 12 }}
+          {{- end }}
+          {{- if or .Values.persistence.enabled .Values.robots.disallowAll }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: indexes
+              mountPath: /app/var/indexes
+            {{- end }}
+            {{- if .Values.robots.disallowAll }}
+            - name: robots
+              mountPath: /app/public/robots.txt
+              subPath: robots.txt
+            {{- end }}
+          {{- end }}
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 3
+            failureThreshold: 40
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.web.resources | nindent 12 }}
+      {{- if or .Values.persistence.enabled .Values.robots.disallowAll }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: indexes
+          persistentVolumeClaim:
+            claimName: {{ include "cvvfcm.fullname" . }}-indexes
+        {{- end }}
+        {{- if .Values.robots.disallowAll }}
+        - name: robots
+          configMap:
+            name: {{ include "cvvfcm.fullname" . }}-robots
+        {{- end }}
+      {{- end }}
+      {{- with .Values.web.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.web.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.web.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,121 @@
+name: Deploy
+
+# Reusable deploy workflow: provisions OKE access via OCI CLI and rolls out the cvvfcm
+# Helm chart. Called by cd.yaml per environment with `secrets: inherit`, so every secret
+# is forwarded automatically — only the per-env knobs are passed as inputs.
+on:
+    workflow_call:
+        inputs:
+            environment:
+                description: 'GitHub deployment environment (drives environment-scoped secrets/vars).'
+                required: true
+                type: string
+            namespace:
+                description: 'Target Kubernetes namespace.'
+                required: true
+                type: string
+            host:
+                description: 'Default public hostname (overridable per env via the APP_HOST var).'
+                required: true
+                type: string
+            s3-bucket:
+                description: 'Scaleway S3 bucket for Sulu media uploads.'
+                required: true
+                type: string
+            disallow-robots:
+                description: 'Serve a deny-all robots.txt.'
+                required: false
+                type: boolean
+                default: false
+
+jobs:
+    deploy:
+        name: Deploy to ${{ inputs.environment }}
+        runs-on: ubuntu-latest
+        environment: ${{ inputs.environment }}
+        env:
+            # Silence the OCI CLI key-label nag (fires on every exec-credential token call).
+            SUPPRESS_LABEL_WARNING: "True"
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+            -   name: Set up Helm
+                uses: azure/setup-helm@v5
+
+            -   name: Install & Configure OCI CLI
+                run: |
+                    curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+                    chmod +x install.sh
+                    ./install.sh --accept-all-defaults
+                    echo "/home/runner/bin" >> "$GITHUB_PATH"
+
+                    mkdir -p ~/.oci
+                    cat <<EOF > ~/.oci/config
+                    [DEFAULT]
+                    user=${{ secrets.OCI_USER_OCID }}
+                    fingerprint=${{ secrets.OCI_FINGERPRINT }}
+                    tenancy=${{ secrets.OCI_TENANCY_OCID }}
+                    region=${{ secrets.OCI_REGION }}
+                    key_file=/home/runner/.oci/key.pem
+                    EOF
+
+                    # OCI_API_KEY is base64encode(file(private_key)) in Terraform — decode
+                    # it back to the raw PEM (writing it verbatim would store base64 text).
+                    echo "${{ secrets.OCI_API_KEY }}" | base64 -d > ~/.oci/key.pem
+
+                    chmod 600 ~/.oci/config ~/.oci/key.pem
+
+                    # Fail fast with a clear message if the key is malformed.
+                    openssl pkey -in ~/.oci/key.pem -noout
+
+            -   name: Write kubeconfig
+                run: |
+                    mkdir -p ~/.kube
+                    echo "${{ secrets.OKE_KUBECONFIG }}" > ~/.kube/config
+                    chmod 600 ~/.kube/config
+
+            -   name: Update chart dependencies
+                run: helm dependency update .infra/helm/cvvfcm
+
+            -   name: Ensure namespace, DB credentials & registry pull secret
+                run: |
+                    kubectl create namespace "${{ inputs.namespace }}" --dry-run=client -o yaml | kubectl apply -f -
+                    kubectl -n "${{ inputs.namespace }}" create secret generic cvvfcm-pg-auth \
+                      --from-literal=password="${{ secrets.DATABASE_PASSWORD }}" \
+                      --from-literal=postgres-password="${{ secrets.DATABASE_PASSWORD }}" \
+                      --dry-run=client -o yaml | kubectl apply -f -
+                    kubectl -n "${{ inputs.namespace }}" create secret docker-registry ghcr \
+                      --docker-server=ghcr.io \
+                      --docker-username="${{ github.actor }}" \
+                      --docker-password="${{ github.token }}" \
+                      --dry-run=client -o yaml | kubectl apply -f -
+
+            -   name: Helm deploy
+                env:
+                    # Edge basic auth enabled when this secret is set (PREPROD); absent in PROD → off.
+                    BASIC_AUTH_USERS: ${{ secrets.BASIC_AUTH_USERS }}
+                run: |
+                    EXTRA=()
+                    # htpasswd hashes contain $ and / — pass via a file with --set-file to avoid
+                    # --set escaping/comma-splitting issues.
+                    if [ -n "$BASIC_AUTH_USERS" ]; then
+                      printf '%s' "$BASIC_AUTH_USERS" > /tmp/htpasswd
+                      EXTRA+=(--set basicAuth.enabled=true --set-file basicAuth.users=/tmp/htpasswd)
+                    fi
+                    EXTRA+=(--set robots.disallowAll=${{ inputs.disallow-robots }})
+
+                    helm upgrade --install cvvfcm .infra/helm/cvvfcm \
+                      --namespace "${{ inputs.namespace }}" --create-namespace \
+                      --set image.tag="${{ github.sha }}" \
+                      --set host="${{ vars.APP_HOST || inputs.host }}" \
+                      --set postgresql.enabled=true \
+                      --set postgresql.auth.existingSecret=cvvfcm-pg-auth \
+                      --set secrets.appSecret="${{ secrets.APP_SECRET }}" \
+                      --set secrets.mailerDsn="${{ secrets.MAILER_DSN }}" \
+                      --set secrets.symfonyDecryptionSecret="${{ secrets.SYMFONY_DECRYPTION_SECRET }}" \
+                      --set secrets.s3Key="${{ secrets.SCW_ACCESS_KEY }}" \
+                      --set secrets.s3Secret="${{ secrets.SCW_SECRET_KEY }}" \
+                      --set secrets.rtspHttpPassword="${{ secrets.RTSP_TO_WEB_HTTP_PASSWORD }}" \
+                      --set app.s3Bucket="${{ inputs.s3-bucket }}" \
+                      "${EXTRA[@]}" \
+                      --wait --rollback-on-failure --timeout 5m

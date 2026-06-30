@@ -1,0 +1,13 @@
+{{- if .Values.robots.disallowAll }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cvvfcm.fullname" . }}-robots
+  labels:
+    {{- include "cvvfcm.labels" . | nindent 4 }}
+data:
+  # Mounted over /app/public/robots.txt on the web pod (see web-deployment.yaml).
+  robots.txt: |
+    User-agent: *
+    Disallow: /
+{{- end }}

@@ -1,0 +1,192 @@
+# Default values for cvvfcm.
+
+image:
+  # The php image is a superset (carries src/config/templates/public/bin), so web,
+  # consumer and the migrate job all run from it. rtsp-to-web is a standalone Go service.
+  # Fully qualified: OKE's runtime enforces short-name mode and rejects bare names.
+  web:
+    repository: ghcr.io/cvvfcm/website/php
+  rtsp:
+    repository: ghcr.io/cvvfcm/website/rtsp-to-web
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# ghcr.io/cvvfcm/website is private — CD creates a docker-registry secret named "ghcr".
+imagePullSecrets:
+  - name: ghcr
+
+# FrankenPHP web server (serves the Symfony/Sulu app).
+# Resources: memory request==limit (Guaranteed memory QoS); cpu request only, no cpu
+# limit (avoids CFS throttling). Starting points — tune from `kubectl top`.
+web:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 150m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  # FrankenPHP sizes threads/workers from the HOST core count by default (it doesn't see
+  # the cgroup CPU limit) — on a big node that spawns far too many PHP workers and OOMs
+  # the memory limit. Pin small explicit counts that fit the resources above.
+  frankenphp:
+    numThreads: 8
+    numWorkers: 2
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Symfony Messenger consumer. Messenger transports are unset (sync://); this process runs
+# the Symfony Scheduler (src/Schedule.php, #[AsSchedule]) via its scheduler_default transport.
+consumer:
+  replicaCount: 1
+  transport: scheduler_default
+  resources:
+    requests:
+      cpu: 50m
+      memory: 192Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# rtsp-to-web webcam streaming service. The Caddyfile reverse-proxies /stream/* to the
+# Service named exactly "rtsp-to-web" (see rtsp-service.yaml).
+rtsp:
+  enabled: true
+  replicaCount: 1
+  httpLogin: admin
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Public hostname served by the app.
+host: cvvfcm.fr
+
+# Non-secret application configuration (rendered into a ConfigMap).
+app:
+  env: prod
+  debug: "false"
+  # ":80" → plain HTTP only; Caddy will not attempt auto-HTTPS (TLS is at the Gateway).
+  serverName: ":80"
+  suluAdminEmail: "CVVFCM <contact@cvvfcm.fr>"
+  # S3-backed media storage (Sulu uploads) on Scaleway Object Storage, Paris region.
+  # Endpoint/region are fixed; bucket is per-env (CD overrides). Key/secret live in the Secret.
+  s3Endpoint: https://s3.fr-par.scw.cloud
+  s3Region: fr-par
+  s3Bucket: cvvfcm
+
+# HTTP basic auth at the Traefik edge (PREPROD gate). When enabled, a Traefik Middleware
+# is attached to the HTTPRoute. users = htpasswd lines (e.g. `htpasswd -nbB user pass`),
+# supplied by CD from the BASIC_AUTH_USERS secret. Off in PROD.
+basicAuth:
+  enabled: false
+  users: ""
+  realm: "CVVFCM PREPROD"
+
+# Serve a deny-all robots.txt (PREPROD gate) — overrides the allow-all file baked in the
+# image so staging is not indexed. Off in PROD.
+robots:
+  disallowAll: false
+
+# Loupe search index (cmsig/seal) lives on local disk under /app/var/indexes. Small RWO
+# PVC so it survives pod restarts. Uploads go to S3, so no uploads PVC is needed.
+persistence:
+  enabled: true
+  storageClass: longhorn
+  size: 1Gi
+
+# Bundled PostgreSQL (Bitnami subchart). When enabled, DATABASE_URL is derived
+# automatically from postgresql.auth below and externalDatabase.url is ignored.
+postgresql:
+  enabled: false
+  auth:
+    username: cvvfcm
+    database: cvvfcm
+    # Name of a pre-existing Secret holding the DB credentials (keys: "password",
+    # "postgres-password"). Owned outside the helm release so it survives uninstall
+    # and never regenerates — both the subchart and the app read it. Created by CD.
+    # If empty, the subchart auto-generates a password (not stable across uninstalls).
+    existingSecret: ""
+    secretKeys:
+      userPasswordKey: password
+      adminPasswordKey: postgres-password
+    password: ""
+  primary:
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      size: 8Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 2Gi
+  # Bitnami relocated its free images to docker.io/bitnamilegacy in Aug 2025. The
+  # pinned chart (~18.7) still references valid images; if pulls fail, switch to the
+  # legacy repo and allow it:
+  #   image:
+  #     repository: bitnamilegacy/postgresql
+  #   global:
+  #     security:
+  #       allowInsecureImages: true
+
+# External PostgreSQL — used only when postgresql.enabled is false.
+externalDatabase:
+  # Full Doctrine DSN, e.g.
+  #   postgresql://cvvfcm:secret@db.internal:5432/cvvfcm?serverVersion=18&charset=utf8
+  url: ""
+  # serverVersion advertised in the DATABASE_URL derived for the bundled DB.
+  serverVersion: "18"
+
+# Secret values. Supply via --set, a values.local.yaml, or a sealed-secret.
+secrets:
+  appSecret: ""
+  mailerDsn: ""
+  symfonyDecryptionSecret: ""
+  s3Key: ""
+  s3Secret: ""
+  rtspHttpPassword: "!ChangeMe!"
+
+# Database migration job (Helm post-install/post-upgrade hook).
+migrations:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 192Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Gateway API parentRef for the HTTPRoutes (the shared cluster Gateway).
+gateway:
+  name: main
+  namespace: traefik
+  secureSectionName: websecure
+  insecureSectionName: web
+
+# Pod-level security context. The image bakes EXTERNAL_USER_ID=33 (www-data);
+# keep runAsUser aligned with the build arg.
+podSecurityContext:
+  runAsUser: 33
+  runAsGroup: 33
+  fsGroup: 33
+
+securityContext: {}
+
+serviceAccount:
+  create: false
+  name: ""

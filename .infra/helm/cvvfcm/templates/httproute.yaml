@@ -1,0 +1,29 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+    name: {{ include "cvvfcm.fullname" . }}
+    labels:
+        {{- include "cvvfcm.labels" . | nindent 8 }}
+spec:
+    parentRefs:
+        -   name: {{ .Values.gateway.name }}
+            namespace: {{ .Values.gateway.namespace }}
+            sectionName: {{ .Values.gateway.secureSectionName }}
+    hostnames:
+        - {{ .Values.host | quote }}
+    rules:
+        -   matches:
+                -   path:
+                        type: PathPrefix
+                        value: /
+            {{- if .Values.basicAuth.enabled }}
+            filters:
+                -   type: ExtensionRef
+                    extensionRef:
+                        group: traefik.io
+                        kind: Middleware
+                        name: {{ include "cvvfcm.fullname" . }}-basic-auth
+            {{- end }}
+            backendRefs:
+                -   name: {{ include "cvvfcm.fullname" . }}-web
+                    port: 80

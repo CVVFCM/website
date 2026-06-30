@@ -1,0 +1,21 @@
+{{- if .Values.rtsp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  # Named literally "rtsp-to-web": the baked Caddyfile reverse-proxies /stream/* to the
+  # hardcoded upstream "rtsp-to-web:8083", which k8s DNS resolves within this namespace.
+  # One rtsp-to-web release per namespace (fine — preprod/prod are separate namespaces).
+  name: rtsp-to-web
+  labels:
+    {{- include "cvvfcm.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rtsp-to-web
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "cvvfcm.rtsp.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: 8083
+      targetPort: http
+      protocol: TCP
+{{- end }}
