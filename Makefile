@@ -74,8 +74,8 @@ cs: ## Fix code style
 	@$(DOCKER_COMPOSE) exec -T php ./vendor/bin/php-cs-fixer fix
 	@$(DOCKER_COMPOSE) exec -T php ./vendor/bin/twig-cs-fixer fix templates
 
-stylelint: ## Lint website CSS (pass fix=1 to auto-fix)
-	@docker run --rm -v $(PWD):/app -w /app node:22-bookworm-slim sh -c "npm ci --no-audit --no-fund && { npx stylelint 'assets/website/styles/**/*.css' $(if $(fix),--fix,); rc=\$$?; } ; chown -R $(shell id -u):$(shell id -g) node_modules ; exit \$$rc"
+stylelint: node_modules/ ## Lint website CSS (pass fix=1 to auto-fix)
+	@docker run --rm -v $(PWD):/app -w /app node:22-bookworm-slim sh -c "npm install --no-audit --no-fund && { npx stylelint 'assets/website/styles/**/*.css' $(if $(fix),--fix,); rc=\$$?; } ; chown -R $(shell id -u):$(shell id -g) node_modules ; exit \$$rc"
 
 psalm: ## Run static analysis
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/psalm --no-diff
@@ -88,6 +88,9 @@ ml_cs: ## Fix code style in ML code
 
 var/:
 	@mkdir -p var/cache var/indexes var/log
+
+node_modules/:
+	@npm i
 
 vendor/:
 	@$(DOCKER_COMPOSE) run --rm php composer install
