@@ -41,7 +41,7 @@
         {% endif %}
 
         <ul class="HomepageCalendar__events">
-             {% for event in block.events|filter(event => event.url not in block.featured_event|map(e => e.url))|slice(0,4) %}
+             {% for event in block.events|filter(event => event.url not in block.featured_event|map(e => e.url))|slice(0, 4) %}
                 {% set daysRemaining = (event.begin_date|date('U') - 'now'|date('U')) // 86400 %}
 
                 <li class="HomepageCalendar__eventItem">

@@ -9,7 +9,7 @@
 {% block content %}
 
     {% set parent = sulu_page_load(resource.parent.uuid, {url: 'url', title: 'title'}) %}
-    {% set days_diff = ((content.begin_date|date('U') - "now"|date('U')) / 86400)|round(0, 'floor') %}
+    {% set days_diff = ((content.begin_date|date('U') - 'now'|date('U')) / 86400)|round(0, 'floor') %}
 
     <header class="EventPage__header">
 
@@ -41,7 +41,6 @@
 
             <div class="EventPage__headerBody">
 
-
                 <div class="EventPage__headerMeta">
                     {% if days_diff > 0 %}
                         <span class="EventPage__headerCountdown">J-{{ days_diff }}</span>
@@ -55,15 +54,15 @@
 
                 <div class="EventPage__headerDates">
                     <span class="EventPage__headerDay">
-                        {{ content.begin_date|format_date(pattern='EEEE d MMMM yyyy', locale='fr')|upper }}
+                        {{ content.begin_date|format_date(pattern: 'EEEE d MMMM yyyy', locale: 'fr')|upper }}
                     </span>
                     {% if content.end_date %}
                         <span class="EventPage__headerTime">
-                            DE {{ content.begin_date|format_datetime(pattern="HH'H'mm") }} À {{ content.end_date|format_datetime(pattern="HH'H'mm") }}
+                            DE {{ content.begin_date|format_datetime(pattern: "HH'H'mm") }} À {{ content.end_date|format_datetime(pattern: "HH'H'mm") }}
                         </span>
                     {% else %}
                         <span class="EventPage__headerTime">
-                            À {{ content.begin_date|format_datetime(pattern="HH'H'mm") }}
+                            À {{ content.begin_date|format_datetime(pattern: "HH'H'mm") }}
                         </span>
                     {% endif %}
                 </div>

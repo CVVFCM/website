@@ -44,7 +44,7 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
         'Quand le lac parle',
         'La leçon du vent',
         'Le courage des eaux calmes',
-        "Sur la crête des vagues",
+        'Sur la crête des vagues',
         "L'heure du bord",
         'Mémoire de navigation',
         "L'âme du régatier",
@@ -119,7 +119,7 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
      * 4 catégories → sous-catégories → pages default.
      * Chaque entrée :  ['title', 'slug', 'description', 'subcategories']
      * Sous-catégorie : ['title', 'slug', 'description', 'pages']
-     * Page :           ['title', 'slug']
+     * Page :           ['title', 'slug'].
      *
      * @var list<array{
      *   title: string,
@@ -146,9 +146,9 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'pages' => [
                         ['title' => "Premiers bords sur l'eau", 'slug' => 'premiers-bords'],
                         ['title' => "L'art du virement de bord", 'slug' => 'virement-de-bord'],
-                        ['title' => "Empanner sans craindre le vent", 'slug' => 'empannage'],
-                        ['title' => "Réglages pour les jeunes champions", 'slug' => 'reglages-voiles'],
-                        ['title' => "Régates Optimist des Ardennes", 'slug' => 'regates-ardennes'],
+                        ['title' => 'Empanner sans craindre le vent', 'slug' => 'empannage'],
+                        ['title' => 'Réglages pour les jeunes champions', 'slug' => 'reglages-voiles'],
+                        ['title' => 'Régates Optimist des Ardennes', 'slug' => 'regates-ardennes'],
                     ],
                 ],
                 [
@@ -156,11 +156,11 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'laser',
                     'description' => '<p>Le Laser est le verdict du vent rendu sans appel. Seul face aux éléments, le régatier apprend à se surpasser dans une communion brutale avec l\'élément.</p>',
                     'pages' => [
-                        ['title' => "Initiation au Laser", 'slug' => 'initiation'],
-                        ['title' => "Le planing et ses vertiges", 'slug' => 'planing'],
-                        ['title' => "Maîtriser le vent thermique", 'slug' => 'vent-thermique'],
-                        ['title' => "Préparation physique du régatier", 'slug' => 'preparation-physique'],
-                        ['title' => "Tactique de course en dériveur", 'slug' => 'tactique-course'],
+                        ['title' => 'Initiation au Laser', 'slug' => 'initiation'],
+                        ['title' => 'Le planing et ses vertiges', 'slug' => 'planing'],
+                        ['title' => 'Maîtriser le vent thermique', 'slug' => 'vent-thermique'],
+                        ['title' => 'Préparation physique du régatier', 'slug' => 'preparation-physique'],
+                        ['title' => 'Tactique de course en dériveur', 'slug' => 'tactique-course'],
                     ],
                 ],
                 [
@@ -168,18 +168,18 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'habitables',
                     'description' => '<p>Sur les habitables, on apprend que la voile est aussi une philosophie de vie, où l\'équipage forme une âme collective face à l\'imprévisible.</p>',
                     'pages' => [
-                        ['title' => "Naviguer en équipage, une philosophie", 'slug' => 'philosophie-equipage'],
-                        ['title' => "La manœuvre du spi", 'slug' => 'manoeuvre-spi'],
-                        ['title' => "Navigation nocturne sur le lac", 'slug' => 'navigation-nocturne'],
-                        ['title' => "Météorologie pour navigateurs avisés", 'slug' => 'meteorologie'],
-                        ['title' => "Le règlement des courses en équipage", 'slug' => 'reglement-courses'],
-                        ['title' => "Entretien du gréement et des voiles", 'slug' => 'entretien-greement'],
+                        ['title' => 'Naviguer en équipage, une philosophie', 'slug' => 'philosophie-equipage'],
+                        ['title' => 'La manœuvre du spi', 'slug' => 'manoeuvre-spi'],
+                        ['title' => 'Navigation nocturne sur le lac', 'slug' => 'navigation-nocturne'],
+                        ['title' => 'Météorologie pour navigateurs avisés', 'slug' => 'meteorologie'],
+                        ['title' => 'Le règlement des courses en équipage', 'slug' => 'reglement-courses'],
+                        ['title' => 'Entretien du gréement et des voiles', 'slug' => 'entretien-greement'],
                     ],
                 ],
             ],
         ],
         [
-            'title' => "Compétitions & Régates",
+            'title' => 'Compétitions & Régates',
             'slug' => 'competitions-regates',
             'description' => '<p>La régate est la mesure de l\'homme par le vent. Chaque marque doublée est une victoire sur soi-même avant d\'être une victoire sur les autres.</p>',
             'subcategories' => [
@@ -188,11 +188,11 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'trophee-ardennes',
                     'description' => '<p>Le Trophée des Ardennes est notre grand rendez-vous annuel avec la gloire. Sur ces eaux familières, les champions se révèlent à eux-mêmes.</p>',
                     'pages' => [
-                        ['title' => "Le grand rendez-vous annuel", 'slug' => 'presentation'],
-                        ['title' => "Palmarès et légendes du lac", 'slug' => 'palmares'],
-                        ['title' => "Règlement sportif", 'slug' => 'reglement'],
-                        ['title' => "Inscriptions et jauge", 'slug' => 'inscriptions'],
-                        ['title' => "Les parcours homologués du lac", 'slug' => 'parcours'],
+                        ['title' => 'Le grand rendez-vous annuel', 'slug' => 'presentation'],
+                        ['title' => 'Palmarès et légendes du lac', 'slug' => 'palmares'],
+                        ['title' => 'Règlement sportif', 'slug' => 'reglement'],
+                        ['title' => 'Inscriptions et jauge', 'slug' => 'inscriptions'],
+                        ['title' => 'Les parcours homologués du lac', 'slug' => 'parcours'],
                     ],
                 ],
                 [
@@ -200,10 +200,10 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'circuit-regional',
                     'description' => '<p>Le circuit Grand Est forge les navigateurs dans l\'épreuve répétée. Chaque étape est un pas vers l\'excellence, chaque défaite une leçon gravée dans la quille.</p>',
                     'pages' => [
-                        ['title' => "Calendrier du circuit 2025", 'slug' => 'calendrier-2025'],
-                        ['title' => "Classement général provisoire", 'slug' => 'classement'],
-                        ['title' => "Système de points et qualifications", 'slug' => 'points-qualifications'],
-                        ['title' => "Sélection pour les championnats de France", 'slug' => 'selection-france'],
+                        ['title' => 'Calendrier du circuit 2025', 'slug' => 'calendrier-2025'],
+                        ['title' => 'Classement général provisoire', 'slug' => 'classement'],
+                        ['title' => 'Système de points et qualifications', 'slug' => 'points-qualifications'],
+                        ['title' => 'Sélection pour les championnats de France', 'slug' => 'selection-france'],
                     ],
                 ],
                 [
@@ -211,17 +211,17 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'championnats',
                     'description' => '<p>Quand nos couleurs flottent sur les plans d\'eau nationaux, c\'est tout le club qui navigue avec nos champions. Leur gloire est notre gloire collective.</p>',
                     'pages' => [
-                        ['title' => "Nos champions, notre fierté", 'slug' => 'nos-champions'],
-                        ['title' => "La Route du Rhum — nos représentants", 'slug' => 'route-du-rhum'],
-                        ['title' => "Records sur le lac des Vieilles Forges", 'slug' => 'records'],
-                        ['title' => "Préparation aux grands circuits", 'slug' => 'preparation-circuits'],
-                        ['title' => "Hommage aux anciens champions", 'slug' => 'hommage'],
+                        ['title' => 'Nos champions, notre fierté', 'slug' => 'nos-champions'],
+                        ['title' => 'La Route du Rhum — nos représentants', 'slug' => 'route-du-rhum'],
+                        ['title' => 'Records sur le lac des Vieilles Forges', 'slug' => 'records'],
+                        ['title' => 'Préparation aux grands circuits', 'slug' => 'preparation-circuits'],
+                        ['title' => 'Hommage aux anciens champions', 'slug' => 'hommage'],
                     ],
                 ],
             ],
         ],
         [
-            'title' => "Vie du Club",
+            'title' => 'Vie du Club',
             'slug' => 'vie-du-club',
             'description' => '<p>Le club est plus qu\'une association. C\'est une famille rassemblée par la passion de l\'eau, du vent et de la liberté que confère seule la navigation à la voile.</p>',
             'subcategories' => [
@@ -230,12 +230,12 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'histoire',
                     'description' => '<p>Notre histoire est celle de passionnés qui ont choisi de braver les vents ardennais pour offrir à leur lac la dignité d\'un vrai club de voile.</p>',
                     'pages' => [
-                        ['title' => "Les origines du CVVFCM", 'slug' => 'origines'],
-                        ['title' => "Les fondateurs légendaires", 'slug' => 'fondateurs'],
-                        ['title' => "Cinquante ans sur les eaux ardennaises", 'slug' => 'cinquante-ans'],
-                        ['title' => "Le lac des Vieilles Forges, notre domaine", 'slug' => 'le-lac'],
-                        ['title' => "Les grandes traversées de notre histoire", 'slug' => 'grandes-traversees'],
-                        ['title' => "Hommage aux hommes de barre", 'slug' => 'hommage-hommes-de-barre'],
+                        ['title' => 'Les origines du CVVFCM', 'slug' => 'origines'],
+                        ['title' => 'Les fondateurs légendaires', 'slug' => 'fondateurs'],
+                        ['title' => 'Cinquante ans sur les eaux ardennaises', 'slug' => 'cinquante-ans'],
+                        ['title' => 'Le lac des Vieilles Forges, notre domaine', 'slug' => 'le-lac'],
+                        ['title' => 'Les grandes traversées de notre histoire', 'slug' => 'grandes-traversees'],
+                        ['title' => 'Hommage aux hommes de barre', 'slug' => 'hommage-hommes-de-barre'],
                     ],
                 ],
                 [
@@ -243,11 +243,11 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'adhesion',
                     'description' => '<p>Rejoindre le CVVFCM, c\'est choisir de naviguer avec des hommes et des femmes qui partagent le même amour de l\'élément et de la liberté.</p>',
                     'pages' => [
-                        ['title' => "Rejoindre notre équipage", 'slug' => 'rejoindre'],
+                        ['title' => 'Rejoindre notre équipage', 'slug' => 'rejoindre'],
                         ['title' => "Tarifs et formules d'adhésion", 'slug' => 'tarifs'],
-                        ['title' => "Le bureau et les élus", 'slug' => 'bureau-elus'],
-                        ['title' => "Assemblée générale annuelle", 'slug' => 'assemblee-generale'],
-                        ['title' => "Nos partenaires et mécènes", 'slug' => 'partenaires'],
+                        ['title' => 'Le bureau et les élus', 'slug' => 'bureau-elus'],
+                        ['title' => 'Assemblée générale annuelle', 'slug' => 'assemblee-generale'],
+                        ['title' => 'Nos partenaires et mécènes', 'slug' => 'partenaires'],
                     ],
                 ],
                 [
@@ -255,17 +255,17 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'flotte',
                     'description' => '<p>Notre flotte est l\'âme matérielle du club. Chaque bateau est une promesse d\'aventure, soigneusement entretenu par des mains passionnées.</p>',
                     'pages' => [
-                        ['title' => "La flotte du club", 'slug' => 'presentation'],
-                        ['title' => "Le port et les pontons", 'slug' => 'port-pontons'],
-                        ['title' => "Réservation des bateaux", 'slug' => 'reservation'],
-                        ['title' => "Entretien participatif, devoir du marin", 'slug' => 'entretien-participatif'],
-                        ['title' => "Nouveaux équipements 2025", 'slug' => 'equipements-2025'],
+                        ['title' => 'La flotte du club', 'slug' => 'presentation'],
+                        ['title' => 'Le port et les pontons', 'slug' => 'port-pontons'],
+                        ['title' => 'Réservation des bateaux', 'slug' => 'reservation'],
+                        ['title' => 'Entretien participatif, devoir du marin', 'slug' => 'entretien-participatif'],
+                        ['title' => 'Nouveaux équipements 2025', 'slug' => 'equipements-2025'],
                     ],
                 ],
             ],
         ],
         [
-            'title' => "Technique & Navigation",
+            'title' => 'Technique & Navigation',
             'slug' => 'technique-navigation',
             'description' => '<p>La technique est le langage que nous apprenons pour dialoguer avec le vent. Chaque nœud de vitesse gagné est une conversation plus profonde avec l\'élément.</p>',
             'subcategories' => [
@@ -274,11 +274,11 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'meteo',
                     'description' => '<p>Le vent ne pardonne pas l\'ignorance. Connaître la météo, c\'est respecter l\'élément avant de s\'y abandonner avec toute la confiance du marin averti.</p>',
                     'pages' => [
-                        ['title' => "Lire les vents ardennais", 'slug' => 'vents-ardennais'],
-                        ['title' => "Les effets de site sur notre lac", 'slug' => 'effets-de-site'],
-                        ['title' => "La règle des vingt nœuds", 'slug' => 'regle-vingt-noeuds'],
-                        ['title' => "Outils météo du navigateur moderne", 'slug' => 'outils-meteo'],
-                        ['title' => "Journal de bord climatique du lac", 'slug' => 'journal-climatique'],
+                        ['title' => 'Lire les vents ardennais', 'slug' => 'vents-ardennais'],
+                        ['title' => 'Les effets de site sur notre lac', 'slug' => 'effets-de-site'],
+                        ['title' => 'La règle des vingt nœuds', 'slug' => 'regle-vingt-noeuds'],
+                        ['title' => 'Outils météo du navigateur moderne', 'slug' => 'outils-meteo'],
+                        ['title' => 'Journal de bord climatique du lac', 'slug' => 'journal-climatique'],
                     ],
                 ],
                 [
@@ -287,10 +287,10 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'description' => '<p>La prudence n\'est pas la peur. C\'est la sagesse du marin qui sait que l\'élément ne transige pas avec l\'imprudence ni avec la vanité.</p>',
                     'pages' => [
                         ['title' => "La règle d'or en mer", 'slug' => 'regle-or'],
-                        ['title' => "Procédures de chavirage", 'slug' => 'chavirage'],
-                        ['title' => "Matériel de sécurité obligatoire", 'slug' => 'materiel-obligatoire'],
-                        ['title' => "Formation premiers secours nautiques", 'slug' => 'formation-secours'],
-                        ['title' => "Signaux de détresse sur le lac", 'slug' => 'signaux-detresse'],
+                        ['title' => 'Procédures de chavirage', 'slug' => 'chavirage'],
+                        ['title' => 'Matériel de sécurité obligatoire', 'slug' => 'materiel-obligatoire'],
+                        ['title' => 'Formation premiers secours nautiques', 'slug' => 'formation-secours'],
+                        ['title' => 'Signaux de détresse sur le lac', 'slug' => 'signaux-detresse'],
                     ],
                 ],
                 [
@@ -298,12 +298,12 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                     'slug' => 'reglages',
                     'description' => '<p>Le réglage est l\'art de faire parler le bateau. Quand la voile est parfaitement réglée, le bateau s\'efface et seul le vent demeure.</p>',
                     'pages' => [
-                        ['title' => "Réglage du mât — les fondamentaux", 'slug' => 'reglage-mat'],
-                        ['title' => "La quête du profil de voile parfait", 'slug' => 'profil-voile'],
+                        ['title' => 'Réglage du mât — les fondamentaux', 'slug' => 'reglage-mat'],
+                        ['title' => 'La quête du profil de voile parfait', 'slug' => 'profil-voile'],
                         ['title' => "Le vang, l'outil méconnu", 'slug' => 'le-vang'],
-                        ['title' => "Optimisation du centre de gravité", 'slug' => 'centre-gravite'],
-                        ['title' => "Carénage et entretien des carènes", 'slug' => 'carenage'],
-                        ['title' => "Les polaires de vitesse", 'slug' => 'polaires-vitesse'],
+                        ['title' => 'Optimisation du centre de gravité', 'slug' => 'centre-gravite'],
+                        ['title' => 'Carénage et entretien des carènes', 'slug' => 'carenage'],
+                        ['title' => 'Les polaires de vitesse', 'slug' => 'polaires-vitesse'],
                     ],
                 ],
             ],

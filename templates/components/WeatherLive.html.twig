@@ -9,12 +9,9 @@
 
             <div class="HomepageLive__weatherInfo">
 
-
                 <div class="HomepageLive__weatherTemp">{{ liveWeather.temperature|round(1)|replace({'.': ','}) }}<span class="HomepageLive__weatherTempUnit">°c</span></div>
                 <div class="HomepageLive__weatherCondition">Éclaircies</div>
             </div>
-
-
 
         {% elseif this.variant == 'homepage-wind' %}
             {# Homepage wind variant - Lake map with wind info #}

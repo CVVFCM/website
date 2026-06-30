@@ -1,7 +1,7 @@
 {% set navigation_context_name = 'main' %}
 {% set navigation_max_depth = 4 %}
 
-{% set navigation_root = sulu_page_navigation_root_tree(navigation_context_name, navigation_max_depth, {'title': 'title', 'url': 'url', 'template': 'object.templateKey'}) %}
+{% set navigation_root = sulu_page_navigation_root_tree(navigation_context_name, navigation_max_depth, {title: 'title', url: 'url', template: 'object.templateKey'}) %}
 {% set navigation_links = sulu_snippet_load_by_area('navigation_links') %}
 {% set navigation_links_2 = sulu_snippet_load_by_area('navigation_links_2') %}
 
@@ -29,7 +29,7 @@
     </div>
 
     {% if navigation_links %}
-        {% include 'snippets/navigation_links.html.twig' with {content: navigation_links.content} %}
+        {{ include('snippets/navigation_links.html.twig', {content: navigation_links.content}) }}
     {% endif %}
 
     <div class="MainNavigation__container"
@@ -43,7 +43,7 @@
 
         {% if navigation_links_2 %}
             <div class="ainNavigation__socialMenu SocialMenu">
-                {% include 'snippets/navigation_links.html.twig' with {content: navigation_links_2.content} %}
+                {{ include('snippets/navigation_links.html.twig', {content: navigation_links_2.content}) }}
             </div>
         {% endif %}
     </div>

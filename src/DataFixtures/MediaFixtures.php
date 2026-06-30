@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -65,7 +67,6 @@ final class MediaFixtures extends Fixture implements DependentFixtureInterface
                 1,
             );
         }
-
     }
 
     #[\Override]

@@ -1,6 +1,6 @@
 DOCKER_COMPOSE = EXTERNAL_USER_ID=$(shell id -u) docker compose
 
-.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test cc css hadolint cs psalm psalm_strict
+.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test cc css hadolint cs stylelint psalm psalm_strict
 
 run: .configured up
 
@@ -73,6 +73,9 @@ hadolint: ## Lint Dockerfile
 cs: ## Fix code style
 	@$(DOCKER_COMPOSE) exec -T php ./vendor/bin/php-cs-fixer fix
 	@$(DOCKER_COMPOSE) exec -T php ./vendor/bin/twig-cs-fixer fix templates
+
+stylelint: ## Lint website CSS (pass fix=1 to auto-fix)
+	@docker run --rm -v $(PWD):/app -w /app node:22-bookworm-slim sh -c "npm ci --no-audit --no-fund && { npx stylelint 'assets/website/styles/**/*.css' $(if $(fix),--fix,); rc=\$$?; } ; chown -R $(shell id -u):$(shell id -g) node_modules ; exit \$$rc"
 
 psalm: ## Run static analysis
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/psalm --no-diff
