@@ -40,8 +40,8 @@ VOLUME /app/data/weather/ml
 VOLUME /app/public/uploads
 VOLUME /app/var/indexes
 
-COPY --chown=www-data:www-data infra/docker/php/Caddyfile /etc/frankenphp/Caddyfile
-COPY --chown=www-data:www-data infra/docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY --chown=www-data:www-data .infra/docker/php/Caddyfile /etc/frankenphp/Caddyfile
+COPY --chown=www-data:www-data .infra/docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
@@ -52,7 +52,7 @@ USER www-data
 WORKDIR /app
 
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY --chown=www-data:www-data infra/docker/php/conf.d/symfony.prod.ini $PHP_INI_DIR/conf.d/symfony.ini
+COPY --chown=www-data:www-data .infra/docker/php/conf.d/symfony.prod.ini $PHP_INI_DIR/conf.d/symfony.ini
 
 COPY --chown=www-data:www-data composer.json composer.lock symfony.lock ./
 

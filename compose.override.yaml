@@ -2,12 +2,12 @@ services:
     php:
         volumes:
             - '.:/app:rw'
-            - './infra/docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini:ro'
+            - './.infra/docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini:ro'
         depends_on: [ mailer, s3 ]
         environment:
             CADDY_EXTRA_CONFIG: |
                 https:// {
-                    tls /app/infra/tls/cert.pem /app/infra/tls/key.pem
+                    tls /app/.infra/tls/cert.pem /app/.infra/tls/key.pem
                 }
             SITE_EXTRA_CONFIG: |
                 mercure {

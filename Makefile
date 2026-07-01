@@ -12,7 +12,7 @@ clean: clean_admin_assets
 	@rm -rf \
 		.configured \
 		assets/admin/node_modules \
-		infra/tls \
+		.infra/tls \
 		data/weather/ml \
 		ml/.venv \
 		public/assets \
@@ -45,7 +45,7 @@ ml_cli:
 	test -f $@ || make first_run
 	@touch $@
 
-first_run: infra/tls/cert.pem build var/ data/weather/ml vendor/ up reset public/build/admin/manifest.json data/weather/ml/model_pytorch.onnx
+first_run: .infra/tls/cert.pem build var/ data/weather/ml vendor/ up reset public/build/admin/manifest.json data/weather/ml/model_pytorch.onnx
 
 reset:
 	@$(DOCKER_COMPOSE) exec php composer reset
@@ -101,9 +101,9 @@ public/build/admin/manifest.json: assets/admin/package.json assets/admin/package
 	@docker run --rm -v $(PWD):/app -w /app/assets/admin node:22-bookworm-slim chown -R $(shell id -u):$(shell id -g) .
 	@docker run --rm -v $(PWD):/app -w /app node:22-bookworm-slim chown -R $(shell id -u):$(shell id -g) public/build
 
-infra/tls/cert.pem:
-	@mkdir -p infra/tls
-	@mkcert -key-file infra/tls/key.pem -cert-file infra/tls/cert.pem localhost
+.infra/tls/cert.pem:
+	@mkdir -p .infra/tls
+	@mkcert -key-file .infra/tls/key.pem -cert-file .infra/tls/cert.pem localhost
 
 data/weather/ml:
 	@mkdir -p data/weather/ml
