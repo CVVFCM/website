@@ -37,7 +37,7 @@ services:
         image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}rtsp-to-web:${IMAGE_TAG:-latest}
         restart: unless-stopped
         build:
-            context: infra/docker/rtsp-to-web
+            context: .infra/docker/rtsp-to-web
             target: rtsp-to-web
         environment:
             HTTP_LOGIN: '${RTSP_TO_WEB_HTTP_LOGIN:-admin}'
