@@ -5,12 +5,16 @@
         {% if this.variant == 'homepage' %}
             {# Homepage weather variant -temperature display #}
 
-            <img class="HomepageLive__weatherIcon" src="{{ asset('images/meteo_icons/eclaircies.svg') }}" alt="meteo d'aujourd'hui eclaircies" />
+            {% set currentCondition = this.currentCondition %}
+
+            <img class="HomepageLive__weatherIcon" src="{{ asset('images/meteo_icons/eclaircies.svg') }}" alt="météo actuelle {{ currentCondition|default('') }}" />
 
             <div class="HomepageLive__weatherInfo">
 
                 <div class="HomepageLive__weatherTemp">{{ liveWeather.temperature|round(1)|replace({'.': ','}) }}<span class="HomepageLive__weatherTempUnit">°c</span></div>
-                <div class="HomepageLive__weatherCondition">Éclaircies</div>
+                {% if currentCondition %}
+                    <div class="HomepageLive__weatherCondition">{{ currentCondition }}</div>
+                {% endif %}
             </div>
 
         {% elseif this.variant == 'homepage-wind' %}

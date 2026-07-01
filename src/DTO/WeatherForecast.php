@@ -22,7 +22,7 @@ final readonly class WeatherForecast
     private const array CONDITIONS = [
         0 => 'Ciel clair',
         1 => 'Éclaircies',
-        2 => 'Partiellement nuageux',
+        2 => 'Éclaircies',
         3 => 'Couvert',
         45 => 'Brouillard',
         48 => 'Brouillard givrant',
