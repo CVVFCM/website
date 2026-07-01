@@ -30,12 +30,14 @@ final readonly class OpenMeteoAromeWeatherForecastProvider implements WeatherFor
             $response = $client->request(
                 'GET',
                 strtr(
-                    'forecast?latitude=::latitude::&longitude=::longitude::&hourly=::data_types::&wind_speed_unit=kn&timezone=UTC&models=meteofrance_seamless&start_hour=::start_hour::&end_hour=::end_hour::',
+                    'forecast?latitude=::latitude::&longitude=::longitude::&hourly=::data_types::&wind_speed_unit=kn&timezone=Europe%2FParis&models=meteofrance_seamless&start_hour=::start_hour::&end_hour=::end_hour::',
                     [
                         '::latitude::' => $this->latitude,
                         '::longitude::' => $this->longitude,
-                        '::data_types::' => 'temperature_2m,relative_humidity_2m,pressure_msl,precipitation,wind_speed_10m,wind_direction_10m',
-                        '::start_hour::' => date('Y-m-d\TH:00'),
+                        '::data_types::' => 'temperature_2m,relative_humidity_2m,pressure_msl,precipitation,wind_speed_10m,wind_direction_10m,weather_code',
+                        // Start at today's midnight (Europe/Paris) so the 10h/15h slots stay available
+                        // even after they have passed earlier in the day.
+                        '::start_hour::' => date('Y-m-d\T00:00'),
                         '::end_hour::' => new \DateTimeImmutable('tomorrow 23:00')->format('Y-m-d\TH:00'),
                     ],
                 ),
@@ -51,6 +53,7 @@ final readonly class OpenMeteoAromeWeatherForecastProvider implements WeatherFor
              *          wind_direction_10m: int[],
              *          pressure_msl: float[],
              *          relative_humidity_2m: int[],
+             *          weather_code: int[],
              *      }
              * } $arrayResponse
              */
@@ -65,6 +68,7 @@ final readonly class OpenMeteoAromeWeatherForecastProvider implements WeatherFor
                     $arrayResponse['hourly']['precipitation'][$i],
                     $arrayResponse['hourly']['wind_speed_10m'][$i],
                     $arrayResponse['hourly']['wind_direction_10m'][$i],
+                    $arrayResponse['hourly']['weather_code'][$i],
                 );
             }
 

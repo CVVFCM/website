@@ -27,10 +27,10 @@
 
                 <div class="HomepageLive__windInfo">
                     <div class="HomepageLive__windKnots">
-                        <span class="HomepageLive__windKnotsValue">{{ liveWeather.windSpeed|round }}</span> Noeuds
+                        <span class="HomepageLive__windKnotsValue">{{ liveWeather.windSpeed|round }}</span> Noeuds (raf.)
                     </div>
                     <div class="HomepageLive__windSpeed">
-                        {{ (liveWeather.windSpeed * 1.852)|round(2)|replace({'.': ','}) }} <span class="HomepageLive__windSpeedUnit">km/h</span>
+                        {{ liveWeather.windSpeed|replace({'.': ','}) }} <span class="HomepageLive__windSpeedUnit">Noeuds</span>
                     </div>
                     <div class="HomepageLive__windDirection">
                         {{ liveWeather.windDirectionAsCardinal.value }}

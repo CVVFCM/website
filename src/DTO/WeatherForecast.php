@@ -14,6 +14,42 @@ final readonly class WeatherForecast
         '16' => 'Après-midi',
     ];
 
+    /**
+     * WMO weather interpretation codes → French labels.
+     *
+     * @see https://open-meteo.com/en/docs#weathervariables
+     */
+    private const array CONDITIONS = [
+        0 => 'Ciel clair',
+        1 => 'Éclaircies',
+        2 => 'Partiellement nuageux',
+        3 => 'Couvert',
+        45 => 'Brouillard',
+        48 => 'Brouillard givrant',
+        51 => 'Bruine',
+        53 => 'Bruine',
+        55 => 'Bruine',
+        56 => 'Bruine verglaçante',
+        57 => 'Bruine verglaçante',
+        61 => 'Pluie',
+        63 => 'Pluie',
+        65 => 'Pluie',
+        66 => 'Pluie verglaçante',
+        67 => 'Pluie verglaçante',
+        71 => 'Neige',
+        73 => 'Neige',
+        75 => 'Neige',
+        77 => 'Neige',
+        80 => 'Averses',
+        81 => 'Averses',
+        82 => 'Averses',
+        85 => 'Averses de neige',
+        86 => 'Averses de neige',
+        95 => 'Orage',
+        96 => 'Orage (grêle)',
+        99 => 'Orage (grêle)',
+    ];
+
     public function __construct(
         public \DateTimeImmutable $date,
         public float $temperature,
@@ -22,7 +58,13 @@ final readonly class WeatherForecast
         public float $precipitation,
         public float $windSpeed,
         public int $windDirection,
+        public int $weatherCode,
     ) {
+    }
+
+    public function getConditionLabel(): string
+    {
+        return self::CONDITIONS[$this->weatherCode] ?? '—';
     }
 
     public function getLabel(): string
