@@ -106,3 +106,44 @@ When creating `src/Twig/Components/Foo.php`, you **must** also create:
 - Mobile-first: base styles without media queries, desktop via `@media (min-width: ...rem)`
 - No color literals — always use CSS custom properties from `variables.css`
 - Only define new custom properties if reused 3+ times across blocks
+
+## Symfony Superpowers (plugin)
+
+The `superpowers-symfony` plugin is enabled. For Symfony / Doctrine / Twig / Messenger / testing work,
+**prefer these agents & skills over free-handing**. Entry point: the `symfony:using-symfony-superpowers`
+skill. When a task matches one below, invoke it — but always honour this repo's conventions (see below
+and the Rules section).
+
+### Stack caveats (pick the matching variant)
+- **Tests = PHPUnit** (`make test`), not Pest → use the PHPUnit variants (`symfony:tdd-with-phpunit`, `/symfony-tdd-phpunit`, `symfony-tdd-coach` in PHPUnit mode).
+- **Static analysis = Psalm** (`make psalm`), **not PHPStan**. Keep style via `make cs` (php-cs-fixer `@Symfony`). Do **not** substitute PHPStan when a skill mentions it.
+- **CMS = Sulu, no API Platform** → the `api-platform-*` agents/skills are **N/A** unless API Platform is added.
+- Fixtures already use Doctrine fixtures (`make reset`); Foundry is optional.
+- Async: `symfony/scheduler` + `symfony/messenger` (sync transport) — `symfony:symfony-scheduler` / `symfony:symfony-messenger` apply.
+- Planning already handled by the built-in `/plan` flow; the plugin's `writing-plans`/`executing-plans` are complementary, not a replacement.
+
+### Agents (delegate via the Agent tool)
+| Agent | Use when |
+|---|---|
+| `symfony-engineer` | General Symfony impl (controllers, services, DI, VOs/DTOs, forms, Twig components) when no specialised agent fits |
+| `doctrine-architect` | Entity schema, relationships, migration planning **before** implementing |
+| `doctrine-performance-optimizer` | Read-only N+1 / fetch-mode / index / cache audit after adding entities/queries or a slow page |
+| `symfony-reviewer` | Proactive quality/architecture review after code changes |
+| `symfony-security-auditor` | After changes to security, voters, forms, controllers (read-only audit) |
+| `symfony-tdd-coach` | Writing tests / adding coverage — PHPUnit mode |
+| `api-platform-builder` | Only if API Platform is introduced (currently N/A) |
+
+### Skills (invoke via the Skill tool, `symfony:<name>`)
+- **Testing**: `tdd-with-phpunit`, `functional-tests`, `test-doubles-mocking`, `doctrine-fixtures-foundry` (Foundry optional).
+- **Doctrine**: `doctrine-migrations`, `doctrine-relations`, `doctrine-transactions`, `doctrine-batch-processing`, `doctrine-events`, `doctrine-fetch-modes`.
+- **Async / caching**: `symfony-messenger`, `messenger-retry-failures`, `symfony-scheduler`, `symfony-cache`, `rate-limiting`.
+- **Architecture**: `value-objects-and-dtos`, `interfaces-and-autowiring`, `ports-and-adapters`, `cqrs-and-handlers`, `strategy-pattern`, `controller-cleanup`, `config-env-parameters`.
+- **Frontend**: `twig-components` (this repo leans on Twig UX components).
+- **Security**: `symfony-voters` (+ the `symfony-security-auditor` agent).
+- **Quality**: `quality-checks` — but run this repo's `make cs` + `make psalm` (not PHPStan).
+- **Workflow / meta**: `using-symfony-superpowers`, `daily-workflow`, `effective-context`.
+- **API Platform** (`api-platform-*`): skip unless API Platform is added.
+
+### Slash commands
+Thin wrappers over the skills above, e.g. `/symfony-check` → `symfony:quality-checks`,
+`/symfony-tdd-phpunit`, `/symfony-migrations`, `/symfony-voters`, `/symfony-messenger`, `/symfony-fixtures`.
