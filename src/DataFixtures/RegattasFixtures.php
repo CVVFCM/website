@@ -16,6 +16,7 @@ use Sulu\Content\Domain\Model\DimensionContentInterface;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Page\Application\Message\CreatePageMessage;
 use Sulu\Page\Domain\Model\Page;
+use Sulu\Page\Domain\Model\PageDimensionContent;
 use Sulu\Page\Domain\Repository\PageRepositoryInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\HandleTrait;
@@ -134,7 +135,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
 
         for ($i = 0; $i < 3; ++$i) {
             $editionName = $name.' '.$begin->format('Y');
-            $url = $regatta->getDimensionContents()->last()->getTemplateData()['url'].'/'.(new AsciiSlugger())->slug($editionName)->lower()->ascii();
+            $url = $regatta->getDimensionContents()->last()->getRoute()->getSlug().'/'.(new AsciiSlugger())->slug($editionName)->lower()->ascii();
 
             /** @var Page $edition */
             $editionData = [

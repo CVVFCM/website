@@ -13,6 +13,6 @@ data:
   S3_REGION: {{ .Values.app.s3Region | quote }}
   S3_BUCKET: {{ .Values.app.s3Bucket | quote }}
   # Bound FrankenPHP threads/workers (it otherwise sizes from the host core count and
-  # OOMs the pod's memory limit). CLI pods (consumer, migrate) ignore these.
+  # OOMs the pod's memory limit). CLI pods (consumer) ignore these.
   FRANKENPHP_CONFIG: {{ printf "num_threads %d" (.Values.web.frankenphp.numThreads | int) | quote }}
   FRANKENPHP_WORKER_CONFIG: {{ printf "num %d" (.Values.web.frankenphp.numWorkers | int) | quote }}

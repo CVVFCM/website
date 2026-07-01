@@ -71,7 +71,7 @@
                         <title lang="fr">Liste des contenus (pages)</title>
                     </meta>
                     <params>
-                        <param name="types" value="page"/>
+                        <param name="templateKeys" value="page"/>
                         <param name="max_per_page" value="10" />
                         <param name="properties" type="collection">
                             <param name="title" value="title" />

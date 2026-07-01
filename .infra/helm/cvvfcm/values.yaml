@@ -1,8 +1,8 @@
 # Default values for cvvfcm.
 
 image:
-  # The php image is a superset (carries src/config/templates/public/bin), so web,
-  # consumer and the migrate job all run from it. rtsp-to-web is a standalone Go service.
+  # The php image is a superset (carries src/config/templates/public/bin), so web and
+  # consumer both run from it. rtsp-to-web is a standalone Go service.
   # Fully qualified: OKE's runtime enforces short-name mode and rejects bare names.
   web:
     repository: ghcr.io/cvvfcm/website/php
@@ -159,17 +159,6 @@ secrets:
   s3Key: ""
   s3Secret: ""
   rtspHttpPassword: "!ChangeMe!"
-
-# Database migration job (Helm post-install/post-upgrade hook).
-migrations:
-  enabled: true
-  resources:
-    requests:
-      cpu: 100m
-      memory: 192Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
 
 # Gateway API parentRef for the HTTPRoutes (the shared cluster Gateway).
 gateway:
