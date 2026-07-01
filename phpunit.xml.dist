@@ -13,6 +13,11 @@
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
         <env name="KERNEL_CLASS" value="App\Tests\WebsiteKernel" />
+
+        <!-- ###+ symfony/brevo-mailer ### -->
+        <!-- MAILER_DSN=brevo+api://KEY@default -->
+        <!-- MAILER_DSN=brevo+smtp://USERNAME:PASSWORD@default -->
+        <!-- ###- symfony/brevo-mailer ### -->
     </php>
 
     <testsuites>
