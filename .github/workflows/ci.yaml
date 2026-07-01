@@ -51,10 +51,11 @@ jobs:
             -   name: Install mkcert & Generate SSL certificates
                 run: |
                     sudo apt-get install libnss3-tools
-                    wget https://dl.filippo.io/mkcert/latest?for=linux/amd64
-                    sudo mv mkcert-* /usr/local/bin/mkcert
+                    wget -O mkcert "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+                    sudo mv mkcert /usr/local/bin/mkcert
                     sudo chmod +x /usr/local/bin/mkcert
                     mkcert -install
+                    mkdir -p .infra/tls
                     mkcert -key-file .infra/tls/key.pem -cert-file .infra/tls/cert.pem localhost
             -   name: Cache Composer dependencies
                 uses: actions/cache@v5
