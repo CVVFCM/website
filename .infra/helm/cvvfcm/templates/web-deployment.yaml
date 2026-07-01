@@ -68,22 +68,35 @@ spec:
               subPath: robots.txt
             {{- end }}
           {{- end }}
+          # Probes MUST send the real vhost as Host. Sulu resolves the webspace's {host}
+          # URL from the first request and caches it per FrankenPHP worker; a default probe
+          # (Host: <podIP>) would poison every worker so real requests for {{ .Values.host }}
+          # get "no portal" 500s. Sending the real Host makes workers cache the right portal.
           startupProbe:
             httpGet:
               path: /
               port: http
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.host | quote }}
             periodSeconds: 3
             failureThreshold: 40
           readinessProbe:
             httpGet:
               path: /
               port: http
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.host | quote }}
             periodSeconds: 10
             timeoutSeconds: 5
           livenessProbe:
             httpGet:
               path: /
               port: http
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.host | quote }}
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 3
