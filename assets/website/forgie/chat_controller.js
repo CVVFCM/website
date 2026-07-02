@@ -70,6 +70,7 @@ export default class extends Controller {
             return;
         }
 
+        this.element.classList.add('Forgie--started');
         this.appendBubble('user', message);
         this.inputTarget.value = '';
         this.buffer = '';
@@ -111,9 +112,17 @@ export default class extends Controller {
         }
 
         if (data.delta) {
+            // Only auto-follow when the reader is already near the bottom — never
+            // yank them back down while they scrolled up to re-read something.
+            const el = this.messagesTarget;
+            const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 64;
+
             this.buffer += data.delta;
             this.pendingBubble.innerHTML = this.renderMarkdown(this.buffer);
-            this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight;
+
+            if (nearBottom) {
+                el.scrollTop = el.scrollHeight;
+            }
         }
     }
 

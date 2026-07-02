@@ -4,16 +4,36 @@
 
 {% block importmap %}{{ importmap(['app', 'forgie']) }}{% endblock %}
 
+{# Event-page top bar instead of the main navigation: Forgie is a full-height standalone page. #}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block pageclass %}Forgie-page{% endblock %}
+
 {% block content %}
     <section
         class="Forgie"
         data-controller="forgie-chat"
         data-forgie-chat-hub-url-value="{{ hub_url }}"
     >
-        <h1 class="Forgie__title">Forgie</h1>
-        <p class="Forgie__intro">L'assistant du Club de Voile des Vieilles Forges. Pose-lui une question !</p>
+        <div class="Logo__headerTopBar Forgie__topBar">
+            <a class="Logo__headerLogoLink" href="/" aria-label="Accueil CVVFCM">
+                <img class="Logo__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
+                <span class="Logo__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
+            </a>
+        </div>
 
-        <div class="Forgie__messages" data-forgie-chat-target="messages" aria-live="polite"></div>
+        <header class="Forgie__hero">
+            <h1 class="Forgie__title">Forgie</h1>
+            <p class="Forgie__subtitle">L'assistant du club — météo, régates, sorties&nbsp;: pose ta question.</p>
+        </header>
+
+        <div class="Forgie__messages" data-forgie-chat-target="messages" aria-live="polite">
+            <div class="Forgie__welcome">
+                <img class="Forgie__welcomeLogo" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="" />
+                <p class="Forgie__welcomeText">Bonjour moussaillon&nbsp;! Quel temps sur le lac, quelles régates à venir&nbsp;?<br />Je suis là pour ça.</p>
+            </div>
+        </div>
 
         <form class="Forgie__form" data-action="submit->forgie-chat#send">
             <input

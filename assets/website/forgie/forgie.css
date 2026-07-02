@@ -1,27 +1,55 @@
-/* Forgie — AI assistant chat page */
+/* Forgie — « le lac au crépuscule » : full-height chat on the event-page dusk gradient. */
+
+/* .Forgie-page (pageclass block): the empty SiteHeader (+8vh margin) and .Main__container (-8vh)
+   cancel each other out, so no offset correction is needed — the class stays as a scoping hook. */
 
 .Forgie {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    max-width: 46rem;
-    margin: 0 auto;
-    padding: 2rem var(--site-layout-row-padding) 3rem;
+    height: 100vh;
+    height: 100dvh;
     box-sizing: border-box;
-    min-height: 70vh;
+    padding: 0.5rem var(--site-layout-row-padding) 0.75rem;
+
+    /* Same dusk as .EventPage__header (event.css). */
+    background: linear-gradient(240deg, #1D68A0 0%, #06315A 100%);
+    overflow: hidden;
+}
+
+/* ── Top bar (borrowed from the event page), white on the gradient ───────── */
+
+.Forgie__topBar {
+    padding: 0.75rem 0;
+
+    & .Logo__headerLogoText {
+        color: var(--color-white);
+    }
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+
+.Forgie__hero {
+    text-align: center;
+    padding: 0.25rem 0 0.75rem;
 }
 
 .Forgie__title {
-    color: var(--blue-note-text);
-    font-size: 2rem;
-    font-weight: 800;
     margin: 0;
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+    color: var(--red-act-text);
 }
 
-.Forgie__intro {
-    color: var(--base-text-color);
-    margin: 0;
+.Forgie__subtitle {
+    margin: 0.25rem 0 0;
+    color: var(--utility-grey);
+    font-size: 0.95rem;
 }
+
+/* ── Messages (the only scrolling element) ────────────────────────────────── */
 
 .Forgie__messages {
     flex: 1;
@@ -29,16 +57,43 @@
     flex-direction: column;
     gap: 0.75rem;
     overflow-y: auto;
-    padding: 1rem;
-    background-color: var(--color-gray-100);
-    border-radius: var(--white-card-radius);
-    min-height: 20rem;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+    width: 100%;
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 0.5rem 0.25rem;
+    min-height: 0;
 }
+
+/* Welcome moment — visible until the first message. */
+.Forgie__welcome {
+    margin: auto;
+    text-align: center;
+    color: var(--color-white);
+}
+
+.Forgie--started .Forgie__welcome {
+    display: none;
+}
+
+.Forgie__welcomeLogo {
+    width: 6rem;
+    height: 6rem;
+}
+
+.Forgie__welcomeText {
+    color: var(--utility-grey);
+    line-height: 1.5;
+    margin: 0.75rem 0 0;
+}
+
+/* ── Bubbles ──────────────────────────────────────────────────────────────── */
 
 .Forgie__bubble {
     margin: 0;
     padding: 0.75em 1em;
-    border-radius: 1em;
+    border-radius: var(--white-card-radius);
     max-width: 85%;
     line-height: 1.4;
     overflow-wrap: break-word;
@@ -54,12 +109,13 @@
     white-space: pre-wrap;
 }
 
-/* Assistant bubbles hold sanitized markdown-rendered HTML. */
+/* Assistant bubbles hold sanitized markdown-rendered HTML — white cards, like the site's hulls. */
 .Forgie__bubble--forgie {
     align-self: flex-start;
     background-color: var(--color-white);
     color: var(--base-text-color);
     border-bottom-left-radius: 0.25em;
+    box-shadow: 0 0.25rem 1rem rgb(6 49 90 / 35%);
     white-space: normal;
 
     & p,
@@ -107,47 +163,81 @@
     }
 }
 
+/* Typing indicator — three quiet dots while Forgie thinks. */
 .Forgie__bubble--pending:empty::after {
-    content: '…';
+    content: '•\2009•\2009•';
     color: var(--color-gray-400);
+    letter-spacing: 0.15em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .Forgie__bubble--pending:empty::after {
+        animation: forgie-thinking 1.2s ease-in-out infinite;
+    }
+
+    @keyframes forgie-thinking {
+        0%,
+        100% {
+            opacity: 0.35;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
 }
 
 .Forgie__bubble--error {
     color: var(--red-act-text);
 }
 
+/* ── Input bar (site pill language) ───────────────────────────────────────── */
+
 .Forgie__form {
     display: flex;
     gap: 0.5rem;
+    width: 100%;
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 0.5rem 0 calc(0.25rem + env(safe-area-inset-bottom));
 }
 
 .Forgie__input {
     flex: 1;
+    min-width: 0;
     font: inherit;
     color: var(--base-text-color);
-    padding: 0.75em 1em;
-    border: 1px solid var(--color-border);
-    border-radius: 2em;
+    padding: 0.75em 1.25em;
+    border: none;
+    border-radius: 5em;
     background-color: var(--color-white);
 }
 
 .Forgie__input:focus-visible {
-    outline: 0.125rem solid var(--blue-note-text);
-    outline-offset: -0.125rem;
+    outline: 0.15rem solid var(--red-act-text);
+    outline-offset: 0.1rem;
 }
 
+/* Mirror of .CallToAction--btn. */
 .Forgie__submit {
     font: inherit;
     font-weight: 700;
+    font-size: 0.9em;
+    letter-spacing: 0.03em;
     color: var(--color-white);
     background-color: var(--red-act-text);
     border: none;
-    border-radius: 2em;
-    padding: 0.75em 1.5em;
+    border-radius: 5em;
+    padding: 0.8em 1.8em;
     cursor: pointer;
 }
 
+.Forgie__submit:focus-visible {
+    outline: 0.15rem solid var(--color-white);
+    outline-offset: 0.1rem;
+}
+
 .Forgie__submit:disabled {
-    background-color: var(--color-gray-300);
+    background-color: var(--color-gray-400);
     cursor: wait;
 }
