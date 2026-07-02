@@ -78,6 +78,9 @@ make reset-test   # Same as reset but for test environment
 
 ## Rules (Never Skip)
 
+### Quality gates (after EVERY update)
+- `make cs` and `make psalm` **must pass after each edit** — run them immediately, not batched at the end of a task. Treat a red psalm like a failing test.
+
 ### PHP
 - Always `declare(strict_types=1);`
 - Type all properties, parameters, and return values

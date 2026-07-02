@@ -69,11 +69,7 @@ final class RegattaToolTest extends KernelTestCase
     private function assertRegattaShape(array $regatta): void
     {
         $this->assertSame(
-<<<<<<< HEAD
-            ['titre', 'debut', 'fin', 'url', 'lieu', 'description', 'series', 'informations'],
-=======
             ['titre', 'debut', 'fin', 'url', 'lieu', 'description', 'series', 'informations', 'services', 'liens', 'contacts'],
->>>>>>> b609d95 (fix: Fixed Forgie prompt)
             array_keys($regatta),
         );
 
@@ -86,15 +82,12 @@ final class RegattaToolTest extends KernelTestCase
 
         $this->assertNotEmpty($regatta['series'], 'Rich payload must expose the series/grades');
         $this->assertNotNull($regatta['informations']);
-<<<<<<< HEAD
-=======
         $this->assertNotEmpty($regatta['services'], 'Rich payload must expose on-site services');
         $this->assertNotEmpty($regatta['liens'], 'Rich payload must expose the links');
         $this->assertNotEmpty($regatta['contacts'], 'Rich payload must expose resolved contacts');
         foreach ($regatta['services'] as $service) {
             $this->assertSame(['nom', 'disponible'], array_keys($service));
         }
->>>>>>> b609d95 (fix: Fixed Forgie prompt)
     }
 
     private function tool(): RegattaTool
