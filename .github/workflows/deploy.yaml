@@ -116,6 +116,8 @@ jobs:
                       --set secrets.s3Key="${{ secrets.SCW_ACCESS_KEY }}" \
                       --set secrets.s3Secret="${{ secrets.SCW_SECRET_KEY }}" \
                       --set secrets.rtspHttpPassword="${{ secrets.RTSP_TO_WEB_HTTP_PASSWORD }}" \
+                      --set secrets.mercureJwtSecret="${{ secrets.MERCURE_JWT_SECRET }}" \
+                      --set secrets.mistralApiKey="${{ secrets.MISTRAL_API_KEY }}" \
                       --set app.s3Bucket="${{ inputs.s3-bucket }}" \
                       "${EXTRA[@]}" \
                       --wait --rollback-on-failure --timeout 5m

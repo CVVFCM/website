@@ -37,11 +37,13 @@ web:
   tolerations: []
   affinity: {}
 
-# Symfony Messenger consumer. Messenger transports are unset (sync://); this process runs
-# the Symfony Scheduler (src/Schedule.php, #[AsSchedule]) via its scheduler_default transport.
+# Symfony Messenger consumer: handles the async transport (Forgie & co, doctrine-backed)
+# and the Symfony Scheduler (src/Schedule.php, #[AsSchedule]) transport.
 consumer:
   replicaCount: 1
-  transport: scheduler_default
+  transports:
+    - async
+    - scheduler_default
   resources:
     requests:
       cpu: 50m
@@ -85,6 +87,13 @@ app:
   s3Endpoint: https://s3.fr-par.scw.cloud
   s3Region: fr-par
   s3Bucket: cvvfcm
+  # Mercure hub is embedded in the web (FrankenPHP) pod. Internal URL the app/consumer POSTs
+  # updates to — MUST target the web Service (the consumer pod has no local hub). Empty →
+  # derived as http://<release>-web/.well-known/mercure.
+  # NOTE: the hub is per-pod; keep web.replicaCount at 1 (or move to a shared hub) before scaling.
+  mercureUrl: ""
+  # Public URL the browser subscribes to. Empty → derived as https://<host>/.well-known/mercure.
+  mercurePublicUrl: ""
 
 # HTTP basic auth at the Traefik edge (PREPROD gate). When enabled, a Traefik Middleware
 # is attached to the HTTPRoute. users = htpasswd lines (e.g. `htpasswd -nbB user pass`),
@@ -159,6 +168,11 @@ secrets:
   s3Key: ""
   s3Secret: ""
   rtspHttpPassword: "!ChangeMe!"
+  # Signs the Mercure hub JWTs (publisher & subscriber) AND is read by the hub itself
+  # (SITE_EXTRA_CONFIG references it via {env.MERCURE_JWT_SECRET}).
+  mercureJwtSecret: "!ChangeThisMercureHubJWTSecretKey!"
+  # Mistral API key for the Forgie agent.
+  mistralApiKey: ""
 
 # Gateway API parentRef for the HTTPRoutes (the shared cluster Gateway).
 gateway:
