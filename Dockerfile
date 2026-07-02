@@ -133,4 +133,5 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
 
 HEALTHCHECK CMD echo "OK"
 
-CMD [ "php", "bin/console", "messenger:consume", "--time-limit=3600", "--failure-limit=10", "-vv" ]
+# Receivers named explicitly: async (Forgie & co) + the Symfony Scheduler transport.
+CMD [ "php", "bin/console", "messenger:consume", "async", "scheduler_default", "--time-limit=3600", "--failure-limit=10", "-vv" ]

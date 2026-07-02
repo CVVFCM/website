@@ -20,6 +20,15 @@ services:
             S3_ENDPOINT: ${S3_ENDPOINT:-}
             S3_REGION: ${S3_REGION:-eu-west-3}
             S3_BUCKET: ${S3_BUCKET:-cvvfcm}
+            # Mercure hub is embedded in the php (FrankenPHP) container; "php" resolves on the
+            # compose network, so the consumer publishes to it too. Literal (not ${MERCURE_URL:-…}):
+            # compose would interpolate that from .env, whose localhost value is wrong for the consumer.
+            MERCURE_URL: http://php/.well-known/mercure
+            MERCURE_PUBLIC_URL: ${MERCURE_PUBLIC_URL:-https://${SERVER_NAME:-localhost}/.well-known/mercure}
+            MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+            # MISTRAL_API_KEY intentionally NOT set here: an empty real env var would shadow the
+            # value from .env.local (Symfony dotenv precedence). Dev key lives in .env.local; k8s
+            # injects the real env var via the helm secret.
         labels:
             - 'traefik.enable=true'
             - 'traefik.docker.network=${NETWORK_NAME:-${COMPOSE_PROJECT_NAME}_default}'
@@ -70,11 +79,13 @@ services:
         volumes:
             - database_data:/var/lib/mysql
 
+
 volumes:
     caddy_data:
     caddy_config:
     database_data:
     search_indexes:
+
     thumbnails:
 
 networks:

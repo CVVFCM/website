@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forgie — CVVFCM{% endblock %}
+
+{% block importmap %}{{ importmap(['app', 'forgie']) }}{% endblock %}
+
+{% block content %}
+    <section
+        class="Forgie"
+        data-controller="forgie-chat"
+        data-forgie-chat-hub-url-value="{{ hub_url }}"
+    >
+        <h1 class="Forgie__title">Forgie</h1>
+        <p class="Forgie__intro">L'assistant du Club de Voile des Vieilles Forges. Pose-lui une question !</p>
+
+        <div class="Forgie__messages" data-forgie-chat-target="messages" aria-live="polite"></div>
+
+        <form class="Forgie__form" data-action="submit->forgie-chat#send">
+            <input
+                class="Forgie__input"
+                type="text"
+                name="message"
+                placeholder="Écris ton message…"
+                maxlength="4000"
+                autocomplete="off"
+                required
+                data-forgie-chat-target="input"
+            />
+            <button class="Forgie__submit" type="submit" data-forgie-chat-target="submit">Envoyer</button>
+        </form>
+    </section>
+{% endblock %}

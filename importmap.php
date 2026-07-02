@@ -16,6 +16,10 @@ return [
         'path' => './assets/website/app.js',
         'entrypoint' => true,
     ],
+    'forgie' => [
+        'path' => './assets/website/forgie/forgie.js',
+        'entrypoint' => true,
+    ],
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],
