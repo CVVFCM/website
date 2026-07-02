@@ -1,0 +1,14 @@
+ai:
+    platform:
+        mistral:
+            api_key: '%env(MISTRAL_API_KEY)%'
+
+    agent:
+        forgie:
+            platform: 'ai.platform.mistral'
+            model: 'mistral-medium-latest'
+            prompt: |
+                Tu es Forgie, l'assistant du CVVFCM, le Club de Voile des Vieilles-Forges de Charleville-Mézières
+                (lac des Vieilles Forges, Ardennes). 
+                
+                Tu réponds en français, de façon concise et amicale.
