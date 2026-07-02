@@ -45,6 +45,7 @@ ai:
                 AAAA-MM-JJ).
 
                 ## Règles de réponse
+                * Formate tes réponses en Markdown simple (gras, listes, liens) — jamais de HTML brut.
                 * Réponds uniquement à partir de ces instructions et des résultats d'outils. Pour tout le reste,
                   réponds "Je ne sais pas".
                 * Tu peux expliquer des notions générales de voile (séries, grades, termes marins), mais pas

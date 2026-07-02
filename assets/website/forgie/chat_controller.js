@@ -1,8 +1,29 @@
 import { Controller } from '@hotwired/stimulus';
+import snarkdown from 'snarkdown';
+import DOMPurify from 'dompurify';
+
+// Module-level (once): harden links coming out of the markdown — new tab, no opener,
+// http(s)/mailto/relative hrefs only.
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+    if ('A' !== node.tagName) {
+        return;
+    }
+
+    const href = node.getAttribute('href') ?? '';
+    if (!/^(https?:|mailto:|\/|#)/i.test(href)) {
+        node.removeAttribute('href');
+
+        return;
+    }
+
+    node.setAttribute('target', '_blank');
+    node.setAttribute('rel', 'noopener noreferrer');
+});
 
 /**
  * Forgie chat: POSTs the user message to the API (202) and streams the answer
- * from Mercure ({delta} frames, then {done} — or {error}).
+ * from Mercure ({delta} frames, then {done} — or {error}). Assistant bubbles
+ * are rendered as Markdown (snarkdown) and sanitized (DOMPurify).
  */
 export default class extends Controller {
     static values = {
@@ -22,6 +43,11 @@ export default class extends Controller {
      * @type {HTMLElement|null}
      */
     pendingBubble = null;
+
+    /**
+     * Raw markdown accumulated for the in-flight answer.
+     */
+    buffer = '';
 
     connect() {
         const url = new URL(this.hubUrlValue);
@@ -46,6 +72,7 @@ export default class extends Controller {
 
         this.appendBubble('user', message);
         this.inputTarget.value = '';
+        this.buffer = '';
         this.pendingBubble = this.appendBubble('forgie', '');
         this.pendingBubble.classList.add('Forgie__bubble--pending');
         this.submitTarget.disabled = true;
@@ -84,9 +111,17 @@ export default class extends Controller {
         }
 
         if (data.delta) {
-            this.pendingBubble.textContent += data.delta;
+            this.buffer += data.delta;
+            this.pendingBubble.innerHTML = this.renderMarkdown(this.buffer);
             this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight;
         }
+    }
+
+    renderMarkdown(text) {
+        return DOMPurify.sanitize(snarkdown(text), {
+            ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'a', 'code', 'pre', 'h1', 'h2', 'h3'],
+            ALLOWED_ATTR: ['href', 'target', 'rel'],
+        });
     }
 
     appendBubble(author, text) {

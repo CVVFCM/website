@@ -41,7 +41,6 @@
     border-radius: 1em;
     max-width: 85%;
     line-height: 1.4;
-    white-space: pre-wrap;
     overflow-wrap: break-word;
 }
 
@@ -50,13 +49,62 @@
     background-color: var(--blue-note-text);
     color: var(--color-white);
     border-bottom-right-radius: 0.25em;
+
+    /* User input is plain text: keep their line breaks. */
+    white-space: pre-wrap;
 }
 
+/* Assistant bubbles hold sanitized markdown-rendered HTML. */
 .Forgie__bubble--forgie {
     align-self: flex-start;
     background-color: var(--color-white);
     color: var(--base-text-color);
     border-bottom-left-radius: 0.25em;
+    white-space: normal;
+
+    & p,
+    & ul,
+    & ol {
+        margin: 0.4em 0;
+    }
+
+    & > :first-child {
+        margin-top: 0;
+    }
+
+    & > :last-child {
+        margin-bottom: 0;
+    }
+
+    & ul,
+    & ol {
+        padding-left: 1.2em;
+    }
+
+    & a {
+        color: var(--blue-note-text);
+        text-decoration: underline;
+    }
+
+    & code,
+    & pre {
+        background-color: var(--color-gray-100);
+        border-radius: 0.25em;
+        padding: 0.1em 0.3em;
+    }
+
+    & pre {
+        padding: 0.5em 0.75em;
+        overflow-x: auto;
+    }
+
+    & h1,
+    & h2,
+    & h3 {
+        font-size: 1.1em;
+        font-weight: 700;
+        margin: 0.5em 0 0.25em;
+    }
 }
 
 .Forgie__bubble--pending:empty::after {
