@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\AI\Tool;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;
-use Sulu\Content\Domain\Model\DimensionContentInterface;
-use Sulu\Page\Domain\Model\PageDimensionContent;
+use App\AI\ContactResolver;
+use App\AI\PageContentRepository;
+use App\AI\TemplateData;
 use Symfony\AI\Agent\Toolbox\Attribute\AsTool;
 
 use function Symfony\Component\Clock\now;
@@ -36,8 +34,8 @@ use function Symfony\Component\Clock\now;
 final readonly class RegattaTool
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private ContactRepositoryInterface $contactRepository,
+        private PageContentRepository $pageContentRepository,
+        private ContactResolver $contactResolver,
     ) {
     }
 
@@ -68,30 +66,9 @@ final readonly class RegattaTool
      */
     private function fetch(\DateTimeImmutable $from, \DateTimeImmutable $to, string $order): array
     {
-        /** @var list<array{templateData: array<string, mixed>}> $rows */
-        $rows = $this->entityManager->createQueryBuilder()
-            ->select('dc.templateData')
-            ->addSelect("JSON_GET_TEXT(dc.templateData, 'begin_date') AS HIDDEN begin_date")
-            ->from(PageDimensionContent::class, 'dc')
-            ->where('dc.locale = :locale')
-            ->andWhere('dc.stage = :stage')
-            ->andWhere('dc.templateKey = :templateKey')
-            ->andWhere("JSON_GET_TEXT(dc.templateData, 'event_type') = :eventType")
-            ->andWhere("JSON_GET_TEXT(dc.templateData, 'begin_date') >= :from")
-            ->andWhere("JSON_GET_TEXT(dc.templateData, 'begin_date') < :to")
-            ->orderBy('begin_date', $order)
-            ->setParameter('locale', 'fr')
-            ->setParameter('stage', DimensionContentInterface::STAGE_LIVE)
-            ->setParameter('templateKey', 'event')
-            ->setParameter('eventType', 'regatta')
-            ->setParameter('from', $from->format('Y-m-d\TH:i:s'))
-            ->setParameter('to', $to->format('Y-m-d\TH:i:s'))
-            ->getQuery()
-            ->getArrayResult();
-
         return array_map(
-            fn (array $row): array => $this->mapRegatta($row['templateData']),
-            $rows,
+            fn (array $data): array => $this->mapRegatta($data),
+            $this->pageContentRepository->findEvents('regatta', $from, $to, $order),
         );
     }
 
@@ -102,18 +79,6 @@ final readonly class RegattaTool
      */
     private function mapRegatta(array $data): array
     {
-        $location = null;
-        if (\is_array($data['location'] ?? null)) {
-            $parts = [];
-            /** @var mixed $part */
-            foreach ([$data['location']['title'] ?? null, $data['location']['town'] ?? null] as $part) {
-                if (\is_string($part) && '' !== trim($part)) {
-                    $parts[] = trim($part);
-                }
-            }
-            $location = [] !== $parts ? implode(', ', $parts) : null;
-        }
-
         $series = [];
         /** @var mixed $serie */
         foreach ((array) ($data['series'] ?? []) as $serie) {
@@ -137,71 +102,18 @@ final readonly class RegattaTool
             }
         }
 
-        $links = [];
-        /** @var mixed $link */
-        foreach ((array) ($data['links'] ?? []) as $link) {
-            if (\is_array($link) && isset($link['title'], $link['url'])) {
-                $links[] = [
-                    'titre' => (string) $link['title'],
-                    'url' => (string) $link['url'],
-                ];
-            }
-        }
-
         return [
             'titre' => (string) ($data['title'] ?? ''),
             'debut' => (string) ($data['begin_date'] ?? ''),
             'fin' => isset($data['end_date']) ? (string) $data['end_date'] : null,
             'url' => isset($data['url']) ? (string) $data['url'] : null,
-            'lieu' => $location,
-            'description' => $this->plainText($data['description'] ?? null),
+            'lieu' => TemplateData::location($data),
+            'description' => TemplateData::plainText($data['description'] ?? null),
             'series' => $series,
-            'informations' => $this->plainText($data['regatta_informations'] ?? null),
+            'informations' => TemplateData::plainText($data['regatta_informations'] ?? null),
             'services' => $services,
-            'liens' => $links,
-            'contacts' => $this->resolveContacts($data['contact'] ?? null),
+            'liens' => TemplateData::links($data),
+            'contacts' => $this->contactResolver->resolve($data['contact'] ?? null),
         ];
-    }
-
-    /**
-     * Resolves contact_account_selection values ("c<id>" entries) to "Name (email)" strings.
-     *
-     * @return list<string>
-     */
-    private function resolveContacts(mixed $selection): array
-    {
-        $contacts = [];
-        /** @var mixed $entry */
-        foreach ((array) ($selection ?? []) as $entry) {
-            if (!\is_string($entry)) {
-                continue;
-            }
-            if (!str_starts_with($entry, 'c')) {
-                continue;
-            }
-
-            $contact = $this->contactRepository->find((int) substr($entry, 1));
-            if (!$contact instanceof Contact) {
-                continue;
-            }
-
-            $email = $contact->getMainEmail();
-            $contacts[] = null !== $email && '' !== $email
-                ? sprintf('%s (%s)', $contact->getFullName(), $email)
-                : $contact->getFullName();
-        }
-
-        return $contacts;
-    }
-
-    private function plainText(mixed $html): ?string
-    {
-        if (!\is_string($html)) {
-            return null;
-        }
-
-        $text = trim(strip_tags($html));
-
-        return '' !== $text ? $text : null;
     }
 }
