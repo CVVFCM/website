@@ -99,6 +99,7 @@ final readonly class RegattaTool
         $location = null;
         if (\is_array($data['location'] ?? null)) {
             $parts = [];
+            /** @var mixed $part */
             foreach ([$data['location']['title'] ?? null, $data['location']['town'] ?? null] as $part) {
                 if (\is_string($part) && '' !== trim($part)) {
                     $parts[] = trim($part);
