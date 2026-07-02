@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\AI\Tool;
 
 use Doctrine\ORM\EntityManagerInterface;
+<<<<<<< HEAD
+=======
+use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;
+>>>>>>> b609d95 (fix: Fixed Forgie prompt)
 use Sulu\Content\Domain\Model\DimensionContentInterface;
 use Sulu\Page\Domain\Model\PageDimensionContent;
 use Symfony\AI\Agent\Toolbox\Attribute\AsTool;
@@ -24,14 +28,28 @@ use function Symfony\Component\Clock\now;
  *     description: string|null,
  *     series: list<array{serie: string, grade: string, prix_inscription: string|null}>,
  *     informations: string|null,
+<<<<<<< HEAD
  * }
  */
 #[AsTool('upcoming_regattas', 'Liste les régates à venir du club dans les 12 prochains mois, de la plus proche à la plus lointaine (titre, dates, lieu, séries et grades, tarif d\'inscription, informations).', method: 'upcoming')]
 #[AsTool('past_regattas', 'Liste les régates passées du club dans les 12 derniers mois, de la plus récente à la plus ancienne (titre, dates, lieu, séries et grades, informations).', method: 'past')]
+=======
+ *     services: list<array{nom: string, disponible: bool}>,
+ *     liens: list<array{titre: string, url: string}>,
+ *     contacts: list<string>,
+ * }
+ */
+#[AsTool('upcoming_regattas', 'Liste les régates à venir du club dans les 12 prochains mois, de la plus proche à la plus lointaine (titre, dates, lieu, séries et grades, tarif d\'inscription, services sur place, liens, contacts, informations).', method: 'upcoming')]
+#[AsTool('past_regattas', 'Liste les régates passées du club dans les 12 derniers mois, de la plus récente à la plus ancienne (titre, dates, lieu, séries et grades, services sur place, liens, contacts, informations).', method: 'past')]
+>>>>>>> b609d95 (fix: Fixed Forgie prompt)
 final readonly class RegattaTool
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+<<<<<<< HEAD
+=======
+        private ContactRepositoryInterface $contactRepository,
+>>>>>>> b609d95 (fix: Fixed Forgie prompt)
     ) {
     }
 
@@ -120,6 +138,31 @@ final readonly class RegattaTool
             }
         }
 
+<<<<<<< HEAD
+=======
+        $services = [];
+        /** @var mixed $service */
+        foreach ((array) ($data['services'] ?? []) as $service) {
+            if (\is_array($service) && isset($service['name'])) {
+                $services[] = [
+                    'nom' => (string) $service['name'],
+                    'disponible' => (bool) ($service['availability'] ?? false),
+                ];
+            }
+        }
+
+        $links = [];
+        /** @var mixed $link */
+        foreach ((array) ($data['links'] ?? []) as $link) {
+            if (\is_array($link) && isset($link['title'], $link['url'])) {
+                $links[] = [
+                    'titre' => (string) $link['title'],
+                    'url' => (string) $link['url'],
+                ];
+            }
+        }
+
+>>>>>>> b609d95 (fix: Fixed Forgie prompt)
         return [
             'titre' => (string) ($data['title'] ?? ''),
             'debut' => (string) ($data['begin_date'] ?? ''),
@@ -129,9 +172,46 @@ final readonly class RegattaTool
             'description' => $this->plainText($data['description'] ?? null),
             'series' => $series,
             'informations' => $this->plainText($data['regatta_informations'] ?? null),
+<<<<<<< HEAD
         ];
     }
 
+=======
+            'services' => $services,
+            'liens' => $links,
+            'contacts' => $this->resolveContacts($data['contact'] ?? null),
+        ];
+    }
+
+    /**
+     * Resolves contact_account_selection values ("c<id>" entries) to "Name (email)" strings.
+     *
+     * @return list<string>
+     */
+    private function resolveContacts(mixed $selection): array
+    {
+        $contacts = [];
+        /** @var mixed $entry */
+        foreach ((array) ($selection ?? []) as $entry) {
+            if (!\is_string($entry) || !str_starts_with($entry, 'c')) {
+                continue;
+            }
+
+            $contact = $this->contactRepository->find((int) substr($entry, 1));
+            if (null === $contact) {
+                continue;
+            }
+
+            $email = $contact->getMainEmail();
+            $contacts[] = null !== $email && '' !== $email
+                ? sprintf('%s (%s)', $contact->getFullName(), $email)
+                : $contact->getFullName();
+        }
+
+        return $contacts;
+    }
+
+>>>>>>> b609d95 (fix: Fixed Forgie prompt)
     private function plainText(mixed $html): ?string
     {
         if (!\is_string($html)) {
