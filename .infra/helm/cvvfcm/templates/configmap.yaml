@@ -16,3 +16,15 @@ data:
   # OOMs the pod's memory limit). CLI pods (consumer) ignore these.
   FRANKENPHP_CONFIG: {{ printf "num_threads %d" (.Values.web.frankenphp.numThreads | int) | quote }}
   FRANKENPHP_WORKER_CONFIG: {{ printf "num %d" (.Values.web.frankenphp.numWorkers | int) | quote }}
+  # Embedded Mercure hub (Caddy module) in the web pod. Injected into the Caddyfile via the
+  # {$SITE_EXTRA_CONFIG} placeholder; the JWT key resolves at runtime from the pod env
+  # ({env.…}, provided by the Secret). Subscribing is anonymous; topics are unguessable uuids.
+  SITE_EXTRA_CONFIG: |
+    mercure {
+        publisher_jwt {env.MERCURE_JWT_SECRET}
+        subscriber_jwt {env.MERCURE_JWT_SECRET}
+        anonymous
+    }
+  # Internal publish URL (consumer → web Service hub) and public subscribe URL.
+  MERCURE_URL: {{ .Values.app.mercureUrl | default (printf "http://%s-web/.well-known/mercure" (include "cvvfcm.fullname" .)) | quote }}
+  MERCURE_PUBLIC_URL: {{ .Values.app.mercurePublicUrl | default (printf "https://%s/.well-known/mercure" .Values.host) | quote }}

@@ -38,7 +38,9 @@ spec:
             - php
             - bin/console
             - messenger:consume
-            - {{ .Values.consumer.transport | quote }}
+            {{- range .Values.consumer.transports }}
+            - {{ . | quote }}
+            {{- end }}
             - --no-debug
             - -vv
             # Recycle the worker periodically (memory hygiene); on exit the container
