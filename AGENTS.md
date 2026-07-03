@@ -78,6 +78,9 @@ make reset-test   # Same as reset but for test environment
 
 ## Rules (Never Skip)
 
+### Git
+- **Never commit or push unless explicitly asked.** Prepare changes, verify them, report — then wait for the user to request the commit.
+
 ### Quality gates (after EVERY update)
 - `make cs` and `make psalm` **must pass after each edit** — run them immediately, not batched at the end of a task. Treat a red psalm like a failing test.
 
