@@ -5,8 +5,10 @@ on:
         types: [ published ]
     push:
         branches: [ main ]
+        # Root-level docs only: nested .md files (e.g. config/prompts/*.md, the Forgie
+        # prompt) are shipped in the image and must trigger a build.
         paths-ignore:
-            - '**.md'
+            - '*.md'
     workflow_dispatch:
 
 concurrency:
