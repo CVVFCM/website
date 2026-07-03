@@ -10,7 +10,7 @@ import '../forgie/launcher.css';
  * The launcher is a plain link to /forgie: no-JS users and fetch failures fall back to it.
  */
 const INVITE_KEY = 'forgie-invite';
-const INVITE_MAX_VISITS = 3;
+const INVITE_MAX_DISPLAYS = 3;
 const INVITE_TTL = 30 * 24 * 60 * 60 * 1000; // 1 month
 
 export default class extends Controller {
@@ -36,28 +36,24 @@ export default class extends Controller {
     }
 
     /**
-     * Invitation bubble next to the launcher, on the visitor's 3 first visits.
-     * Counter in localStorage ({count, since}), one visit per browser session
-     * (sessionStorage guard), counter resets after a month.
+     * Invitation bubble next to the launcher, shown 3 times total — every page view
+     * counts as a display, sessions don't matter. Counter in localStorage ({count,
+     * since}), reset after a month.
      */
     maybeShowInvite() {
-        let state;
         try {
-            state = JSON.parse(localStorage.getItem(INVITE_KEY));
-            if (null === state || Date.now() - state.since > INVITE_TTL) {
-                state = { count: 0, since: Date.now() };
+            const now = Date.now();
+            let state = JSON.parse(localStorage.getItem(INVITE_KEY));
+            if (null === state || now - state.since > INVITE_TTL) {
+                state = { count: 0, since: now };
             }
 
-            if (!sessionStorage.getItem(INVITE_KEY)) {
-                if (state.count >= INVITE_MAX_VISITS) {
-                    return;
-                }
-                state.count += 1;
-                sessionStorage.setItem(INVITE_KEY, '1');
-                localStorage.setItem(INVITE_KEY, JSON.stringify(state));
+            if (state.count >= INVITE_MAX_DISPLAYS) {
+                return;
             }
-            // Same-session page loads don't re-count; the bubble keeps showing for the
-            // whole session that consumed one of the 3 visits.
+
+            state.count += 1;
+            localStorage.setItem(INVITE_KEY, JSON.stringify(state));
         } catch {
             // Storage unavailable (private mode, quota): no way to cap at 3, skip the bubble.
             return;
