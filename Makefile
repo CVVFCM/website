@@ -75,7 +75,7 @@ cs: ## Fix code style
 	@$(DOCKER_COMPOSE) exec -T php ./vendor/bin/twig-cs-fixer fix templates
 
 stylelint: node_modules/ ## Lint website CSS (pass fix=1 to auto-fix)
-	@docker run --rm -v $(PWD):/app -w /app node:22-bookworm-slim sh -c "npm install --no-audit --no-fund && { npx stylelint 'assets/website/styles/**/*.css' $(if $(fix),--fix,); rc=\$$?; } ; chown -R $(shell id -u):$(shell id -g) node_modules ; exit \$$rc"
+	@npx stylelint 'assets/website/styles/**/*.css' $(if $(fix),--fix,)
 
 psalm: ## Run static analysis
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/psalm --no-diff

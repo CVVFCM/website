@@ -1,0 +1,183 @@
+/* Forgie launcher: site-wide floating button + right-side pane hosting the embedded chat.
+   Loaded on demand by forgie_launcher_controller.js — never on the standalone /forgie page. */
+
+/* ── Floating button ──────────────────────────────────────────────────────── */
+
+.ForgieLauncher {
+    position: fixed;
+    right: calc(1rem + env(safe-area-inset-right));
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    color: var(--color-white);
+
+    /* Same dusk as the Forgie page (forgie.css). */
+    background: linear-gradient(240deg, #1D68A0 0%, #06315A 100%);
+    box-shadow: 0 0.25rem 1rem rgb(6 49 90 / 45%);
+
+    & svg {
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+}
+
+.ForgieLauncher:hover {
+    color: var(--utility-grey);
+}
+
+.ForgieLauncher:focus-visible {
+    outline: 0.15rem solid var(--red-act-text);
+    outline-offset: 0.15rem;
+}
+
+.ForgieLauncher--loading {
+    cursor: progress;
+    opacity: 0.7;
+}
+
+/* Invitation bubble — 3 first visits only (see forgie_launcher_controller.js). */
+.ForgieLauncher__invite {
+    position: fixed;
+    right: calc(1rem + env(safe-area-inset-right));
+    bottom: calc(5rem + env(safe-area-inset-bottom));
+    z-index: 1049;
+    max-width: 16rem;
+    padding: 0.75em 1em;
+    border: none;
+    border-radius: var(--white-card-radius);
+    border-bottom-right-radius: 0.25em;
+    background-color: var(--color-white);
+    color: var(--base-text-color);
+    font: inherit;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 0.25rem 1rem rgb(6 49 90 / 35%);
+}
+
+.ForgieLauncher__invite:focus-visible {
+    outline: 0.15rem solid var(--red-act-text);
+    outline-offset: 0.15rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .ForgieLauncher__invite {
+        animation: forgie-invite-pop 0.4s ease-out;
+    }
+
+    @keyframes forgie-invite-pop {
+        from {
+            opacity: 0;
+            transform: translateY(0.5rem);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+/* Visually hidden accessible label. */
+.ForgieLauncher__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* ── Backdrop ─────────────────────────────────────────────────────────────── */
+
+.ForgiePane__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    background-color: rgb(6 49 90 / 55%);
+}
+
+.ForgiePane__backdrop--closed {
+    visibility: hidden;
+    opacity: 0;
+}
+
+/* ── Pane (the embedded .Forgie fills it: 100dvh flex column, styles untouched) ── */
+
+.ForgiePane {
+    position: fixed;
+    inset: 0 0 0 auto;
+    z-index: 1101;
+    width: 90%;
+    box-shadow: -0.5rem 0 2rem rgb(6 49 90 / 45%);
+}
+
+@media (width >= 64rem) {
+    .ForgiePane {
+        width: 40%;
+    }
+}
+
+.ForgiePane--closed {
+    visibility: hidden;
+    transform: translateX(100%);
+}
+
+/* Embedded-only corrections (forgie.css stays untouched):
+   .Forgie's inline padding is 8vw — sized for the full viewport, oversized inside a
+   40%-wide fixed pane. And the club name next to the logo is redundant here (the site
+   is visible behind); at pane width it wraps word-by-word. */
+.ForgiePane .Forgie {
+    padding-inline: 1.5rem;
+}
+
+.ForgiePane .Forgie__topBar .Logo__headerLogoText {
+    display: none;
+}
+
+/* Straddles the pane's left edge — clear of the compact Forgie header content. */
+.ForgiePane__close {
+    position: absolute;
+    top: calc(1rem + env(safe-area-inset-top));
+    left: 0;
+    transform: translateX(-50%);
+    z-index: 1;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--red-act-text);
+    color: var(--color-white);
+    font: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 0.15rem 0.5rem rgb(6 49 90 / 45%);
+}
+
+.ForgiePane__close:hover {
+    filter: brightness(1.1);
+}
+
+.ForgiePane__close:focus-visible {
+    outline: 0.15rem solid var(--color-white);
+    outline-offset: 0.1rem;
+}
+
+/* ── Motion (opt-in only) ─────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: no-preference) {
+    .ForgiePane {
+        transition: transform 0.3s ease, visibility 0.3s;
+    }
+
+    .ForgiePane__backdrop {
+        transition: opacity 0.3s ease, visibility 0.3s;
+    }
+}
