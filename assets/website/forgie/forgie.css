@@ -16,37 +16,65 @@
     overflow: hidden;
 }
 
-/* ── Top bar (borrowed from the event page), white on the gradient ───────── */
+/* ── Header: compact single row, logo left + title right, to leave the maximum
+   room to the conversation. Full club branding lives in the welcome moment. ─── */
 
+.Forgie__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 0.4rem 0;
+}
+
+/* Top bar (borrowed from the event page): flattened to a horizontal, small logo. */
 .Forgie__topBar {
-    padding: 0.75rem 0;
+    font-size: 0.75rem;
+
+    & .Logo__headerLogoLink {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.6em;
+    }
+
+    & .Logo__headerLogoImg {
+        height: 3em;
+    }
 
     & .Logo__headerLogoText {
         color: var(--color-white);
     }
 }
 
-/* ── Hero ─────────────────────────────────────────────────────────────────── */
-
 .Forgie__hero {
-    text-align: center;
-    padding: 0.25rem 0 0.75rem;
+    text-align: right;
 }
 
 .Forgie__title {
     margin: 0;
-    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-size: clamp(1.4rem, 4vw, 2rem);
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    line-height: 1.1;
+    line-height: 1;
     color: var(--red-act-text);
 }
 
 .Forgie__subtitle {
-    margin: 0.25rem 0 0;
+    margin: 0.15rem 0 0;
     color: var(--utility-grey);
-    font-size: 0.95rem;
+    font-size: 0.8rem;
+}
+
+/* Narrow screens: drop the subtitle and the club name line, keep logo + title. */
+@media (max-width: 30rem) {
+    .Forgie__subtitle,
+    .Forgie__topBar .Logo__headerLogoText {
+        display: none;
+    }
 }
 
 /* ── Messages (the only scrolling element) ────────────────────────────────── */

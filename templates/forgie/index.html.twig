@@ -16,16 +16,18 @@
         data-controller="forgie-chat"
         data-forgie-chat-hub-url-value="{{ hub_url }}"
     >
-        <div class="Logo__headerTopBar Forgie__topBar">
-            <a class="Logo__headerLogoLink" href="/" aria-label="Accueil CVVFCM">
-                <img class="Logo__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
-                <span class="Logo__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
-            </a>
-        </div>
+        <header class="Forgie__header">
+            <div class="Logo__headerTopBar Forgie__topBar">
+                <a class="Logo__headerLogoLink" href="/" aria-label="Accueil CVVFCM">
+                    <img class="Logo__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
+                    <span class="Logo__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
+                </a>
+            </div>
 
-        <header class="Forgie__hero">
-            <h1 class="Forgie__title">Forgie</h1>
-            <p class="Forgie__subtitle">L'assistant du club — météo, régates, sorties&nbsp;: pose ta question.</p>
+            <div class="Forgie__hero">
+                <h1 class="Forgie__title">Forgie</h1>
+                <p class="Forgie__subtitle">L'assistant du club — météo, régates, sorties&nbsp;: pose ta question.</p>
+            </div>
         </header>
 
         <div class="Forgie__messages" data-forgie-chat-target="messages" aria-live="polite">
