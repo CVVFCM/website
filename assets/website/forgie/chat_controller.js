@@ -1,6 +1,9 @@
 import { Controller } from '@hotwired/stimulus';
-import snarkdown from 'snarkdown';
+import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+
+// GFM (tables…) on; breaks: single newlines become <br>, chat-style.
+marked.use({ gfm: true, breaks: true });
 
 // Module-level (once): harden links coming out of the markdown — new tab, no opener,
 // http(s)/mailto/relative hrefs only.
@@ -23,7 +26,7 @@ DOMPurify.addHook('afterSanitizeAttributes', (node) => {
 /**
  * Forgie chat: POSTs the user message to the API (202) and streams the answer
  * from Mercure ({delta} frames, then {done} — or {error}). Assistant bubbles
- * are rendered as Markdown (snarkdown) and sanitized (DOMPurify).
+ * are rendered as Markdown (marked, GFM) and sanitized (DOMPurify).
  */
 export default class extends Controller {
     static values = {
@@ -127,9 +130,12 @@ export default class extends Controller {
     }
 
     renderMarkdown(text) {
-        return DOMPurify.sanitize(snarkdown(text), {
-            ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'a', 'code', 'pre', 'h1', 'h2', 'h3'],
-            ALLOWED_ATTR: ['href', 'target', 'rel'],
+        return DOMPurify.sanitize(marked.parse(text), {
+            ALLOWED_TAGS: [
+                'p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'a', 'code', 'pre', 'h1', 'h2', 'h3',
+                'table', 'thead', 'tbody', 'tr', 'th', 'td', 'del', 'blockquote', 'hr',
+            ],
+            ALLOWED_ATTR: ['href', 'target', 'rel', 'align'],
         });
     }
 

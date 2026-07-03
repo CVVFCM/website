@@ -49,10 +49,10 @@ return [
         'version' => '4.1.4',
         'type' => 'css',
     ],
-    'snarkdown' => [
-        'version' => '2.0.0',
-    ],
     'dompurify' => [
         'version' => '3.4.11',
+    ],
+    'marked' => [
+        'version' => '18.0.5',
     ],
 ];
