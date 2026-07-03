@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Forgie: chat bubble with the CVVFCM logo boat (mainsail, jib, spinnaker — original
+       logo paths and transforms, verbatim) punched out through a mask. -->
+  <defs>
+    <mask id="forgie-sails">
+      <rect width="100" height="100" fill="#fff" />
+      <!-- Boat bbox in logo coords: x 92.5→213.5, y 0→135.2; scaled ×0.44, centered in the bubble. -->
+      <g fill="#000" transform="translate(-16.3 10) scale(0.44)">
+        <path transform="translate(49.519 -8.254)" d="M101.557,8.33V143.413H43S47.178,87.906,78.573,14.9c3.378-7.848,22.984-6.572,22.984-6.572" />
+        <path transform="translate(82.271 2.931)" d="M72.441,130.7V19.683L128.151,130.7Z" />
+        <path transform="translate(-5287.191 -8619.691)" d="M5494.167,8738.647l-49.066-97.773c7.155,2.267,20.938,7.6,32.882,17.868,9.907,8.513,16.592,18.7,19.868,30.288a66.691,66.691,0,0,1,2.23,22.131,100.924,100.924,0,0,1-5.914,27.483Z" />
+      </g>
+    </mask>
+  </defs>
+  <path fill="#fff" mask="url(#forgie-sails)" d="M24 4 H76 C87 4 96 13 96 24 V58 C96 69 87 78 76 78 H44 L20 95 L26 78 H24 C13 78 4 69 4 58 V24 C4 13 13 4 24 4 Z" />
+</svg>

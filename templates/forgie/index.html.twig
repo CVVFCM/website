@@ -1,4 +1,6 @@
-{% extends 'base.html.twig' %}
+{# Autonomous page by default; ?embedded renders only the content block for the
+   site-wide side pane (see forgie_launcher_controller.js). #}
+{% extends app.request.query.has('embedded') ? 'forgie/embedded_base.html.twig' : 'base.html.twig' %}
 
 {% block title %}Forgie — CVVFCM{% endblock %}
 
@@ -7,6 +9,9 @@
 {# Event-page top bar instead of the main navigation: Forgie is a full-height standalone page. #}
 {% block header %}{% endblock %}
 {% block footer %}{% endblock %}
+
+{# No floating launcher on the standalone Forgie page — it IS Forgie. #}
+{% block forgie_launcher %}{% endblock %}
 
 {% block pageclass %}Forgie-page{% endblock %}
 
