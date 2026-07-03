@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\AI\Chat\ForgieChatFactory;
 use App\Message\AskForgie;
 use Psr\Log\LoggerInterface;
-use Symfony\AI\Agent\AgentInterface;
 use Symfony\AI\Platform\Message\Message;
-use Symfony\AI\Platform\Message\MessageBag;
 use Symfony\AI\Platform\Result\Stream\Delta\TextDelta;
-use Symfony\AI\Platform\Result\StreamResult;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -19,12 +17,15 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Streams Forgie's answer over Mercure: one {delta} update per token chunk,
  * then {done}. On failure an {error} update is published instead of retrying
  * (a retry would replay already-streamed chunks to the client).
+ *
+ * Conversation memory: the Chat loads the history stored for this conversationId
+ * and persists the new user + assistant messages once the stream completes.
  */
 #[AsMessageHandler]
 final readonly class AskForgieHandler
 {
     public function __construct(
-        private AgentInterface $agent,
+        private ForgieChatFactory $chats,
         private HubInterface $hub,
         private LoggerInterface $logger,
     ) {
@@ -35,22 +36,11 @@ final readonly class AskForgieHandler
         $topic = self::topic($message->conversationId);
 
         try {
-            $result = $this->agent->call(
-                new MessageBag(Message::ofUser($message->message)),
-                ['stream' => true],
-            );
+            $chat = $this->chats->create($message->conversationId);
 
-            if ($result instanceof StreamResult) {
-                foreach ($result->getContent() as $delta) {
-                    if ($delta instanceof TextDelta) {
-                        $this->publish($topic, ['delta' => $delta->getText()]);
-                    }
-                }
-            } else {
-                // Defensive fallback: model/platform answered without streaming.
-                $content = $result->getContent();
-                if (\is_string($content)) {
-                    $this->publish($topic, ['delta' => $content]);
+            foreach ($chat->stream(Message::ofUser($message->message)) as $delta) {
+                if ($delta instanceof TextDelta) {
+                    $this->publish($topic, ['delta' => $delta->getText()]);
                 }
             }
 
