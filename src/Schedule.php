@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Message\PurgeForgieConversations;
 use Symfony\Component\Scheduler\Attribute\AsSchedule;
+use Symfony\Component\Scheduler\RecurringMessage;
 use Symfony\Component\Scheduler\Schedule as SymfonySchedule;
 use Symfony\Component\Scheduler\ScheduleProviderInterface;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -23,6 +25,7 @@ final readonly class Schedule implements ScheduleProviderInterface
         return (new SymfonySchedule())
             ->stateful($this->cache) // ensure missed tasks are executed
             ->processOnlyLastMissedRun(true) // ensure only last missed task is run
+            ->add(RecurringMessage::every('1 hour', new PurgeForgieConversations()))
         ;
     }
 }

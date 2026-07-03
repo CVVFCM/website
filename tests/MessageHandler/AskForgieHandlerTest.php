@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\MessageHandler;
 
+use App\AI\Chat\ForgieChatFactory;
 use App\Message\AskForgie;
 use App\MessageHandler\AskForgieHandler;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\AI\Agent\AgentInterface;
@@ -31,7 +33,7 @@ final class AskForgieHandlerTest extends TestCase
         $updates = [];
         $hub = $this->createHub($updates);
 
-        new AskForgieHandler($agent, $hub, new NullLogger())(new AskForgie(self::UUID, 'Salut'));
+        new AskForgieHandler($this->createFactory($agent), $hub, new NullLogger())(new AskForgie(self::UUID, 'Salut'));
 
         $this->assertSame([
             [self::TOPIC, '{"delta":"Bon"}'],
@@ -49,9 +51,22 @@ final class AskForgieHandlerTest extends TestCase
         $updates = [];
         $hub = $this->createHub($updates);
 
-        new AskForgieHandler($agent, $hub, new NullLogger())(new AskForgie(self::UUID, 'Salut'));
+        new AskForgieHandler($this->createFactory($agent), $hub, new NullLogger())(new AskForgie(self::UUID, 'Salut'));
 
         $this->assertSame([[self::TOPIC, '{"error":true}']], $updates);
+    }
+
+    /**
+     * Real factory + store over a stubbed EntityManager: the Chat wraps the agent
+     * stream, an unknown conversation loads an empty bag, persistence is flushed
+     * once the stream completes.
+     */
+    private function createFactory(AgentInterface $agent): ForgieChatFactory
+    {
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('find')->willReturn(null);
+
+        return new ForgieChatFactory($agent, $entityManager);
     }
 
     /**

@@ -25,6 +25,7 @@
         "sulu/sulu": "^3.0.7",
         "symfony/ai-agent": "^0.10.0",
         "symfony/ai-bundle": "^0.10.0",
+        "symfony/ai-chat": "^0.10",
         "symfony/ai-mistral-platform": "^0.10.0",
         "symfony/asset": "7.4.*",
         "symfony/asset-mapper": "7.4.*",
