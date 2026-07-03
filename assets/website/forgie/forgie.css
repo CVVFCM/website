@@ -70,7 +70,7 @@
 }
 
 /* Narrow screens: drop the subtitle and the club name line, keep logo + title. */
-@media (max-width: 30rem) {
+@media (width <= 30rem) {
     .Forgie__subtitle,
     .Forgie__topBar .Logo__headerLogoText {
         display: none;
