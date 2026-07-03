@@ -17,6 +17,9 @@
                 {% endif %}
             </div>
 
+        {% elseif this.variant == 'live-update' %}
+            <p class="WeatherLiveBlock__update">Mis à jour le {{ liveWeather.updatedAt.format('d/m/Y à H:i') }}</p>
+
         {% elseif this.variant == 'live-link' %}
             <a class="LivePage__relevesLink" href="{{ this.link }}" target="_blank" rel="noopener noreferrer">
                 Voir tous les relevés →
@@ -35,7 +38,6 @@
                 <dt>Moy. vitesse</dt>
                 <dd>{{ liveWeather.windSpeedAverage|round }} nds</dd>
             </dl>
-            <p class="WeatherLiveBlock__update">Mis à jour le {{ liveWeather.updatedAt.format('d/m/Y à H:i') }}</p>
 
         {% elseif this.variant == 'live-temperature' %}
             <div class="WeatherLiveBlock__main">

@@ -9,6 +9,7 @@
 {% block content %}
     <header class="Page__header">
         {% include 'partials/logo_topbar.html.twig' %}
+        {% block pageHeader %}
         <div class="Page__headerMain">
             <div class="Page__headerBody">
                  <div class="Page__headerNav">
@@ -32,6 +33,7 @@
                 </div>
             {% endif %}
         </div>
+        {% endblock %}
     </header>
     {% block MainContent %}
         {% if content.blocks is defined and content.blocks is not empty %}

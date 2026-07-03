@@ -67,10 +67,12 @@ a {
     text-decoration: none;
     gap: 1em;
     color: var(--color-white);
+    max-width: 33vw;
 }
 
 .Logo__headerLogoImg {
     width: auto;
+    max-width: 100%;
     height: 8em;
 }
 

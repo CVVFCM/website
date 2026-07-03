@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="{{ asset('styles/live.css') }}" />
 {% endblock %}
 
+{% block pageHeader %}
+    <div class="Page__headerMain Page__headerMain--slim"></div>
+{% endblock %}
+
 {% block MainContent %}
     <div class="LivePage__content sectionPadded">
 
@@ -23,7 +27,10 @@
 
         <section class="LivePage__section" id="WeatherLive">
             <div class="LivePage__sectionHeader">
-                <h2 class="LivePage__sectionTitle">Météo en direct</h2>
+                <div>
+                    <h2 class="LivePage__sectionTitle">Météo en direct</h2>
+                    <twig:WeatherLive variant="live-update" />
+                </div>
                 <twig:WeatherLive variant="live-link" />
             </div>
             <div class="LivePage__weatherGrid">

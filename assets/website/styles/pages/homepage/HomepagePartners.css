@@ -1,5 +1,5 @@
 .HomepagePartners {
-    background-color: #e8e5df;
+    background-color: #E3EBEE;
 }
 
 .HomepagePartners__header {
@@ -9,7 +9,7 @@
 .HomepagePartners__title {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--color-dark);
+    color: var(--blueNote-text);
     margin: 0 0 0.5rem;
     line-height: 1.2;
 }

@@ -11,6 +11,10 @@
 }
 
 
+.Page__headerMain--slim {
+    min-height: 3rem;
+}
+
 .Page__headerMain {
     color: var(--base-text-color);
     display: inline-flex;

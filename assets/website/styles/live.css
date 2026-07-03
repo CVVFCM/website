@@ -28,11 +28,11 @@
 
 .LivePage__sectionTitle {
     margin: 0;
-    font-size: 0.8rem;
+    font-size: 2rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--redAct-text);
+    color: var(--blueNote-text);
 }
 
 .LivePage__relevesLink {
@@ -82,20 +82,17 @@
 /* _____________________________________________ Weather grid */
 
 .LivePage__weatherGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem 4rem;
+    display: flex;
     align-items: flex-start;
-}
-
-@media (min-width: 65rem) {
-    .LivePage__weatherGrid {
-        grid-template-columns: repeat(4, 1fr);
-    }
+    gap: 2rem;
+    flex-wrap: wrap;
+    max-width: 100%;
+    position: relative;
 }
 
 .LivePage__weatherGrid .EventContentBlock {
     max-width: none;
+    flex: 22rem;
 }
 
 /* _____________________________________________ Weather block variants */
@@ -141,7 +138,7 @@
 }
 
 .WeatherLiveBlock__update {
-    margin: 0.75rem 0 0;
+    margin: 0.25rem 0 0;
     font-size: 0.75rem;
     color: var(--color-gray-400);
 }
