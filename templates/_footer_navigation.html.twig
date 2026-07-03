@@ -1,26 +1,137 @@
-{% set navigation_context_name = 'footer' %}
-{% set navigation_max_depth = 1 %}
+{% set club_info = sulu_snippet_load_by_area('club_info') %}
+{% set footer_contact = sulu_snippet_load_by_area('footer_contact') %}
+{% set footer_social = sulu_snippet_load_by_area('footer_social') %}
 
-{% set navigation_root = sulu_page_navigation_root_tree(navigation_context_name, navigation_max_depth) %}
+<div class="SiteFooter__main">
 
-<nav>
-    <ul>
-        {{ _self.display_navigation_nodes(navigation_root) }}
-    </ul>
-</nav>
+    <div class="SiteFooter__identity">
+        <a class="SiteFooter__logoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
+            <img class="SiteFooter__logoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" width="48" height="48" />
+            <span class="SiteFooter__clubName">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
+        </a>
+        {% if club_info %}
+            <address class="SiteFooter__address">
+                {% if club_info.content.address is defined and club_info.content.address %}
+                    {{ club_info.content.address|nl2br }}
+                {% endif %}
+                {% if club_info.content.legal_status is defined and club_info.content.legal_status %}
+                    <br />{{ club_info.content.legal_status }}
+                {% endif %}
+                {% if club_info.content.siret is defined and club_info.content.siret %}
+                    <br />Siret : {{ club_info.content.siret }}
+                {% endif %}
+            </address>
+        {% endif %}
+    </div>
 
-{% macro display_navigation_nodes(root) %}
-    {% for item in root is iterable ? root : root.children %}
-        <li>
-            <a href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}">
-                {{ item.title }}
-            </a>
+    <div class="SiteFooter__contact">
+        {% set all_footer_links = [] %}
+        {% if footer_contact and footer_contact.content.links is defined %}
+            {% set all_footer_links = all_footer_links|merge(footer_contact.content.links) %}
+        {% endif %}
+        {% if footer_social and footer_social.content.links is defined %}
+            {% set all_footer_links = all_footer_links|merge(footer_social.content.links) %}
+        {% endif %}
+        {% if all_footer_links is not empty %}
+            <ul class="NavigationLinks__list">
+                {% for link in all_footer_links %}
+                    {% set display_modifier = '' %}
+                    {% if link.display is defined and link.display %}
+                        {% for display_value in link.display %}
+                            {% set display_modifier = display_modifier ~ ' NavigationLinks__item--' ~ display_value %}
+                        {% endfor %}
+                    {% endif %}
+                    <li class="NavigationLinks__item{{ display_modifier }}">
+                        {% if link.type == 'internal' and link.page is defined %}
+                            <a class="NavigationLinks__link"
+                               href="{{ sulu_content_path(link.page.url) }}"
+                               title="{{ link.label }}">
+                                {% if link.media is defined and link.media %}
+                                    <span class="NavigationLinks__media"
+                                          style="--nav-icon-mask: url('{{ link.media.thumbnails['x800'] }}');"
+                                          aria-hidden="true"></span>
+                                {% endif %}
+                                <span class="NavigationLinks__label">{{ link.label }}</span>
+                            </a>
+                        {% elseif link.type == 'external' and link.url is defined %}
+                            <a class="NavigationLinks__link"
+                               href="{{ link.url }}"
+                               title="{{ link.label }}"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                {% if link.media is defined and link.media %}
+                                    <span class="NavigationLinks__media"
+                                          style="--nav-icon-mask: url('{{ link.media.thumbnails['x800'] }}');"
+                                          aria-hidden="true"></span>
+                                {% endif %}
+                                <span class="NavigationLinks__label">{{ link.label }}</span>
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-            {% if item.children is not empty %}
-                <ul>
-                    {{ _self.display_navigation_nodes(item) }}
+        {% if club_info and club_info.content.labels is defined and club_info.content.labels is not empty %}
+            <div class="SiteFooter__labels">
+                <p class="SiteFooter__labelsTitle">Labels</p>
+                <ul class="SiteFooter__labelsList">
+                    {% for label in club_info.content.labels %}
+                        <li class="SiteFooter__labelsItem">
+                            {% if label.url is defined and label.url %}
+                                <a class="SiteFooter__labelLink" href="{{ label.url }}" target="_blank" rel="noopener noreferrer" title="{{ label.name }}">
+                                    <img class="SiteFooter__labelImg" src="{{ label.logo.thumbnails['x200'] }}" alt="{{ label.name }}" />
+                                </a>
+                            {% else %}
+                                <img class="SiteFooter__labelImg" src="{{ label.logo.thumbnails['x200'] }}" alt="{{ label.name }}" />
+                            {% endif %}
+                        </li>
+                    {% endfor %}
                 </ul>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if club_info %}
+        <nav class="SiteFooter__nav" aria-label="Navigation secondaire">
+            {% if club_info.content.col1_title is defined and club_info.content.col1_links is defined %}
+                <div class="SiteFooter__navCol">
+                    <p class="SiteFooter__navColTitle">{{ club_info.content.col1_title }}</p>
+                    <ul class="SiteFooter__navList">
+                        {% for link in club_info.content.col1_links %}
+                            {% if link.page is defined and link.page %}
+                                <li><a class="SiteFooter__navLink" href="{{ sulu_content_path(link.page.url) }}">{{ link.label }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
             {% endif %}
-        </li>
-    {% endfor %}
-{% endmacro %}
+            {% if club_info.content.col2_title is defined and club_info.content.col2_links is defined %}
+                <div class="SiteFooter__navCol">
+                    <p class="SiteFooter__navColTitle">{{ club_info.content.col2_title }}</p>
+                    <ul class="SiteFooter__navList">
+                        {% for link in club_info.content.col2_links %}
+                            {% if link.page is defined and link.page %}
+                                <li><a class="SiteFooter__navLink" href="{{ sulu_content_path(link.page.url) }}">{{ link.label }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </nav>
+    {% endif %}
+
+</div>
+
+<div class="SiteFooter__legal">
+    <span class="SiteFooter__copyright">CVVFCM {{ "now"|date("Y") }}</span>
+    {% if club_info and club_info.content.legal_links is defined and club_info.content.legal_links is not empty %}
+        <ul class="SiteFooter__legalLinks">
+            {% for link in club_info.content.legal_links %}
+                {% if link.page is defined and link.page %}
+                    <li><a class="SiteFooter__legalLink" href="{{ sulu_content_path(link.page.url) }}">{{ link.label }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

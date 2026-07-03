@@ -8,16 +8,43 @@
 {% endblock %}
 
 {% block MainContent %}
-    <article class="LivePage__MainContent">
+    <div class="LivePage__content sectionPadded">
 
-        <section class="LivePage__webcams">
-            {% for webcam_block in content.webcams %}
-                <twig:Webcam class="LivePage__webcam" url="{{ webcam_block.webcam_stream_url }}" />
-            {% endfor %}
+        {% if content.webcams is defined and content.webcams is not empty %}
+        <section class="LivePage__section">
+            <h2 class="LivePage__sectionTitle">Vue en direct</h2>
+            <div class="LivePage__webcams">
+                {% for webcam_block in content.webcams %}
+                    <twig:Webcam class="LivePage__webcam" url="{{ webcam_block.webcam_stream_url }}" />
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="LivePage__section" id="WeatherLive">
+            <div class="LivePage__sectionHeader">
+                <h2 class="LivePage__sectionTitle">Météo en direct</h2>
+                <twig:WeatherLive variant="live-link" />
+            </div>
+            <div class="LivePage__weatherGrid">
+                <div class="EventContentBlock">
+                    <h3 class="EventContentBlock__title">Vent</h3>
+                    <twig:WeatherLive variant="live-wind" />
+                </div>
+                <div class="EventContentBlock">
+                    <h3 class="EventContentBlock__title">Température</h3>
+                    <twig:WeatherLive variant="live-temperature" />
+                </div>
+                <div class="EventContentBlock">
+                    <h3 class="EventContentBlock__title">Pression</h3>
+                    <twig:WeatherLive variant="live-pressure" />
+                </div>
+                <div class="EventContentBlock">
+                    <h3 class="EventContentBlock__title">Précipitations</h3>
+                    <twig:WeatherLive variant="live-rain" />
+                </div>
+            </div>
         </section>
 
-        <section class="LivePage__weather" id="WeatherLive">
-            <twig:WeatherLive full="true" />
-        </section>
-    </article>
+    </div>
 {% endblock %}
