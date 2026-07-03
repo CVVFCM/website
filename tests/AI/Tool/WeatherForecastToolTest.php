@@ -27,30 +27,55 @@ final class WeatherForecastToolTest extends TestCase
         Clock::set(new NativeClock());
     }
 
-    public function testDefaultReturnsWholeTodayForecast(): void
+    public function testDefaultReturnsTodayAbstractPerMoment(): void
     {
         $result = $this->tool()(null, null, null);
 
         $this->assertArrayNotHasKey('erreur', $result);
         $this->assertSame('2026-07-02', $result['date']);
-        $this->assertCount(24, $result['previsions']);
-        $this->assertSame('00h', $result['previsions'][0]['heure']);
-        $this->assertSame('Éclaircies', $result['previsions'][0]['condition']);
+        $this->assertSame(
+            ['matin', 'midi', 'apres-midi', 'soiree'],
+            array_column($result['moments'], 'moment'),
+        );
     }
 
-    public function testMomentFiltersHourRange(): void
+    public function testMorningAbstractAggregatesItsHours(): void
     {
         $result = $this->tool()(null, 'matin', null);
 
-        $this->assertSame(['06h', '07h', '08h', '09h', '10h'], array_column($result['previsions'], 'heure'));
+        $this->assertCount(1, $result['moments']);
+        $matin = $result['moments'][0];
+
+        $this->assertSame('matin', $matin['moment']);
+        $this->assertSame('06h-11h', $matin['heures']);
+        // temperature = 15 + hour * 0.5, hours 6..10.
+        $this->assertSame(18.0, $matin['temperature_min']);
+        $this->assertSame(20.0, $matin['temperature_max']);
+        // windSpeed = hour → mean of 6..10 = 8, max 10.
+        $this->assertSame(8, $matin['vent_moyen_noeuds']);
+        $this->assertSame(10, $matin['vent_max_noeuds']);
+        // weatherCode 1 for hours < 9, 61 for 9 and 10 → 3 × Éclaircies vs 2 × Pluie.
+        $this->assertSame('Éclaircies', $matin['condition']);
+        $this->assertSame(0.0, $matin['precipitation_totale_mm']);
+        $this->assertSame(60, $matin['humidite_moyenne_pourcent']);
     }
 
-    public function testPreciseHourWinsOverMoment(): void
+    public function testEveningAbstractSumsPrecipitation(): void
+    {
+        $result = $this->tool()(null, 'soiree', null);
+
+        // precipitation = 0.5 mm per hour from 18h, moment covers 18..21.
+        $this->assertSame(2.0, $result['moments'][0]['precipitation_totale_mm']);
+    }
+
+    public function testPreciseHourReturnsFullHourlyDetail(): void
     {
         $result = $this->tool()(null, 'matin', 15);
 
+        $this->assertArrayNotHasKey('moments', $result);
         $this->assertCount(1, $result['previsions']);
         $this->assertSame('15h', $result['previsions'][0]['heure']);
+        $this->assertArrayHasKey('pression_hpa', $result['previsions'][0]);
     }
 
     public function testTomorrowIsAvailable(): void
@@ -58,7 +83,7 @@ final class WeatherForecastToolTest extends TestCase
         $result = $this->tool()('2026-07-03', 'midi', null);
 
         $this->assertSame('2026-07-03', $result['date']);
-        $this->assertSame(['11h', '12h', '13h'], array_column($result['previsions'], 'heure'));
+        $this->assertSame(['midi'], array_column($result['moments'], 'moment'));
     }
 
     public function testDateBeyondTomorrowIsRejected(): void
@@ -85,13 +110,13 @@ final class WeatherForecastToolTest extends TestCase
             for ($hour = 0; $hour < 24; ++$hour) {
                 $forecasts[] = new WeatherForecast(
                     new \DateTimeImmutable(sprintf('%s %02d:00:00', $day, $hour), new \DateTimeZone('Europe/Paris')),
-                    20.5,
+                    15.0 + $hour * 0.5,
                     1013.2,
                     60,
-                    0.0,
-                    7.4,
+                    $hour >= 18 ? 0.5 : 0.0,
+                    (float) $hour,
                     135,
-                    1,
+                    $hour < 9 ? 1 : 61,
                 );
             }
         }
