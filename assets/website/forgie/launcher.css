@@ -118,7 +118,7 @@
     box-shadow: -0.5rem 0 2rem rgb(6 49 90 / 45%);
 }
 
-@media (min-width: 64rem) {
+@media (width >= 64rem) {
     .ForgiePane {
         width: 40%;
     }
