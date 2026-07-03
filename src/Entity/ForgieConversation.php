@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity(repositoryClass: ForgieConversationRepository::class)]
 #[Table(name: 'forgie_conversation')]
 #[Index(name: 'idx_forgie_conversation_updated_at', columns: ['updated_at'])]
-final class ForgieConversation
+/* final */ class ForgieConversation
 {
     public function __construct(
         #[Id]
