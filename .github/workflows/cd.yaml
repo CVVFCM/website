@@ -5,6 +5,10 @@ on:
         types: [ published ]
     push:
         branches: [ main ]
+        # Root-level docs only: nested .md files (e.g. config/prompts/*.md, the Forgie
+        # prompt) are shipped in the image and must trigger a build.
+        paths-ignore:
+            - '*.md'
     workflow_dispatch:
 
 concurrency:
@@ -13,14 +17,94 @@ concurrency:
 
 jobs:
     build:
-        name: Build prod images
-        runs-on: ubuntu-latest
+        name: Build prod images (${{ matrix.arch }})
+        runs-on: ${{ matrix.runner }}
+        strategy:
+            fail-fast: true
+            matrix:
+                include:
+                    -   platform: linux/amd64
+                        arch: amd64
+                        runner: ubuntu-latest
+                    -   platform: linux/arm64
+                        arch: arm64
+                        runner: ubuntu-24.04-arm
         permissions:
             contents: read
             packages: write
         steps:
             -   name: Checkout
                 uses: actions/checkout@v6
+            -   name: Set up Docker Buildx
+                uses: docker/setup-buildx-action@v4
+            -   name: 'Login to GitHub Container Registry'
+                uses: docker/login-action@v4
+                with:
+                    registry: ghcr.io
+                    username: ${{github.actor}}
+                    password: ${{secrets.GITHUB_TOKEN}}
+
+            # Each platform builds natively (no QEMU) and pushes untagged images by digest;
+            # the merge job assembles the multi-arch manifests and applies the tags.
+            -   name: Build and push by digest
+                id: bake
+                uses: docker/bake-action@v7
+                env:
+                    EXTERNAL_USER_ID: 33
+                with:
+                    files: |
+                        compose.yaml
+                        docker-bake.hcl
+                    targets: |
+                        php
+                        consumer
+                        rtsp-to-web
+                    push: true
+                    set: |
+                        *.platform=${{ matrix.platform }}
+                        *.tags=
+                        php.output=type=image,name=ghcr.io/cvvfcm/website/php,push-by-digest=true,name-canonical=true,push=true
+                        consumer.output=type=image,name=ghcr.io/cvvfcm/website/consumer,push-by-digest=true,name-canonical=true,push=true
+                        rtsp-to-web.output=type=image,name=ghcr.io/cvvfcm/website/rtsp-to-web,push-by-digest=true,name-canonical=true,push=true
+                        php.cache-from=type=registry,ref=ghcr.io/cvvfcm/website/php:cache-${{ matrix.arch }}
+                        php.cache-to=type=registry,ref=ghcr.io/cvvfcm/website/php:cache-${{ matrix.arch }},mode=max
+                        consumer.cache-from=type=registry,ref=ghcr.io/cvvfcm/website/consumer:cache-${{ matrix.arch }}
+                        consumer.cache-to=type=registry,ref=ghcr.io/cvvfcm/website/consumer:cache-${{ matrix.arch }},mode=max
+                        rtsp-to-web.cache-from=type=registry,ref=ghcr.io/cvvfcm/website/rtsp-to-web:cache-${{ matrix.arch }}
+                        rtsp-to-web.cache-to=type=registry,ref=ghcr.io/cvvfcm/website/rtsp-to-web:cache-${{ matrix.arch }},mode=max
+
+            -   name: Export digests
+                run: |
+                    mkdir -p "${{ runner.temp }}/digests"
+                    echo "$BAKE_METADATA" | jq -r 'to_entries[] | "\(.key) \(.value."containerimage.digest")"' \
+                        | while read -r target digest; do
+                            echo "$digest" > "${{ runner.temp }}/digests/${target}-${{ matrix.arch }}"
+                        done
+                env:
+                    BAKE_METADATA: ${{ steps.bake.outputs.metadata }}
+
+            -   name: Upload digests
+                uses: actions/upload-artifact@v4
+                with:
+                    name: digests-${{ matrix.arch }}
+                    path: ${{ runner.temp }}/digests/*
+                    if-no-files-found: error
+                    retention-days: 1
+
+    merge:
+        name: Merge manifests
+        needs: [ build ]
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            -   name: Download digests
+                uses: actions/download-artifact@v4
+                with:
+                    pattern: digests-*
+                    path: ${{ runner.temp }}/digests
+                    merge-multiple: true
             -   name: Set up Docker Buildx
                 uses: docker/setup-buildx-action@v4
             -   name: 'Login to GitHub Container Registry'
@@ -42,39 +126,31 @@ jobs:
                         type=semver,pattern={{major}}.{{minor}}
                         type=raw,value=latest,enable=${{ github.event_name == 'release' }}
 
-            - name: Build and Push
-              uses: docker/bake-action@v7
-              env:
-                  EXTERNAL_USER_ID: 33
-                  # Always tag with the commit SHA (Helm deploys image.tag=${{ github.sha }}).
-                  TAGS: "${{ steps.meta.outputs.version }},${{ github.sha }}${{ github.event_name == 'release' && ',latest' || '' }}"
-              with:
-                  files: |
-                      compose.yaml
-                      docker-bake.hcl
-                  targets: |
-                      php
-                      consumer
-                      ml
-                      rtsp-to-web
-                  push: true
-                  set: |
-                      php.cache-from=type=gha,scope=php-main
-                      php.cache-from=type=gha,scope=php-${{ github.ref_name }}
-                      php.cache-to=type=gha,scope=php-${{ github.ref_name }},mode=max
-                      consumer.cache-from=type=gha,scope=consumer-main
-                      consumer.cache-from=type=gha,scope=consumer-${{ github.ref_name }}
-                      consumer.cache-to=type=gha,scope=consumer-${{ github.ref_name }},mode=max
-                      ml.cache-from=type=gha,scope=ml-main
-                      ml.cache-from=type=gha,scope=ml-${{ github.ref_name }}
-                      ml.cache-to=type=gha,scope=ml-${{ github.ref_name }},mode=max
-                      rtsp-to-web.cache-from=type=gha,scope=rtsp-main
-                      rtsp-to-web.cache-from=type=gha,scope=rtsp-${{ github.ref_name }}
-                      rtsp-to-web.cache-to=type=gha,scope=rtsp-${{ github.ref_name }},mode=max
+            -   name: Create multi-arch manifests
+                env:
+                    # Always tag with the commit SHA (Helm deploys image.tag=${{ github.sha }}).
+                    TAGS: "${{ steps.meta.outputs.version }},${{ github.sha }}${{ github.event_name == 'release' && ',latest' || '' }}"
+                run: |
+                    for image in php consumer rtsp-to-web; do
+                        repository="ghcr.io/cvvfcm/website/${image}"
+                        tag_args=""
+                        for tag in ${TAGS//,/ }; do
+                            tag_args="${tag_args} -t ${repository}:${tag}"
+                        done
+                        docker buildx imagetools create ${tag_args} \
+                            "${repository}@$(cat "${{ runner.temp }}/digests/${image}-amd64")" \
+                            "${repository}@$(cat "${{ runner.temp }}/digests/${image}-arm64")"
+                    done
+
+            -   name: Inspect manifests
+                run: |
+                    for image in php consumer rtsp-to-web; do
+                        docker buildx imagetools inspect "ghcr.io/cvvfcm/website/${image}:${{ github.sha }}"
+                    done
 
     deploy-preprod:
         name: Deploy to PREPROD
-        needs: [ build ]
+        needs: [ merge ]
         uses: ./.github/workflows/deploy.yaml
         secrets: inherit
         with:
@@ -86,7 +162,7 @@ jobs:
 
     deploy-prod:
         name: Deploy to PROD
-        needs: [ build ]
+        needs: [ merge ]
         if: github.event_name == 'release'
         uses: ./.github/workflows/deploy.yaml
         secrets: inherit

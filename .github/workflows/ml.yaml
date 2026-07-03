@@ -35,7 +35,8 @@ jobs:
                 run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
             -   name: Build ONNX Model
-                run: docker compose -fcompose.yaml run --rm -v./data/weather/ml:/app/data/weather/ml ml python src/train_forecast_model.py
+                # --build: the ml image is no longer pushed by CD, build it fresh on the runner.
+                run: docker compose -fcompose.yaml run --rm --build -v./data/weather/ml:/app/data/weather/ml ml python src/train_forecast_model.py
 
             -   name: Copy to PREPROD
                 run: |
