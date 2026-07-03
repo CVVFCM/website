@@ -67,15 +67,23 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
 # the builder's native arch and reuse it for every target — no arm64 QEMU emulation of npm/webpack.
 FROM --platform=$BUILDPLATFORM node:${NODE_VERSION}-${DEBIAN_VERSION} AS node
 
+# vendor/ is required here: package.json has file:../../vendor/sulu/... dependencies and the
+# webpack config comes from vendor/sulu/sulu.
 COPY --from=base /app /app
 
-COPY --chown=www-data:www-data assets/admin /app/assets/admin/
+# Deps first: an admin-source-only change re-runs webpack but not npm install. The .npmrc is
+# required (legacy-peer-deps, install-links — the Sulu skeleton setup is incompatible with a
+# plain npm ci/install).
+COPY --chown=www-data:www-data assets/admin/package.json assets/admin/package-lock.json assets/admin/.npmrc /app/assets/admin/
 
 WORKDIR /app/assets/admin
 
 RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
-    npm install && \
-    npm run build
+    npm install
+
+COPY --chown=www-data:www-data assets/admin /app/assets/admin/
+
+RUN npm run build
 
 FROM base AS php
 

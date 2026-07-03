@@ -7,7 +7,7 @@ variable "TAGS" {
 }
 
 group "default" {
-  targets = ["php", "consumer", "rtsp-to-web", "ml"]
+  targets = ["php", "consumer", "rtsp-to-web"]
 }
 
 target "php" {
@@ -26,15 +26,6 @@ target "consumer" {
 
   cache-from = ["type=registry,ref=${IMAGE_PREFIX}consumer:cache"]
   cache-to   = ["type=registry,ref=${IMAGE_PREFIX}consumer:cache,mode=max"]
-}
-
-target "ml" {
-  tags = [for t in split(",", TAGS) : "${IMAGE_PREFIX}ml:${t}"]
-
-  platforms = ["linux/amd64", "linux/arm64"]
-
-  cache-from = ["type=registry,ref=${IMAGE_PREFIX}ml:cache"]
-  cache-to   = ["type=registry,ref=${IMAGE_PREFIX}ml:cache,mode=max"]
 }
 
 target "rtsp-to-web" {
