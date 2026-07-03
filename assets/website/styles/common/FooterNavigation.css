@@ -159,6 +159,17 @@
     flex-wrap: wrap;
 }
 
+.SiteFooter__labelLink {
+    height: 7rem;
+    width: 7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-white);
+    border-radius: 25em;
+    overflow: hidden;
+}
+
 .SiteFooter__labelImg {
     height: 3rem;
     width: auto;

@@ -32,6 +32,13 @@
     align-items: center;
     padding: 1rem var(--site-layout-row-padding);
     box-sizing: border-box;
+    pointer-events: none;
+}
+
+.MainNavigation a,
+.MainNavigation button,
+.MainNavigation__container {
+    pointer-events: auto;
 }
 
 .MainNavigation__mainTools {
