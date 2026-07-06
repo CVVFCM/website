@@ -8,7 +8,7 @@
 
 {% block content %}
     <header class="Page__header">
-        {% include 'partials/logo_topbar.html.twig' %}
+        {{ include('partials/logo_topbar.html.twig') }}
         {% block pageHeader %}
         <div class="Page__headerMain">
             <div class="Page__headerBody">
@@ -79,9 +79,9 @@
                                     {% for item in block.pages %}
                                         <li class="ListPage__listItem">
                                             {% if item.event_type is defined and item.event_type %}
-                                                {{ include('partials/list_item_event.html.twig', {item: item}, with_context=false) }}
+                                                {{ include('partials/list_item_event.html.twig', {item: item}, with_context: false) }}
                                             {% else %}
-                                                {{ include('partials/list_item_page.html.twig', {item: item}, with_context=false) }}
+                                                {{ include('partials/list_item_page.html.twig', {item: item}, with_context: false) }}
                                             {% endif %}
                                         </li>
                                     {% endfor %}

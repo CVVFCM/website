@@ -1,1 +1,1 @@
-{% include 'partials/event_card.html.twig' with {event: item} only %}
+{{ include('partials/event_card.html.twig', {event: item}, false) }}

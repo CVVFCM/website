@@ -73,7 +73,7 @@ final class ClubInfoSnippetFixtures extends Fixture implements DependentFixtureI
                     'locale' => 'fr',
                     'template' => 'club_info',
                     'title' => 'Informations du club',
-                    'address' => "5 rue du Lac – 08500 Les Mazures",
+                    'address' => '5 rue du Lac – 08500 Les Mazures',
                     'legal_status' => 'Association sportive loi 1901',
                     'siret' => '123 123 123 123456',
                     'labels' => [

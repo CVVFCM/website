@@ -9,14 +9,14 @@
 
         {% if featuredEvent %}
             <div class="HomepageCalendar__featuredBlock">
-                {% include 'partials/event_card.html.twig' with {event: featuredEvent, featured: true} only %}
+                {{ include('partials/event_card.html.twig', {event: featuredEvent, featured: true}, false) }}
             </div>
         {% endif %}
 
         <ul class="HomepageCalendar__events">
             {% for event in block.events|filter(event => event.url not in block.featured_event|map(e => e.url))|slice(0, 4) %}
                 <li class="HomepageCalendar__eventItem">
-                    {% include 'partials/event_card.html.twig' with {event: event} only %}
+                    {{ include('partials/event_card.html.twig', {event: event}, false) }}
                 </li>
             {% endfor %}
         </ul>

@@ -124,7 +124,7 @@
 </div>
 
 <div class="SiteFooter__legal">
-    <span class="SiteFooter__copyright">CVVFCM {{ "now"|date("Y") }}</span>
+    <span class="SiteFooter__copyright">CVVFCM {{ 'now'|date('Y') }}</span>
     {% if club_info and club_info.content.legal_links is defined and club_info.content.legal_links is not empty %}
         <ul class="SiteFooter__legalLinks">
             {% for link in club_info.content.legal_links %}
