@@ -208,6 +208,56 @@
     max-height: 33vh;
 }
 
+.EventPage__seriesList {
+    list-style: none;
+    margin: 0 0 1.5rem;
+    padding: 0;
+}
+
+.EventPage__seriesItem {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid rgb(255 255 255 / 15%);
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.EventPage__seriesName {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    background-color: var(--blue-note-text);
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.EventPage__seriesRank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    padding: 0.6rem 0.75rem;
+    background-color: var(--red-act-text);
+    color: var(--color-white);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.EventPage__seriesBloc .EventContentBlock__ctaSection {
+    margin: 0 0 1rem;
+}
+
+.EventPage__seriesLinksList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
 .EventPage__mediasBloc {
     max-width: 100%;
     display: block;

@@ -155,6 +155,52 @@
                     </types>
                 </block>
 
+                <property name="series_button_title" type="text_line">
+                    <meta>
+                        <title lang="fr">Surtitre du bouton</title>
+                    </meta>
+                </property>
+
+                <property name="series_button_text" type="text_line" colspan="6">
+                    <meta>
+                        <title lang="fr">Texte du bouton</title>
+                    </meta>
+                </property>
+
+                <property name="series_button_url" type="url" colspan="6">
+                    <meta>
+                        <title lang="fr">URL du bouton</title>
+                    </meta>
+                </property>
+
+                <block name="series_links" default-type="link" minOccurs="0">
+                    <meta>
+                        <title lang="fr">Liens</title>
+                    </meta>
+
+                    <types>
+                        <type name="link">
+                            <meta>
+                                <title lang="fr">Lien</title>
+                            </meta>
+
+                            <properties>
+                                <property name="text" type="text_line" mandatory="true" colspan="8">
+                                    <meta>
+                                        <title lang="fr">Texte</title>
+                                    </meta>
+                                </property>
+
+                                <property name="url" type="url" mandatory="true" colspan="4">
+                                    <meta>
+                                        <title lang="fr">URL</title>
+                                    </meta>
+                                </property>
+                            </properties>
+                        </type>
+                    </types>
+                </block>
+
                 <property name="regatta_informations" type="text_editor">
                     <meta>
                         <title lang="fr">Informations sur la régate</title>

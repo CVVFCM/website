@@ -180,6 +180,12 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                             'rank' => '5A',
                         ],
                     ],
+                    'series_button_title' => 'Classement',
+                    'series_button_text' => 'Résultats',
+                    'series_button_url' => 'https://cvvfcm.fr',
+                    'series_links' => [
+                        ['type' => 'link', 'text' => 'Tableau officiel', 'url' => 'https://drive.google.com/drive/folders/1-DxB5kPmqgkFx4bJF-l-gUeJAWjOHkyq?usp=sharing'],
+                    ],
                     'contact' => ['c'.$contacts[array_rand($contacts)]->getId()],
                     'links' => [
                         [
