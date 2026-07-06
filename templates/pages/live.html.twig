@@ -1,25 +1,14 @@
-{% extends 'base.html.twig' %}
+{% extends 'pages/default.html.twig' %}
+
+{% block pageclass 'LivePage' %}
 
 {% block styles %}
+    <link rel="stylesheet" href="{{ asset('styles/default.css') }}" />
     <link rel="stylesheet" href="{{ asset('styles/live.css') }}" />
 {% endblock %}
 
-{% block content %}
-    <article class="LivePage">
-        <header class="LivePage__header">
-            <h1>{{ content.title }}</h1>
-            {% if content.media %}
-                <div>
-
-                    <img
-                        src="{{ content.media.formats['sulu-400x400.webp'] }}"
-                        alt="{{ content.media.title }}"
-                        title="{{ content.media.description|default(content.media.title) }}" />
-                </div>
-            {% endif %}
-
-            <div>{{ content.description|raw }}</div>
-        </header>
+{% block MainContent %}
+    <article class="LivePage__MainContent">
 
         <section class="LivePage__webcams">
             {% for webcam_block in content.webcams %}

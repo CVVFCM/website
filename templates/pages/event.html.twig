@@ -12,14 +12,7 @@
     {% set days_diff = ((content.begin_date|date('U') - 'now'|date('U')) / 86400)|round(0, 'floor') %}
 
     <header class="EventPage__header">
-
-        <div class="Logo__headerTopBar SectionPadded">
-            <a class="Logo__headerLogoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
-                <img class="Logo__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
-                <span class="Logo__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
-            </a>
-        </div>
-
+        {% include 'partials/logo_topbar.html.twig' %}
         <div class="EventPage__headerMain">
              <div class="EventPage__headerNav">
                 <ul class="BreadCrumb" aria-label="Fil d'Ariane">

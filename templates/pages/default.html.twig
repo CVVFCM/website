@@ -8,12 +8,7 @@
 
 {% block content %}
     <header class="Page__header">
-        <div class="Logo__headerTopBar SectionPadded">
-            <a class="Logo__headerLogoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
-                <img class="Logo__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
-                <span class="Logo__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
-            </a>
-        </div>
+        {% include 'partials/logo_topbar.html.twig' %}
         <div class="Page__headerMain">
             <div class="Page__headerBody">
                  <div class="Page__headerNav">
