@@ -8,6 +8,10 @@
     background: var(--utility-grey);
 }
 
+.ListPage__pagerFooter {
+    padding: 0 var(--site-layout-rowPadding) 5rem;
+}
+
 .ListPage__list {
     display: flex;
     list-style: none;

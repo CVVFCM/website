@@ -16,15 +16,15 @@
                 {% for item in list %}
                     <li class="ListPage__listItem">
                         {% if item.event_type is defined and item.event_type is not null %}
-                            {{ include('partials/list_item_event.html.twig', {item: item}, with_context=false) }}
+                            {{ include('partials/list_item_event.html.twig', {item: item}, with_context: false) }}
                         {% else %}
-                            {{ include('partials/list_item_page.html.twig', {item: item}, with_context=false) }}
+                            {{ include('partials/list_item_page.html.twig', {item: item}, with_context: false) }}
                         {% endif %}
                     </li>
                 {% endfor %}
             </ul>
             {% if list_view is not empty and list_view.paginated %}
-                <footer>
+                <footer class="ListPage__pagerFooter">
                     {{ include('_pager.html.twig', {content: content, list_view: list_view}, with_context: false) }}
                 </footer>
             {% endif %}
