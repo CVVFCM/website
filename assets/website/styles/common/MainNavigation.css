@@ -275,7 +275,7 @@
     position: absolute;
     align-items: center;
     text-decoration: none;
-    left: var(--site-layout-rowPadding);
+    left: var(--site-layout-row-padding);
     order: -100;
     top: .25rem;
     transform: scale(1);

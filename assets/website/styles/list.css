@@ -9,7 +9,7 @@
 }
 
 .ListPage__pagerFooter {
-    padding: 0 var(--site-layout-rowPadding) 5rem;
+    padding: 0 var(--site-layout-row-padding) 5rem;
 }
 
 .ListPage__list {

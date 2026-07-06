@@ -32,7 +32,7 @@
 }
 
 .Pager__link--active {
-    background-color: var(--redAct-text);
+    background-color: var(--red-act-text);
     color: var(--color-white);
 }
 
