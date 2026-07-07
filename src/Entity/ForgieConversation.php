@@ -13,14 +13,12 @@ use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Table;
 
 /**
- * One Forgie chat conversation: the whole message history (user/assistant turns,
- * serialized by the ai-chat MessageNormalizer) as a single row, keyed by the
- * client-generated conversation UUID. Rows are purged after 24h of inactivity.
+ * @api
  */
 #[Entity(repositoryClass: ForgieConversationRepository::class)]
 #[Table(name: 'forgie_conversation')]
 #[Index(name: 'idx_forgie_conversation_updated_at', columns: ['updated_at'])]
-/* final */ class ForgieConversation
+class ForgieConversation
 {
     public function __construct(
         #[Id]
