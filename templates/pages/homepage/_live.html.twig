@@ -4,10 +4,10 @@
           <div class="HomepageLive__description">{{ block.description|raw }}</div>
           <div class="HomepageLive__weatherDate">
               <span class="HomepageLive__weatherDay">
-                  {{ 'now'|date|format_date(pattern='eeee')|upper }}
+                  {{ 'now'|date|format_date(pattern: 'eeee')|upper }}
               </span>
               <span class="HomepageLive__weatherDateNumber">
-                  {{ 'now'|date|format_date(pattern='dd MMMM')|upper }}.
+                  {{ 'now'|date|format_date(pattern: 'dd MMMM')|upper }}.
               </span>
           </div>
     </header>

@@ -15,6 +15,7 @@ final class RegattaToolTest extends KernelTestCase
         'Tour des Lacs Yole OK',
         'Femmes à la Barre - L\'Ardennaise',
         'National Maraudeur',
+        'Régate Full',
     ];
 
     public function testUpcomingReturnsOnlyFutureRegattasWithinAYearAscending(): void

@@ -85,6 +85,7 @@ make reset-test   # Same as reset but for test environment
 ### Quality gates (after EVERY update)
 - `make cs` and `make psalm` **must pass after each edit** — run them immediately, not batched at the end of a task. Treat a red psalm like a failing test.
 - `make stylelint` **must pass after each CSS edit** — same rule: run immediately, not batched.
+- `make test` **must pass before finishing any task** — the PHPUnit suite is the final gate; a red test means the task is not done.
 
 ### PHP
 - Always `declare(strict_types=1);`
