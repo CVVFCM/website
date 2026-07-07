@@ -6,12 +6,10 @@ namespace App\AI\Chat;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\AI\Agent\AgentInterface;
-use Symfony\AI\Chat\Chat;
-use Symfony\AI\Chat\ChatInterface;
 
 /**
- * One Chat per conversation: the ai-chat component binds a store to a single
- * conversation, so the store (and thus the Chat) is instantiated per conversationId.
+ * One chat per conversation: the store binds to a single conversation, so the
+ * store (and thus the chat) is instantiated per conversationId.
  */
 final readonly class ForgieChatFactory
 {
@@ -21,8 +19,8 @@ final readonly class ForgieChatFactory
     ) {
     }
 
-    public function create(string $conversationId): ChatInterface
+    public function create(string $conversationId): ForgieChat
     {
-        return new Chat($this->agent, new ForgieMessageStore($this->entityManager, $conversationId));
+        return new ForgieChat($this->agent, new ForgieMessageStore($this->entityManager, $conversationId));
     }
 }

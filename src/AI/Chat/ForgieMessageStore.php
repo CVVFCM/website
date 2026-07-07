@@ -10,8 +10,11 @@ use Symfony\AI\Chat\ManagedStoreInterface;
 use Symfony\AI\Chat\MessageNormalizer;
 use Symfony\AI\Chat\MessageStoreInterface;
 use Symfony\AI\Platform\Contract\Normalizer\Result\ToolCallNormalizer;
+use Symfony\AI\Platform\Message\AssistantMessage;
+use Symfony\AI\Platform\Message\Content\Text;
 use Symfony\AI\Platform\Message\MessageBag;
 use Symfony\AI\Platform\Message\MessageInterface;
+use Symfony\AI\Platform\Message\UserMessage;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -75,7 +78,35 @@ final readonly class ForgieMessageStore implements ManagedStoreInterface, Messag
         /** @var list<MessageInterface> $messages */
         $messages = $this->serializer->denormalize($conversation->messages, MessageInterface::class.'[]');
 
-        return new MessageBag(...\array_slice($messages, -self::MAX_MESSAGES));
+        // Drop assistant messages with neither text nor tool calls: rows written by
+        // the buggy ChatStreamListener (empty streamed text) would be sent back as
+        // {"content": null} without tool_calls — a hard 400 on Mistral.
+        $messages = array_values(array_filter($messages, self::isValidMessage(...)));
+
+        $messages = \array_slice($messages, -self::MAX_MESSAGES);
+
+        // The cap may cut mid tool-call exchange; a bag starting with an orphan tool
+        // result (or an assistant message) is rejected too, so start at a user message.
+        while ([] !== $messages && !$messages[0] instanceof UserMessage) {
+            array_shift($messages);
+        }
+
+        return new MessageBag(...$messages);
+    }
+
+    private static function isValidMessage(MessageInterface $message): bool
+    {
+        if (!$message instanceof AssistantMessage) {
+            return true;
+        }
+
+        foreach ($message->getContent() as $part) {
+            if (!$part instanceof Text || '' !== $part->getText()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     #[\Override]

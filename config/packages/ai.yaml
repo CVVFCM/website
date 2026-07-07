@@ -6,7 +6,7 @@ ai:
     agent:
         forgie:
             platform: 'ai.platform.mistral'
-            model: 'mistral-medium-latest'
+            model: 'mistral-small-latest'
             tools:
                 - 'App\AI\Tool\CurrentDateTimeTool'
                 - 'App\AI\Tool\RegattaTool'

@@ -68,7 +68,7 @@ services:
             APP_ENV: ${APP_ENV:-dev}
         tty: true
         # Name the receivers (async + scheduler) — the interactive prompt would otherwise block on tty.
-        command: [ "php", "bin/console", "messenger:consume", "async", "scheduler_default", "--time-limit=3600", "--failure-limit=10", "-vv" ]
+        command: [ "php", "bin/console", "messenger:consume", "async", "scheduler_default", "--time-limit=3600", "--failure-limit=10", "-vvv" ]
 
     rtsp-to-web:
         ports:

@@ -70,6 +70,48 @@ final class ForgieMessageStoreTest extends TestCase
         $this->assertSame('message 25', $messages[19]->asText());
     }
 
+    public function testLoadDropsEmptyAssistantMessages(): void
+    {
+        // Rows written by the component's buggy ChatStreamListener contain an
+        // assistant message with an empty text: sent back to Mistral it becomes
+        // {"content": null} without tool_calls — a hard 400.
+        $store = $this->storeOverInMemoryRow();
+
+        $store->save(new MessageBag(
+            Message::ofUser('Quel temps ?'),
+            Message::ofAssistant(''),
+        ));
+
+        $messages = $store->load()->getMessages();
+
+        $this->assertCount(1, $messages);
+        $this->assertInstanceOf(UserMessage::class, $messages[0]);
+    }
+
+    public function testLoadStartsTheCappedHistoryAtAUserMessage(): void
+    {
+        // The cap may cut mid-exchange; a bag starting with an assistant (or orphan
+        // tool result) message is rejected by the API, so leading non-user messages
+        // are dropped.
+        $store = $this->storeOverInMemoryRow();
+
+        $bag = new MessageBag();
+        for ($i = 1; $i <= 13; ++$i) {
+            $bag->add(Message::ofUser("question $i"));
+            if ($i < 13) {
+                $bag->add(Message::ofAssistant("réponse $i"));
+            }
+        }
+        $store->save($bag);
+
+        $messages = $store->load()->getMessages();
+
+        // 25 messages capped to 20 would start at "réponse 3": it is dropped too.
+        $this->assertCount(19, $messages);
+        $this->assertInstanceOf(UserMessage::class, $messages[0]);
+        $this->assertSame('question 4', $messages[0]->asText());
+    }
+
     /**
      * EntityManager double acting as a one-row store: save() persists or mutates the
      * entity, find() returns whatever was last persisted.
