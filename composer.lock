@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c095bdf451f022cf6f11ef1141dcb6ee",
+    "content-hash": "3f52f307510f6b74a0d029d7f5e976e2",
     "packages": [
         {
             "name": "api-platform/core",
@@ -19043,9 +19043,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "sulu/form-bundle": 5
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
