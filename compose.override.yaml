@@ -11,6 +11,8 @@ services:
                 }
             SITE_EXTRA_CONFIG: |
                 mercure {
+                    publisher_jwt {env.MERCURE_JWT_SECRET}
+                    subscriber_jwt {env.MERCURE_JWT_SECRET}
                     anonymous
                 }
             FRANKENPHP_SITE_CONFIG: hot_reload assets/**/*.css assets/**/*.js src/**/*.php templates/**/*.html.twig
