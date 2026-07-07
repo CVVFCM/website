@@ -11,6 +11,10 @@
 }
 
 
+.Page__headerMain--slim {
+    min-height: 3rem;
+}
+
 .Page__headerMain {
     color: var(--base-text-color);
     display: inline-flex;
@@ -18,6 +22,7 @@
     z-index: 0;
     gap: 0;
     word-break: break-all;
+    align-items: end;
 
     p, h1, h2 {
         color: inherit;
@@ -50,10 +55,9 @@
 
 .Page__headerMedia {
     position: relative;
-    margin-top: 10%;
     left: -8vh;
     order: -1;
-    max-height: 60vh;
+    max-height: 55vh;
     min-height: 33vh;
     max-width: 55vw;
     transform:  skewX(15deg) ;

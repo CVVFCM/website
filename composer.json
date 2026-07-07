@@ -21,7 +21,7 @@
         "scheb/2fa-trusted-device": "^7.11.0",
         "scienta/doctrine-json-functions": "^6.3",
         "stof/doctrine-extensions-bundle": "^1.14.0",
-        "sulu/form-bundle": "^3.0.0@rc",
+        "sulu/form-bundle": "^3.0.0",
         "sulu/sulu": "^3.0.7",
         "symfony/ai-agent": "^0.10.0",
         "symfony/ai-bundle": "^0.10.0",

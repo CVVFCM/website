@@ -1,6 +1,7 @@
 .EventContentBlock {
     list-style-type: none;
-    border-left: 1px dashed var(--red-act-text);
+    border: 1px dashed var(--red-act-text);
+    border-width: 0 0 0 1px;
     padding-left: 2rem;
     padding-right: 0.5rem;
     max-width: 26rem;
@@ -12,6 +13,8 @@
         list-style: none;
         padding-left: 0;
     }
+
+
 }
 
 .EventContentBlock__title {
@@ -155,3 +158,23 @@
 .EventContentBlock__ctaButton:active {
     background-color: var(--red-act-text);
 }
+
+.EventContentBlock__ctaButton--disabled {
+    background-color: var(--color-gray-400);
+    color: var(--color-gray-600);
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.EventContentBlock__ctaButton--disabled:hover {
+    background-color: var(--color-gray-400);
+}
+
+@media (width < 65em) {
+    .EventContentBlock {
+        border-width: 1px 0 0;
+        padding: 2rem 0 0;
+    }
+}
+
+/* modified Thu May 28 01:17:38 PM CEST 2026 */

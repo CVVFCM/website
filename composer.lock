@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c095bdf451f022cf6f11ef1141dcb6ee",
+    "content-hash": "3f52f307510f6b74a0d029d7f5e976e2",
     "packages": [
         {
             "name": "api-platform/core",
-            "version": "v4.3.15",
+            "version": "v4.3.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/core.git",
-                "reference": "1d641ccad7abbc292dc8341895ef57338a853944"
+                "reference": "95dd0232dd50e982d37f0590cb35ca3cefd13efa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/core/zipball/1d641ccad7abbc292dc8341895ef57338a853944",
-                "reference": "1d641ccad7abbc292dc8341895ef57338a853944",
+                "url": "https://api.github.com/repos/api-platform/core/zipball/95dd0232dd50e982d37f0590cb35ca3cefd13efa",
+                "reference": "95dd0232dd50e982d37f0590cb35ca3cefd13efa",
                 "shasum": ""
             },
             "require": {
@@ -220,22 +220,22 @@
             ],
             "support": {
                 "issues": "https://github.com/api-platform/core/issues",
-                "source": "https://github.com/api-platform/core/tree/v4.3.15"
+                "source": "https://github.com/api-platform/core/tree/v4.3.16"
             },
-            "time": "2026-06-26T10:41:18+00:00"
+            "time": "2026-07-03T06:59:33+00:00"
         },
         {
             "name": "async-aws/core",
-            "version": "1.29.0",
+            "version": "1.29.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/core.git",
-                "reference": "70899695fcc7b23a9247926ff8b581668583b993"
+                "reference": "549c166a715fba5e18508a8922904865d056c69a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/core/zipball/70899695fcc7b23a9247926ff8b581668583b993",
-                "reference": "70899695fcc7b23a9247926ff8b581668583b993",
+                "url": "https://api.github.com/repos/async-aws/core/zipball/549c166a715fba5e18508a8922904865d056c69a",
+                "reference": "549c166a715fba5e18508a8922904865d056c69a",
                 "shasum": ""
             },
             "require": {
@@ -282,7 +282,7 @@
                 "sts"
             ],
             "support": {
-                "source": "https://github.com/async-aws/core/tree/1.29.0"
+                "source": "https://github.com/async-aws/core/tree/1.29.1"
             },
             "funding": [
                 {
@@ -294,20 +294,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-04-18T17:06:10+00:00"
+            "time": "2026-07-01T13:58:12+00:00"
         },
         {
             "name": "async-aws/s3",
-            "version": "3.3.0",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/s3.git",
-                "reference": "26bf7e498df4fd135fb2c32cbaa5ba92c0615fa3"
+                "reference": "87f3f19dbae1f54a8f6535a9a4dbdf3b02178acd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/s3/zipball/26bf7e498df4fd135fb2c32cbaa5ba92c0615fa3",
-                "reference": "26bf7e498df4fd135fb2c32cbaa5ba92c0615fa3",
+                "url": "https://api.github.com/repos/async-aws/s3/zipball/87f3f19dbae1f54a8f6535a9a4dbdf3b02178acd",
+                "reference": "87f3f19dbae1f54a8f6535a9a4dbdf3b02178acd",
                 "shasum": ""
             },
             "require": {
@@ -326,7 +326,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.3-dev"
+                    "dev-master": "3.4-dev"
                 }
             },
             "autoload": {
@@ -347,7 +347,7 @@
                 "sdk"
             ],
             "support": {
-                "source": "https://github.com/async-aws/s3/tree/3.3.0"
+                "source": "https://github.com/async-aws/s3/tree/3.4.0"
             },
             "funding": [
                 {
@@ -359,7 +359,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-04-29T10:05:33+00:00"
+            "time": "2026-07-01T13:58:12+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -3417,16 +3417,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "3.35.1",
+            "version": "3.35.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "f23af6c5aafd958a7593029a271d77baf5ed793c"
+                "reference": "b277b5dc3d56650b68904117124e79c851e12376"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/f23af6c5aafd958a7593029a271d77baf5ed793c",
-                "reference": "f23af6c5aafd958a7593029a271d77baf5ed793c",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/b277b5dc3d56650b68904117124e79c851e12376",
+                "reference": "b277b5dc3d56650b68904117124e79c851e12376",
                 "shasum": ""
             },
             "require": {
@@ -3494,9 +3494,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.35.1"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.35.2"
             },
-            "time": "2026-06-25T06:52:23+00:00"
+            "time": "2026-07-06T14:42:07+00:00"
         },
         {
             "name": "league/flysystem-async-aws-s3",
@@ -6072,24 +6072,26 @@
         },
         {
             "name": "sulu/form-bundle",
-            "version": "3.0.0-RC3",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sulu/SuluFormBundle.git",
-                "reference": "a7ae80aed9b8d2ca28ea43285f934c5c0c577a36"
+                "reference": "de98f0b01ee15c948f2469dd206230187debd893"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sulu/SuluFormBundle/zipball/a7ae80aed9b8d2ca28ea43285f934c5c0c577a36",
-                "reference": "a7ae80aed9b8d2ca28ea43285f934c5c0c577a36",
+                "url": "https://api.github.com/repos/sulu/SuluFormBundle/zipball/de98f0b01ee15c948f2469dd206230187debd893",
+                "reference": "de98f0b01ee15c948f2469dd206230187debd893",
                 "shasum": ""
             },
             "require": {
                 "doctrine/collections": "^1.6 || ^2.0",
+                "doctrine/doctrine-migrations-bundle": "^3.3",
+                "doctrine/migrations": "^3.6",
                 "doctrine/orm": "^2.17.3 || ^3.3",
                 "doctrine/persistence": "^3.1 || ^4.0",
                 "php": "^8.2",
-                "sulu/sulu": "^3.0.4 || 3.0.x-dev",
+                "sulu/sulu": "^3.0.7 || 3.0.x-dev",
                 "symfony/config": "^6.4 || ^7.1",
                 "symfony/console": "^6.4 || ^7.1",
                 "symfony/dependency-injection": "^6.4 || ^7.1",
@@ -6111,36 +6113,39 @@
                 "doctrine/doctrine-bundle": "^2.0",
                 "drewm/mailchimp-api": "^2.2",
                 "excelwebzone/recaptcha-bundle": "^1.4.2",
+                "getbrevo/brevo-php": "^4.0",
                 "handcraftedinthealps/zendsearch": "^2.0",
                 "jackalope/jackalope-doctrine-dbal": "^2.0",
-                "jangregor/phpstan-prophecy": "^1.0",
+                "jangregor/phpstan-prophecy": "^2.0",
                 "massive/search-bundle": "^2.0",
-                "php-cs-fixer/shim": "^3.0",
+                "php-cs-fixer/shim": "^3.14",
                 "phpspec/prophecy": "^1.14",
                 "phpspec/prophecy-phpunit": "^2.0",
-                "phpstan/phpstan": "^1.0",
-                "phpstan/phpstan-doctrine": "^1.0",
-                "phpstan/phpstan-phpunit": "^1.0",
-                "phpstan/phpstan-symfony": "^1.0",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-doctrine": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-symfony": "^2.0",
+                "phpstan/phpstan-webmozart-assert": "^2.0",
                 "phpunit/phpunit": "^10.0 || ^11.0",
-                "sendinblue/api-v3-sdk": "^8.0",
+                "rector/rector": "^2.0",
+                "spaze/phpstan-disallowed-calls": "^4.7",
                 "symfony/browser-kit": "^6.4 || ^7.1",
                 "symfony/dotenv": "^6.4 || ^7.1",
                 "symfony/mime": "^6.4 || ^7.1",
                 "symfony/monolog-bundle": "^3.1",
                 "symfony/stopwatch": "^6.4 || ^7.1",
-                "symfony/var-dumper": "^6.4 || ^7.1",
-                "thecodingmachine/phpstan-strict-rules": "^1.0"
+                "symfony/var-dumper": "^6.4 || ^7.1"
             },
             "suggest": {
                 "drewm/mailchimp-api": "Allows to add a newsletter subscription over mailchimp to any dynamic form",
                 "excelwebzone/recaptcha-bundle": "Allows to add recaptcha to any dynamic form",
-                "sendinblue/api-v3-sdk": "Allows to add a newsletter subscription over sendinblue to any dynamic form"
+                "getbrevo/brevo-php": "Allows to add a newsletter subscription over Brevo to any dynamic form"
             },
             "type": "sulu-bundle",
             "autoload": {
                 "psr-4": {
-                    "Sulu\\Bundle\\FormBundle\\": ""
+                    "Sulu\\Bundle\\FormBundle\\": "",
+                    "Sulu\\Bundle\\FormBundle\\Migrations\\": "migrations"
                 },
                 "exclude-from-classmap": [
                     "/Tests/"
@@ -6166,9 +6171,9 @@
             ],
             "support": {
                 "issues": "https://github.com/sulu/SuluFormBundle/issues",
-                "source": "https://github.com/sulu/SuluFormBundle/tree/3.0.0-RC3"
+                "source": "https://github.com/sulu/SuluFormBundle/tree/3.0.0"
             },
-            "time": "2026-05-19T15:02:25+00:00"
+            "time": "2026-07-02T13:43:01+00:00"
         },
         {
             "name": "sulu/messenger",
@@ -14223,16 +14228,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.27.1",
+            "version": "v3.28.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "ae2071bffb38f04847fc0864d730c94b9cb8ab74"
+                "reference": "597c12ed286fb9d1701a36684ce6e0cbe28ebc8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ae2071bffb38f04847fc0864d730c94b9cb8ab74",
-                "reference": "ae2071bffb38f04847fc0864d730c94b9cb8ab74",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/597c12ed286fb9d1701a36684ce6e0cbe28ebc8b",
+                "reference": "597c12ed286fb9d1701a36684ce6e0cbe28ebc8b",
                 "shasum": ""
             },
             "require": {
@@ -14287,7 +14292,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v3.27.1"
+                "source": "https://github.com/twigphp/Twig/tree/v3.28.0"
             },
             "funding": [
                 {
@@ -14299,7 +14304,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-30T17:09:26+00:00"
+            "time": "2026-07-03T20:44:34+00:00"
         },
         {
             "name": "wamania/php-stemmer",
@@ -16245,20 +16250,19 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.7.0",
+            "version": "v5.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "dca41cd15c2ac9d055ad70dbfd011130757d1f82"
+                "reference": "044a6a392ff8ad0d61f14370a5fbbd0a0107152f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/dca41cd15c2ac9d055ad70dbfd011130757d1f82",
-                "reference": "dca41cd15c2ac9d055ad70dbfd011130757d1f82",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/044a6a392ff8ad0d61f14370a5fbbd0a0107152f",
+                "reference": "044a6a392ff8ad0d61f14370a5fbbd0a0107152f",
                 "shasum": ""
             },
             "require": {
-                "ext-ctype": "*",
                 "ext-json": "*",
                 "ext-tokenizer": "*",
                 "php": ">=7.4"
@@ -16297,9 +16301,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.7.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.8.0"
             },
-            "time": "2025-12-06T11:56:16+00:00"
+            "time": "2026-07-04T14:30:18+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -16766,24 +16770,24 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.30",
+            "version": "12.5.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "900400a5b616d6fb306f9549f6da33ba615d3fbb"
+                "reference": "0608d157a284f15cc73b99a3327eff06b66a176d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/900400a5b616d6fb306f9549f6da33ba615d3fbb",
-                "reference": "900400a5b616d6fb306f9549f6da33ba615d3fbb",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0608d157a284f15cc73b99a3327eff06b66a176d",
+                "reference": "0608d157a284f15cc73b99a3327eff06b66a176d",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
+                "ext-filter": "*",
                 "ext-json": "*",
                 "ext-libxml": "*",
                 "ext-mbstring": "*",
-                "ext-xml": "*",
                 "ext-xmlwriter": "*",
                 "myclabs/deep-copy": "^1.13.4",
                 "phar-io/manifest": "^2.0.4",
@@ -16844,7 +16848,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.30"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.31"
             },
             "funding": [
                 {
@@ -16852,7 +16856,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-06-15T13:12:30+00:00"
+            "time": "2026-07-06T14:54:16+00:00"
         },
         {
             "name": "react/cache",
@@ -19039,9 +19043,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "sulu/form-bundle": 5
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

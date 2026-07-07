@@ -4,73 +4,19 @@
         <p class="HomepageCalendar__description">{{ block.description|striptags }}</p>
     </header>
 
-    {% set eventTypeLabels = {regatta: 'Régate', sea_trip: 'Sortie en mer', default: 'Événement'} %}
     {% set featuredEvent = block.featured_event|first %}
     <div class="HomepageCalendar__grid">
 
         {% if featuredEvent %}
             <div class="HomepageCalendar__featuredBlock">
-                {% set daysRemaining = (featuredEvent.begin_date|date('U') - 'now'|date('U')) // 86400 %}
-                <article class="HomepageCalendar__event HomepageCalendar__event--featured">
-                    {% if featuredEvent.main_media is defined and featuredEvent.main_media %}
-                        <div class="HomepageCalendar__eventImage">
-                            <img src="{{ featuredEvent.main_media.thumbnails['sulu-170x170'] }}"
-                                 alt="{{ featuredEvent.main_media.title }}"
-                                 loading="lazy"
-                                 width="170"
-                                 height="170" />
-                        </div>
-                    {% endif %}
-                    <div class="HomepageCalendar__eventContent">
-                        <div class="HomepageCalendar__eventMeta">
-                            <span class="HomepageCalendar__eventCountdown">J-{{ daysRemaining }}</span>
-                            <span class="HomepageCalendar__eventType">{{ eventTypeLabels[featuredEvent.event_type|default('default')]|default('Événement') }}</span>
-                        </div>
-                        <h3 class="HomepageCalendar__eventTitle">{{ featuredEvent.title }}</h3>
-                        <time class="HomepageCalendar__eventDate" datetime="{{ featuredEvent.begin_date|date('Y-m-d') }}">
-                            {{ featuredEvent.begin_date|format_date(pattern: 'd') }}–{{ featuredEvent.end_date|format_date(pattern: 'd MMMM Y')|upper }}
-                        </time>
-                        <a href="#" class="HomepageCalendar__eventLink" aria-label="Voir {{ featuredEvent.title }}">
-                            <svg class="HomepageCalendar__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                <path d="M8 5v14l11-7z"/>
-                            </svg>
-                        </a>
-                    </div>
-                </article>
+                {{ include('partials/event_card.html.twig', {event: featuredEvent, featured: true}, false) }}
             </div>
         {% endif %}
 
         <ul class="HomepageCalendar__events">
-             {% for event in block.events|filter(event => event.url not in block.featured_event|map(e => e.url))|slice(0, 4) %}
-                {% set daysRemaining = (event.begin_date|date('U') - 'now'|date('U')) // 86400 %}
-
+            {% for event in block.events|filter(event => event.url not in block.featured_event|map(e => e.url))|slice(0, 4) %}
                 <li class="HomepageCalendar__eventItem">
-                    <article class="HomepageCalendar__event">
-                        {% if event.main_media is defined and event.main_media %}
-                            <div class="HomepageCalendar__eventImage">
-                                <img src="{{ event.main_media.thumbnails['sulu-170x170'] }}"
-                                     alt="{{ event.main_media.title }}"
-                                     loading="lazy"
-                                     width="170"
-                                     height="170" />
-                            </div>
-                        {% endif %}
-                        <div class="HomepageCalendar__eventContent">
-                            <div class="HomepageCalendar__eventMeta">
-                                <span class="HomepageCalendar__eventCountdown">J-{{ daysRemaining }}</span>
-                                <span class="HomepageCalendar__eventType">{{ eventTypeLabels[event.event_type|default('default')]|default('Événement') }}</span>
-                            </div>
-                            <h3 class="HomepageCalendar__eventTitle">{{ event.title }}</h3>
-                            <time class="HomepageCalendar__eventDate" datetime="{{ event.begin_date|date('Y-m-d') }}">
-                                {{ event.begin_date|format_date(pattern: 'd') }}–{{ event.end_date|format_date(pattern: 'd MMMM Y')|upper }}
-                            </time>
-                            <a href="{{ event.url }}" class="HomepageCalendar__eventLink" aria-label="Voir {{ event.title }}">
-                                <svg class="HomepageCalendar__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </a>
-                        </div>
-                    </article>
+                    {{ include('partials/event_card.html.twig', {event: event}, false) }}
                 </li>
             {% endfor %}
         </ul>

@@ -1,0 +1,13 @@
+<article class="ListPage__article">
+    <h2 class="ListPage__articleTitle">{{ item.title }}</h2>
+    {% if item.media is defined and item.media %}
+        {% set media = item.media.formats is defined ? item.media : item.media[0] %}
+        <div class="ListPage__articleMedia">
+            <img src="{{ media.formats['sulu-400x400.webp'] }}" alt="{{ media.title }}" />
+        </div>
+    {% endif %}
+    {% if item.description is defined and item.description %}
+        <div class="ListPage__articleDescription">{{ item.description|raw }}</div>
+    {% endif %}
+    <a class="ListPage__moreInfoLink" href="{{ item.url }}">En savoir +</a>
+</article>

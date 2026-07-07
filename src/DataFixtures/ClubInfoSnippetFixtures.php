@@ -24,7 +24,7 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class NavigationLinksSnippetFixtures extends Fixture implements DependentFixtureInterface
+final class ClubInfoSnippetFixtures extends Fixture implements DependentFixtureInterface
 {
     use HandleTrait;
 
@@ -40,75 +40,82 @@ final class NavigationLinksSnippetFixtures extends Fixture implements DependentF
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $pictosCollection = new Collection();
-        $pictosCollection->setType($manager->find(CollectionType::class, 1));
-        $manager->persist($pictosCollection);
+        $labelsCollection = new Collection();
+        $labelsCollection->setType($manager->find(CollectionType::class, 1));
+        $manager->persist($labelsCollection);
 
-        $pictosCollectionMeta = new CollectionMeta();
-        $pictosCollectionMeta->setLocale('fr');
-        $pictosCollectionMeta->setTitle('Pictogrammes navigation');
-        $pictosCollectionMeta->setDescription('Pictogrammes utilisés dans les liens de navigation');
-        $pictosCollectionMeta->setCollection($pictosCollection);
-        $manager->persist($pictosCollectionMeta);
+        $labelsCollectionMeta = new CollectionMeta();
+        $labelsCollectionMeta->setLocale('fr');
+        $labelsCollectionMeta->setTitle('Labels / Certifications');
+        $labelsCollectionMeta->setCollection($labelsCollection);
+        $manager->persist($labelsCollectionMeta);
         $manager->flush();
 
-        $pictos = [];
-        $finder = Finder::create()->in(__DIR__.'/stubs/pictos')->files()->depth(0);
+        $labelMedia = [];
+        $finder = Finder::create()->in(__DIR__.'/stubs/labels')->files()->depth(0)->sortByName();
         foreach ($finder as $fileInfo) {
             $media = $this->mediaManager->save(
                 new UploadedFile($fileInfo->getPathname(), $fileInfo->getFilename()),
-                ['locale' => 'fr', 'collection' => $pictosCollection->getId()],
+                ['locale' => 'fr', 'collection' => $labelsCollection->getId()],
                 1,
             );
-            $entity = $manager->find(Media::class, $media->getId());
-            $pictos[$fileInfo->getFilenameWithoutExtension()] = $entity;
-            $this->addReference('picto_'.$fileInfo->getFilenameWithoutExtension(), $entity);
+            $labelMedia[$fileInfo->getFilenameWithoutExtension()] = $manager->find(Media::class, $media->getId());
         }
 
         $events = $this->getReference('events', Page::class);
         $live = $this->getReference('live', Page::class);
         $regattas = $this->getReference('regattas', Page::class);
 
-        $pictoEvent = $pictos['event'];
-        $pictoLive = $pictos['live'];
-        $pictoMember = $pictos['member'];
-        $pictoBoutique = $pictos['boutique'];
-
         /** @var SnippetInterface $snippet */
         $snippet = $this->handle(
             new Envelope(
                 new CreateSnippetMessage([
                     'locale' => 'fr',
-                    'template' => 'navigation_links',
-                    'title' => 'Liens de navigation',
-                    'links' => [
+                    'template' => 'club_info',
+                    'title' => 'Informations du club',
+                    'address' => '5 rue du Lac – 08500 Les Mazures',
+                    'legal_status' => 'Association sportive loi 1901',
+                    'siret' => '123 123 123 123456',
+                    'labels' => [
                         [
-                            'type' => 'internal',
+                            'type' => 'label',
+                            'name' => 'EFVoile',
+                            'logo' => ['id' => $labelMedia['efvoile']->getId()],
+                            'url' => 'https://www.efvoile.fr',
+                        ],
+                        [
+                            'type' => 'label',
+                            'name' => 'FFVoile',
+                            'logo' => ['id' => $labelMedia['ffvoile']->getId()],
+                            'url' => 'https://www.ffvoile.fr',
+                        ],
+                    ],
+                    'legal_links' => [
+                        [
+                            'type' => 'legal',
+                            'label' => 'Mentions légales',
+                            'page' => $events->getUuid(),
+                        ],
+                    ],
+                    'col1_title' => 'Activités',
+                    'col1_links' => [
+                        [
+                            'type' => 'link',
                             'label' => 'Événements',
                             'page' => $events->getUuid(),
-                            'media' => ['id' => $pictoEvent->getId()],
-                            'display' => ['header_right'],
                         ],
                         [
-                            'type' => 'internal',
-                            'label' => 'Adhérer',
-                            'page' => $regattas->getUuid(),
-                            'media' => ['id' => $pictoMember->getId()],
-                            'display' => ['button', 'header_top'],
-                        ],
-                        [
-                            'type' => 'internal',
+                            'type' => 'link',
                             'label' => 'En direct',
                             'page' => $live->getUuid(),
-                            'media' => ['id' => $pictoLive->getId()],
-                            'display' => ['header_right'],
                         ],
+                    ],
+                    'col2_title' => 'Le Club',
+                    'col2_links' => [
                         [
-                            'type' => 'external',
-                            'label' => 'Boutique',
-                            'url' => 'https://boutique.cvvfcm.fr',
-                            'media' => ['id' => $pictoBoutique->getId()],
-                            'display' => ['hidden_text', 'header_top'],
+                            'type' => 'link',
+                            'label' => 'Régates',
+                            'page' => $regattas->getUuid(),
                         ],
                     ],
                 ]),
@@ -133,7 +140,7 @@ final class NavigationLinksSnippetFixtures extends Fixture implements DependentF
             new Envelope(
                 new ModifySnippetAreaMessage([
                     'webspaceKey' => 'cvvfcm',
-                    'areaKey' => 'navigation_links',
+                    'areaKey' => 'club_info',
                     'snippetIdentifier' => ['uuid' => $snippet->getUuid()],
                     'locale' => 'fr',
                 ]),

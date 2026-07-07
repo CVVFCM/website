@@ -3,8 +3,12 @@
           <h2 class="HomepageLive__title">{{ block.title }}</h2>
           <div class="HomepageLive__description">{{ block.description|raw }}</div>
           <div class="HomepageLive__weatherDate">
-              <span class="HomepageLive__weatherDay">{{ 'now'|date('l')|trans }}</span>
-              <span class="HomepageLive__weatherDateNumber">{{ 'now'|date('d') }} {{ 'now'|date('M')|upper }}.</span>
+              <span class="HomepageLive__weatherDay">
+                  {{ 'now'|date|format_date(pattern: 'eeee')|upper }}
+              </span>
+              <span class="HomepageLive__weatherDateNumber">
+                  {{ 'now'|date|format_date(pattern: 'dd MMMM')|upper }}.
+              </span>
           </div>
     </header>
 

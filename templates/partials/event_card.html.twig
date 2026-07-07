@@ -1,0 +1,31 @@
+{# variables: event (object), featured (bool, optional) #}
+{% set eventTypeLabels = {default: 'Événement', regatta: 'Régate', sea_trip: 'Sortie en mer'} %}
+{% set daysRemaining = (event.begin_date|date('U') - 'now'|date('U')) // 86400 %}
+<article class="EventCard{{ featured is defined and featured ? ' EventCard--featured' : '' }}">
+    {% if event.main_media is defined and event.main_media %}
+        <div class="EventCard__image">
+            <img src="{{ event.main_media.thumbnails['sulu-170x170'] }}"
+                 alt="{{ event.main_media.title }}"
+                 loading="lazy"
+                 width="170"
+                 height="170" />
+        </div>
+    {% endif %}
+    <div class="EventCard__content">
+        <div class="EventCard__meta">
+            <span class="EventCard__countdown">J-{{ daysRemaining }}</span>
+            <span class="EventCard__type">{{ eventTypeLabels[event.event_type|default('default')]|default('Événement') }}</span>
+        </div>
+        <h3 class="EventCard__title">
+            <a href="{{ event.url }}" class="EventCard__link">{{ event.title }}</a>
+        </h3>
+        <time class="EventCard__date" datetime="{{ event.begin_date|date('Y-m-d') }}">
+            {{ event.begin_date|format_date(pattern: 'd') }}–{{ event.end_date|format_date(pattern: 'd MMMM Y')|upper }}
+        </time>
+        <span class="EventCard__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+        </span>
+    </div>
+</article>

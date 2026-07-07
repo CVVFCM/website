@@ -17,6 +17,64 @@
                 {% endif %}
             </div>
 
+        {% elseif this.variant == 'live-update' %}
+            <p class="WeatherLiveBlock__update">Mis à jour le {{ liveWeather.updatedAt.format('d/m/Y à H:i') }}</p>
+
+        {% elseif this.variant == 'live-link' %}
+            <a class="LivePage__relevesLink" href="{{ this.link }}" target="_blank" rel="noopener noreferrer">
+                Voir tous les relevés →
+            </a>
+
+        {% elseif this.variant == 'live-wind' %}
+            <dl class="WeatherLiveBlock__data">
+                <dt>Direction</dt>
+                <dd>{{ liveWeather.windDirectionAsCardinal.value }}</dd>
+                <dt>Vitesse</dt>
+                <dd><strong class="WeatherLiveBlock__value">{{ liveWeather.windSpeed|round }}</strong> nds — {{ (liveWeather.windSpeed * 1.852)|round }} km/h</dd>
+                <dt>Rafales</dt>
+                <dd>{{ liveWeather.windGusts|round }} nds</dd>
+                <dt>Moy. direction</dt>
+                <dd>{{ liveWeather.windDirectionAverageAsCardinal.value }}</dd>
+                <dt>Moy. vitesse</dt>
+                <dd>{{ liveWeather.windSpeedAverage|round }} nds</dd>
+            </dl>
+
+        {% elseif this.variant == 'live-temperature' %}
+            <div class="WeatherLiveBlock__main">
+                {{ liveWeather.temperature|round(1)|replace({'.': ','}) }}<span class="WeatherLiveBlock__unit">°c</span>
+            </div>
+            <dl class="WeatherLiveBlock__data">
+                <dt>Min</dt>
+                <dd>{{ liveWeather.temperatureMin|round(1) }} °c</dd>
+                <dt>Max</dt>
+                <dd>{{ liveWeather.temperatureMax|round(1) }} °c</dd>
+                <dt>Humidité</dt>
+                <dd>{{ liveWeather.humidity|format_number(style: 'percent') }}</dd>
+                <dt>Hum. min</dt>
+                <dd>{{ liveWeather.humidityMin|format_number(style: 'percent') }}</dd>
+                <dt>Hum. max</dt>
+                <dd>{{ liveWeather.humidityMax|format_number(style: 'percent') }}</dd>
+            </dl>
+
+        {% elseif this.variant == 'live-pressure' %}
+            <div class="WeatherLiveBlock__main">
+                {{ liveWeather.pressure|round }}<span class="WeatherLiveBlock__unit">hPa</span>
+            </div>
+            <dl class="WeatherLiveBlock__data">
+                <dt>Min</dt>
+                <dd>{{ liveWeather.pressureMin|round }} hPa</dd>
+                <dt>Max</dt>
+                <dd>{{ liveWeather.pressureMax|round }} hPa</dd>
+            </dl>
+
+        {% elseif this.variant == 'live-rain' %}
+            <dl class="WeatherLiveBlock__data">
+                <dt>Rythme actuel</dt>
+                <dd><strong class="WeatherLiveBlock__value">{{ liveWeather.rainRate|round(1)|replace({'.': ','}) }}</strong> mm/h</dd>
+                <dt>Cumul aujourd'hui</dt>
+                <dd>{{ liveWeather.rainTotal|round(1)|replace({'.': ','}) }} mm</dd>
+            </dl>
+
         {% elseif this.variant == 'homepage-wind' %}
             {# Homepage wind variant - Lake map with wind info #}
 
@@ -31,7 +89,7 @@
 
                 <div class="HomepageLive__windInfo">
                     <div class="HomepageLive__windKnots">
-                        <span class="HomepageLive__windKnotsValue">{{ liveWeather.windSpeed|round }}</span> Noeuds (raf.)
+                        <span class="HomepageLive__windKnotsValue">{{ liveWeather.windSpeed|round(0) }}</span> Noeuds (raf.)
                     </div>
                     <div class="HomepageLive__windSpeed">
                         {{ liveWeather.windSpeed|replace({'.': ','}) }} <span class="HomepageLive__windSpeedUnit">Noeuds</span>

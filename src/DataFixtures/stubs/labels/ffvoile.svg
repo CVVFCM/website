@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="70" viewBox="0 0 160 70">
+  <rect width="158" height="68" x="1" y="1" rx="34" ry="34" fill="white" stroke="#cccccc" stroke-width="1"/>
+  <text x="80" y="26" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#555">Fédération Française</text>
+  <text x="80" y="48" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="900">
+    <tspan fill="#003f8e">FF</tspan><tspan fill="#e2001a">Voile</tspan>
+  </text>
+</svg>

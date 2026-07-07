@@ -45,7 +45,7 @@ ml_cli:
 	test -f $@ || make first_run
 	@touch $@
 
-first_run: .infra/tls/cert.pem build var/ data/weather/ml vendor/ up reset public/build/admin/manifest.json data/weather/ml/model_pytorch.onnx
+first_run: .infra/tls/cert.pem build var/ data/weather/ml vendor/ up reset public/build/admin/ data/weather/ml/model_pytorch.onnx
 
 reset:
 	@$(DOCKER_COMPOSE) exec php composer reset
@@ -95,7 +95,7 @@ node_modules/:
 vendor/:
 	@$(DOCKER_COMPOSE) run --rm php composer install
 
-public/build/admin/manifest.json: assets/admin/package.json assets/admin/package-lock.json assets/admin/app.js
+public/build/admin/: assets/admin/package.json assets/admin/package-lock.json assets/admin/app.js vendor/sulu
 	@docker run --rm -v $(PWD):/app -w /app/assets/admin node:22-bookworm-slim npm install
 	@docker run --rm -v $(PWD):/app -w /app/assets/admin node:22-bookworm-slim npm run build
 	@docker run --rm -v $(PWD):/app -w /app/assets/admin node:22-bookworm-slim chown -R $(shell id -u):$(shell id -g) .

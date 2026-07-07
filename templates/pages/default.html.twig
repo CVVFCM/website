@@ -8,12 +8,8 @@
 
 {% block content %}
     <header class="Page__header">
-        <div class="Logo__headerTopBar SectionPadded">
-            <a class="Logo__headerLogoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
-                <img class="Logo__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
-                <span class="Logo__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
-            </a>
-        </div>
+        {{ include('partials/logo_topbar.html.twig') }}
+        {% block pageHeader %}
         <div class="Page__headerMain">
             <div class="Page__headerBody">
                  <div class="Page__headerNav">
@@ -37,6 +33,7 @@
                 </div>
             {% endif %}
         </div>
+        {% endblock %}
     </header>
     {% block MainContent %}
         {% if content.blocks is defined and content.blocks is not empty %}
@@ -81,44 +78,11 @@
                                 <ul class="ListPage__list ListPage__list--page SectionPadded">
                                     {% for item in block.pages %}
                                         <li class="ListPage__listItem">
-                                            <article class="ListPage__article">
-                                                {% if item.event_type is defined and item.event_type %}
-                                                    {% set eventTypeLabels = {
-                                                        default: 'Événement',
-                                                        regatta: 'Régate',
-                                                        sea_trip: 'Sortie en mer',
-                                                    } %}
-                                                    {% set daysRemaining = (item.begin_date|date('U') - 'now'|date('U')) // 86400 %}
-                                                    <div clas="ListPage__eventContent">
-                                                        <div class="ListPage__eventMeta">
-                                                            <span class="ListPage__eventCountdown">J-{{ daysRemaining }}</span>
-                                                            <span class="ListPage__eventType">{{ eventTypeLabels[item.event_type|default('default')]|default('Événement') }}</span>
-                                                        </div>
-                                                        <h3 class="ListPage__eventTitle">{{ item.title }}</h3>
-                                                        <time class="ListPage__eventDate" datetime="{{ item.begin_date|date('Y-m-d') }}">
-                                                            {{ item.begin_date|format_date(pattern: 'd') }}–{{ item.end_date|format_date(pattern: 'd MMMM Y')|upper }}
-                                                        </time>
-                                                        <a href="{{ item.url }}" class="ListPage__eventLink" aria-label="Voir {{ item.title }}">
-                                                            <svg class="ListPage__eventIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                                                <path d="M8 5v14l11-7z"/>
-                                                            </svg>
-                                                        </a>
-                                                    </div>
-                                                {% else %}
-                                                    <h3 class="ListPage__articleTitle">{{ item.title }}</h3>
-                                                    {% if item.description is defined and item.description %}
-                                                        <div class="ListPage__articleDescription">{{ item.description|raw }}</div>
-                                                    {% endif %}
-                                                    <a class="ListPage__moreInfoLink" href="{{ item.url }}">En savoir +</a>
-                                                {% endif %}
-                                                {% if item.media is defined and item.media %}
-                                                    {% set media = item.media.formats is defined ? item.media : item.media[0] %}
-                                                    <div class="ListPage__articleMedia">
-                                                        <img src="{{ media.formats['sulu-400x400.webp'] }}" alt="{{ media.title }}" />
-                                                    </div>
-                                                {% endif %}
-
-                                            </article>
+                                            {% if item.event_type is defined and item.event_type %}
+                                                {{ include('partials/list_item_event.html.twig', {item: item}, with_context: false) }}
+                                            {% else %}
+                                                {{ include('partials/list_item_page.html.twig', {item: item}, with_context: false) }}
+                                            {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -139,7 +103,7 @@
     {% endblock %}
 
     {% if content.form is defined and content.form %}
-        {% set form = sulu_form_build(content.form, 'page', resource.id) %}
+        {% set form = content.form %}
 
         {% form_theme form '@SuluForm/themes/basic.html.twig' %}
         {{ form(form) }}

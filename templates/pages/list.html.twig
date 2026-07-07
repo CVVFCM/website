@@ -15,30 +15,16 @@
             <ul class="ListPage__list ListPage__list--{{ content.list_type }} SectionPadded">
                 {% for item in list %}
                     <li class="ListPage__listItem">
-                        <article class="ListPage__article">
-                            <h2 class="ListPage__articleTitle">{{ item.title }}</h2>
-
-                            {% if item.media %}
-                                {% set media = item.media.formats is defined ? item.media : item.media[0] %}
-                                <div class="ListPage__articleMedia">
-                                    <img
-                                        src="{{ media.formats['sulu-400x400.webp'] }}"
-                                        alt="{{ media.title }}" />
-                                </div>
-
-                            {% endif %}
-
-                            <div class="ListPage__articleDescription">
-                                {{ item.description|raw }}
-                            </div>
-
-                            <a class="ListPage__moreInfoLink" href="{{ item.url }}">En savoir +</a>
-                        </article>
+                        {% if item.event_type is defined and item.event_type is not null %}
+                            {{ include('partials/list_item_event.html.twig', {item: item}, with_context: false) }}
+                        {% else %}
+                            {{ include('partials/list_item_page.html.twig', {item: item}, with_context: false) }}
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>
             {% if list_view is not empty and list_view.paginated %}
-                <footer>
+                <footer class="ListPage__pagerFooter">
                     {{ include('_pager.html.twig', {content: content, list_view: list_view}, with_context: false) }}
                 </footer>
             {% endif %}

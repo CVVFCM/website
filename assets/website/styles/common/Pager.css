@@ -1,7 +1,7 @@
 .Pager {
     list-style: none;
     padding: 0;
-    margin: 2rem 0;
+    margin: 0;
     display: flex;
     gap: 0.5rem;
     justify-content: center;
@@ -13,13 +13,17 @@
 }
 
 .Pager__link {
-    display: block;
-    padding: 0.5rem 1rem;
-    background-color: var(--color-gray-100);
-    color: var(--color-dark);
+    display: inline-block;
+    padding: 0.55rem 1.25rem;
+    background-color: var(--color-white);
+    color: var(--base-text-color);
     text-decoration: none;
-    border-radius: 0.25rem;
-    transition: background-color 0.2s ease;
+    border-radius: 2rem;
+    font-family: var(--font-family-base);
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .Pager__link:hover,
@@ -28,7 +32,7 @@
 }
 
 .Pager__link--active {
-    background-color: var(--color-accent-primary);
+    background-color: var(--red-act-text);
     color: var(--color-white);
 }
 

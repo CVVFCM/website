@@ -8,17 +8,11 @@
 
 {% block content %}
 
-    {% set parent = sulu_page_load(resource.parent.uuid, {url: 'url', title: 'title'}) %}
     {% set days_diff = ((content.begin_date|date('U') - 'now'|date('U')) / 86400)|round(0, 'floor') %}
 
     <header class="EventPage__header">
 
-        <div class="Logo__headerTopBar SectionPadded">
-            <a class="Logo__headerLogoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
-                <img class="Logo__headerLogoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" />
-                <span class="Logo__headerLogoText">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
-            </a>
-        </div>
+        {{ include('partials/logo_topbar.html.twig') }}
 
         <div class="EventPage__headerMain">
              <div class="EventPage__headerNav">
@@ -45,8 +39,9 @@
                     {% if days_diff > 0 %}
                         <span class="EventPage__headerCountdown">J-{{ days_diff }}</span>
                     {% endif %}
-                    {% if parent %}
-                        <span class="EventPage__headerType">{{ parent.title|upper }}</span>
+                    {% if content.event_type %}
+                        {% set eventTypeLabels = {default: 'Événement', regatta: 'Régate', sea_trip: 'Sortie en mer'} %}
+                        <span class="EventPage__headerType">{{ eventTypeLabels[content.event_type]|default('Événement')|upper }}</span>
                     {% endif %}
                 </div>
 
@@ -93,24 +88,49 @@
         {% if content.series or content.services or content.regatta_informations %}
             {% if content.series %}
             <div class="EventPage__seriesBloc EventContentBlock">
-                <h2 class="EventContentBlock__title">Series </h2>
-                <ul>
+                <h2 class="EventContentBlock__title">Supports</h2>
+                <ul class="EventPage__seriesList">
                     {% for series_with_rank in content.series %}
-                        <li>
-                            <strong>{{ series_with_rank.series }}</strong> : {{ series_with_rank.rank }}
+                        <li class="EventPage__seriesItem">
+                            <span class="EventPage__seriesName">{{ series_with_rank.series }}</span>
+                            <span class="EventPage__seriesRank">{{ series_with_rank.rank }}</span>
                         </li>
                     {% endfor %}
                 </ul>
+                {% if content.series_button_title or content.series_button_text %}
+                    <div class="EventContentBlock__ctaSection">
+                        {% if content.series_button_title %}
+                            <h3 class="EventContentBlock__ctaTitle">{{ content.series_button_title }}</h3>
+                        {% endif %}
+                        {% if content.series_button_text %}
+                            {% if content.series_button_url %}
+                                <a class="EventContentBlock__ctaButton" href="{{ content.series_button_url }}">{{ content.series_button_text }}</a>
+                            {% else %}
+                                <span class="EventContentBlock__ctaButton EventContentBlock__ctaButton--disabled" aria-disabled="true">{{ content.series_button_text }}</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% if content.series_links %}
+                    <ul class="EventPage__seriesLinksList">
+                        {% for link in content.series_links %}
+                            <li><a class="EventContentBlock__link" href="{{ link.url }}">{{ link.text }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
             {% endif %}
 
             {% if content.services %}
                 <div class="EventContentBlock">
-                    <h2 class="EventContentBlock__title">Services </h2>
-                    <ul class="EventPage__servicesBloc ">
+                    <h2 class="EventContentBlock__title">Services</h2>
+                    <ul class="EventContentBlock__services">
                         {% for service in content.services %}
-                            <li>
-                                <strong>{{ service.name }}</strong> : {{ service.availability ? 'Oui' : 'Non' }}
+                            <li class="EventContentBlock__service">
+                                <span class="EventContentBlock__serviceName">{{ service.name }}</span>
+                                <span class="EventContentBlock__serviceAvailability EventContentBlock__serviceAvailability--{{ service.availability ? 'yes' : 'no' }}">
+                                    {{ service.availability ? 'OUI' : 'NON' }}
+                                </span>
                             </li>
                         {% endfor %}
                     </ul>
@@ -159,9 +179,11 @@
             <ul>
                 {% for contact in content.contact %}
                     <li>
-                        {{ contact.fullName }}<br />
+                        <strong>{{ contact.fullName }}</strong><br />
                         {{ contact.positionName }}<br />
-                        {{ contact.contactDetails.emails[0].email }}
+                        {% if contact.contactDetails.emails[0] is defined %}
+                            <a href="mailto:{{ contact.contactDetails.emails[0].email }}">{{ contact.contactDetails.emails[0].email }}</a>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>

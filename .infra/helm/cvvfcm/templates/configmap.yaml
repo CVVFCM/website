@@ -23,7 +23,6 @@ data:
     mercure {
         publisher_jwt {env.MERCURE_JWT_SECRET}
         subscriber_jwt {env.MERCURE_JWT_SECRET}
-        anonymous
     }
   # Internal publish URL (consumer → web Service hub) and public subscribe URL.
   MERCURE_URL: {{ .Values.app.mercureUrl | default (printf "http://%s-web/.well-known/mercure" (include "cvvfcm.fullname" .)) | quote }}

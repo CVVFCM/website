@@ -7,16 +7,25 @@ export default class extends Controller {
         this.element.classList.add('MainNavigation--close');
 
         const siteHeader = this.element.closest('.SiteHeader');
-        this._stickyThreshold = parseFloat(getComputedStyle(siteHeader).marginTop);
+        this._stickyThreshold = parseFloat(getComputedStyle(siteHeader).top);
         this._onScroll = () => {
             this.element.classList.toggle('MainNavigation--stuck', window.scrollY >= this._stickyThreshold);
         };
         window.addEventListener('scroll', this._onScroll, { passive: true });
         this._onScroll();
+
+        this._onClickOutside = (event) => {
+            if (!this.element.classList.contains('MainNavigation--open')) return;
+            if (!this.element.contains(event.target) || event.target === siteHeader) {
+                this.close();
+            }
+        };
+        document.addEventListener('click', this._onClickOutside);
     }
 
     disconnect() {
         window.removeEventListener('scroll', this._onScroll);
+        document.removeEventListener('click', this._onClickOutside);
     }
 
     toggle(event) {

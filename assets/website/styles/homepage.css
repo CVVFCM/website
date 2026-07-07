@@ -1,5 +1,6 @@
 /* Homepage page styles - imports only homepage-specific blocks */
 @import url('./app.css');
+@import url('./common/EventCard.css');
 @import url('./homepage/Header.css');
 @import url('./homepage/CtaCard.css');
 @import url('./pages/homepage/HomepageFacebook.css');

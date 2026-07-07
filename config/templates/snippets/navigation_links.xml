@@ -20,6 +20,16 @@
                 <title lang="fr">Liens de navigation (colonne 2)</title>
             </meta>
         </area>
+        <area key="footer_contact">
+            <meta>
+                <title lang="fr">Footer — Bouton contact</title>
+            </meta>
+        </area>
+        <area key="footer_social">
+            <meta>
+                <title lang="fr">Footer — Réseaux sociaux</title>
+            </meta>
+        </area>
     </areas>
 
     <properties>

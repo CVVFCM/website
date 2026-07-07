@@ -77,7 +77,10 @@
                             <param name="title" value="title" />
                             <param name="url" value="url" />
                             <param name="description" value="description" />
-                            <param name="media" value="media" />
+                            <param name="main_media" value="main_media" />
+                            <param name="event_type" value="event_type" />
+                            <param name="begin_date" value="begin_date" />
+                            <param name="end_date" value="end_date" />
                         </param>
                     </params>
                 </property>
@@ -95,7 +98,8 @@
                             <param name="begin_date" value="begin_date" />
                             <param name="end_date" value="end_date" />
                             <param name="description" value="description" />
-                            <param name="media" value="media" />
+                            <param name="main_media" value="main_media" />
+                            <param name="event_type" value="event_type" />
                         </param>
                     </params>
                 </property>

@@ -101,11 +101,11 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                         'webcams' => [
                             [
                                 'type' => 'webcam',
-                                'webcam_stream_url' => 'https://'.$this->serverName.'/stream/mouillages-2/channel/1/mse',
+                                'webcam_stream_url' => $this->serverName.'/stream/mouillages-2/channel/1/mse',
                             ],
                             [
                                 'type' => 'webcam',
-                                'webcam_stream_url' => 'https://'.$this->serverName.'/stream/mouillages/channel/1/mse',
+                                'webcam_stream_url' => $this->serverName.'/stream/mouillages/channel/1/mse',
                             ],
                         ],
                         'webcam_stream_page_link' => $live->getUuid(),
