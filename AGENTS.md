@@ -22,6 +22,7 @@ make cs           # Fix code style (php-cs-fixer + twig-cs-fixer)
 make psalm        # Run static analysis
 make psalm_strict # Run static analysis with info-level issues
 make test         # Run PHPUnit test suite
+make stylelint    # Lint website CSS (pass fix=1 to auto-fix)
 make reset        # Wipe DB, re-create schema, load fixtures + import weather data
 make reset-test   # Same as reset but for test environment
 ```
@@ -83,6 +84,7 @@ make reset-test   # Same as reset but for test environment
 
 ### Quality gates (after EVERY update)
 - `make cs` and `make psalm` **must pass after each edit** — run them immediately, not batched at the end of a task. Treat a red psalm like a failing test.
+- `make stylelint` **must pass after each CSS edit** — same rule: run immediately, not batched.
 
 ### PHP
 - Always `declare(strict_types=1);`

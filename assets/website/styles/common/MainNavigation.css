@@ -9,7 +9,7 @@
         content: '';
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.35);
+        background: rgb(0 0 0 / 35%);
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.2s ease;
@@ -299,13 +299,13 @@
     transform: scale(1.7) translateY(10%);
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
     .MainNavigation--open .MainNavigation__logo {
         transform: scale(2.2) translateY(10%);
     }
 }
 
-@media (min-width: 65em) {
+@media (width >= 65em) {
     .MainNavigation--open .MainNavigation__logo {
         transform: scale(2.8) translateY(10%);
     }
@@ -474,7 +474,6 @@
 
 
 @media (width < 65em) {
-
     .MainNavigation__mainTools {
         flex: 0 0 auto;
     }

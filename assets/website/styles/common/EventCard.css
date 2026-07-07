@@ -4,7 +4,7 @@
     flex-direction: row;
     background-color: var(--color-white);
     border-radius: var(--white-card-radius);
-    box-shadow: 0.2em 3em 2em rgba(0, 0, 50, 0.4);
+    box-shadow: 0.2em 3em 2em rgb(0 0 50 / 40%);
     padding: 2em 2em 2em .7em;
     gap: .7em;
     width: 100%;
@@ -15,7 +15,7 @@
     &:hover,
     &:focus-within {
         transform: translateY(-0.1em);
-        box-shadow: 0.2em 3.5em 2.5em rgba(0, 0, 50, 0.5);
+        box-shadow: 0.2em 3.5em 2.5em rgb(0 0 50 / 50%);
     }
 
     &:hover .EventCard__icon,

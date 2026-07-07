@@ -172,8 +172,9 @@
 
 @media (width < 65em) {
     .EventContentBlock {
-        border-width: 1px 0 0 0;
-        padding: 2rem 0 0 0;
+        border-width: 1px 0 0;
+        padding: 2rem 0 0;
     }
 }
+
 /* modified Thu May 28 01:17:38 PM CEST 2026 */

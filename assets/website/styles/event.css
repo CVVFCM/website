@@ -278,7 +278,7 @@
 
     & img {
         max-height: 33vh;
-        width auto;
+        width: auto;
         max-width: 60%;
         object-fit: contain;
     }

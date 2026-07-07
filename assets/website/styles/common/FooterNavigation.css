@@ -12,13 +12,13 @@
     box-sizing: border-box;
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
     .SiteFooter__main {
         grid-template-columns: 1fr 1fr;
     }
 }
 
-@media (min-width: 65em) {
+@media (width >= 65em) {
     .SiteFooter__main {
         grid-template-columns: auto 1fr auto;
         gap: 4rem;
@@ -106,7 +106,7 @@
 }
 
 /* Icônes réseaux sociaux */
-.SiteFooter .SiteFooter__contact .NavigationLinks__item--hidden_text .NavigationLinks__link {
+.SiteFooter .SiteFooter__contact .NavigationLinks__item--hiddenText .NavigationLinks__link {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;
@@ -125,11 +125,11 @@
 
 }
 
-.SiteFooter .SiteFooter__contact .NavigationLinks__item--hidden_text .NavigationLinks__media {
+.SiteFooter .SiteFooter__contact .NavigationLinks__item--hiddenText .NavigationLinks__media {
     background-color: var(--color-white);
 }
 
-.SiteFooter .SiteFooter__contact .NavigationLinks__item--hidden_text .NavigationLinks__label {
+.SiteFooter .SiteFooter__contact .NavigationLinks__item--hiddenText .NavigationLinks__label {
     display: none;
 }
 
