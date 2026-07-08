@@ -6,6 +6,8 @@ namespace App\AI\Chat;
 
 use Symfony\AI\Agent\AgentInterface;
 use Symfony\AI\Platform\Message\Message;
+use Symfony\AI\Platform\Message\MessageBag;
+use Symfony\AI\Platform\Message\MessageInterface;
 use Symfony\AI\Platform\Message\UserMessage;
 use Symfony\AI\Platform\Result\Stream\Delta\DeltaInterface;
 use Symfony\AI\Platform\Result\Stream\Delta\TextDelta;
@@ -30,9 +32,14 @@ final readonly class ForgieChat
     }
 
     /**
+     * $message is what the model sees this turn (it may carry an attached image).
+     * $persistedMessage, when given, is stored in its place — used to keep image
+     * bytes out of the history (replaced by a text placeholder) so they are never
+     * re-sent to the model on later turns.
+     *
      * @return \Generator<DeltaInterface>
      */
-    public function stream(UserMessage $message): \Generator
+    public function stream(UserMessage $message, ?UserMessage $persistedMessage = null): \Generator
     {
         $messages = $this->store->load();
         $messages->add($message);
@@ -58,6 +65,25 @@ final readonly class ForgieChat
             $messages->add(Message::ofAssistant($text));
         }
 
-        $this->store->save($messages);
+        $this->store->save($this->toPersistedBag($messages, $message, $persistedMessage));
+    }
+
+    /**
+     * Swaps the turn's user message for its persisted form (identity match) while
+     * preserving every other message — including the tool_call/tool_result messages
+     * the toolbox appended in place during the call.
+     */
+    private function toPersistedBag(MessageBag $messages, UserMessage $message, ?UserMessage $persistedMessage): MessageBag
+    {
+        if (null === $persistedMessage || $persistedMessage === $message) {
+            return $messages;
+        }
+
+        $swapped = array_map(
+            static fn (MessageInterface $current): MessageInterface => $current === $message ? $persistedMessage : $current,
+            $messages->getMessages(),
+        );
+
+        return new MessageBag(...$swapped);
     }
 }

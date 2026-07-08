@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\MessageHandler;
 
 use App\AI\Chat\ForgieChatFactory;
+use App\AI\Chat\ForgieConversationContext;
+use App\AI\Service\ForgieImagePreparer;
+use App\Entity\ForgieUpload;
 use App\Message\AskForgie;
+use App\Repository\ForgieUploadRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\AI\Platform\Message\Message;
+use Symfony\AI\Platform\Message\UserMessage;
 use Symfony\AI\Platform\Result\Stream\Delta\TextDelta;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
@@ -28,6 +33,9 @@ final readonly class AskForgieHandler
         private ForgieChatFactory $chats,
         private HubInterface $hub,
         private LoggerInterface $logger,
+        private ForgieUploadRepository $uploads,
+        private ForgieConversationContext $context,
+        private ForgieImagePreparer $imagePreparer,
     ) {
     }
 
@@ -38,7 +46,14 @@ final readonly class AskForgieHandler
         try {
             $chat = $this->chats->create($message->conversationId);
 
-            foreach ($chat->stream(Message::ofUser($message->message)) as $delta) {
+            // Reset every turn (shared singleton): the tool must never see a previous
+            // turn's image, and it needs this one to attach it to the admin email.
+            $upload = $this->resolveUpload($message);
+            $this->context->setUpload($upload);
+
+            [$vision, $persisted] = $this->buildMessages($message->message, $upload);
+
+            foreach ($chat->stream($vision, $persisted) as $delta) {
                 if ($delta instanceof TextDelta) {
                     $this->publish($topic, ['delta' => $delta->getText()]);
                 }
@@ -49,6 +64,44 @@ final readonly class AskForgieHandler
             $this->logger->error('Forgie failed to answer', ['exception' => $e, 'conversationId' => $message->conversationId]);
             $this->publish($topic, ['error' => true]);
         }
+    }
+
+    private function resolveUpload(AskForgie $message): ?ForgieUpload
+    {
+        if (null === $message->uploadId) {
+            return null;
+        }
+
+        $upload = $this->uploads->find($message->uploadId);
+        if (null === $upload || $upload->conversationId !== $message->conversationId) {
+            $this->logger->warning('Forgie ignored an unknown or mismatched upload', [
+                'uploadId' => $message->uploadId,
+                'conversationId' => $message->conversationId,
+            ]);
+
+            return null;
+        }
+
+        return $upload;
+    }
+
+    /**
+     * Builds the message the model sees (with the image, if any) and, when an image is
+     * present, the placeholder message stored in its place so the bytes never persist.
+     *
+     * @return array{0: UserMessage, 1: UserMessage|null}
+     */
+    private function buildMessages(string $text, ?ForgieUpload $upload): array
+    {
+        if (null === $upload) {
+            return [Message::ofUser($text), null];
+        }
+
+        $image = $this->imagePreparer->toModelImage($upload);
+        $vision = '' !== $text ? Message::ofUser($text, $image) : Message::ofUser($image);
+        $persisted = Message::ofUser(trim($text.' [Image envoyée : '.$upload->filename.']'));
+
+        return [$vision, $persisted];
     }
 
     public static function topic(string $conversationId): string

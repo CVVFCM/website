@@ -15,5 +15,10 @@
     <dd>{{ phone ?? 'Non communiqué' }}</dd>
 </dl>
 
+{% if hasAttachment %}
+    <h2>Pièce jointe</h2>
+    <p>Image jointe par le visiteur : {{ attachmentName ?? 'image' }}</p>
+{% endif %}
+
 <h2>Conversation</h2>
 {{ verbatim|markdown_to_html }}

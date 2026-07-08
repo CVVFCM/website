@@ -6,6 +6,7 @@ namespace App\Tests\AI\Tool;
 
 use App\AI\Chat\ForgieConversationContext;
 use App\AI\Tool\SendContactMessageTool;
+use App\Entity\ForgieUpload;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -59,6 +60,32 @@ final class SendContactMessageToolTest extends TestCase
         $email = $message->getMessage();
         $this->assertInstanceOf(TemplatedEmail::class, $email);
         $this->assertStringContainsString('**Visiteur :** Je veux réserver un stage', (string) $email->getContext()['verbatim']);
+    }
+
+    public function testItForwardsAnAttachedImage(): void
+    {
+        $notifier = $this->notifier();
+        $context = $this->contextWithConversation();
+        $context->setUpload(new ForgieUpload('id', 'conv', base64_encode('IMGBYTES'), 'image/png', 'photo.png', 8, new \DateTimeImmutable()));
+        $tool = new SendContactMessageTool($notifier, $context, new NullLogger(), self::ADMIN);
+
+        $tool('Réservation stage été', 'Jean', 'Dupont', 'jean.dupont@voile.fr');
+
+        $notification = $notifier->notifications[0];
+
+        // Email carries the decoded bytes as an attachment.
+        $message = $notification->asEmailMessage(new Recipient(self::ADMIN));
+        $this->assertNotNull($message);
+        $email = $message->getMessage();
+        $this->assertInstanceOf(TemplatedEmail::class, $email);
+        $attachments = $email->getAttachments();
+        $this->assertCount(1, $attachments);
+        $this->assertSame('IMGBYTES', $attachments[0]->getBody());
+
+        // Google Chat (no binary attachment) just points to the email.
+        $chat = $notification->asChatMessage(new Recipient(self::ADMIN));
+        $this->assertNotNull($chat);
+        $this->assertStringContainsString('Image jointe (voir email).', $chat->getSubject());
     }
 
     public function testItRefusesToSendWithAnInvalidEmail(): void

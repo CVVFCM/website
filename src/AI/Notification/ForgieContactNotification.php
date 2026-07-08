@@ -33,6 +33,11 @@ final class ForgieContactNotification extends Notification implements EmailNotif
         private readonly ?string $phone,
         private readonly string $verbatim,
         private readonly array $channels = ['email', 'chat/googlechat'],
+        // Optional image the visitor attached: bytes go to the email; Google Chat (a
+        // webhook, no binary attachments) only gets a "see email" note.
+        private readonly ?string $attachmentBytes = null,
+        private readonly ?string $attachmentMime = null,
+        private readonly ?string $attachmentName = null,
     ) {
         parent::__construct(\sprintf('[Forgie] Nouveau contact — %s %s', $this->firstName, $this->lastName));
     }
@@ -63,8 +68,18 @@ final class ForgieContactNotification extends Notification implements EmailNotif
                 'contactEmail' => $this->email,
                 'phone' => $this->phone,
                 'verbatim' => $this->verbatim,
+                'hasAttachment' => null !== $this->attachmentBytes,
+                'attachmentName' => $this->attachmentName,
             ])
         ;
+
+        if (null !== $this->attachmentBytes) {
+            $email->attach(
+                $this->attachmentBytes,
+                $this->attachmentName ?? 'image',
+                $this->attachmentMime ?? 'application/octet-stream',
+            );
+        }
 
         return new EmailMessage($email);
     }
@@ -83,6 +98,10 @@ final class ForgieContactNotification extends Notification implements EmailNotif
             $coordinates,
             $this->verbatim,
         );
+
+        if (null !== $this->attachmentBytes) {
+            $text .= "\n\n*Image jointe (voir email).*";
+        }
 
         return new ChatMessage($this->toGoogleChatFormatting($text));
     }

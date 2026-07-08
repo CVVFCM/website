@@ -71,11 +71,12 @@ final readonly class SendContactMessageTool
 
         $phone = null !== $phone ? trim($phone) : null;
         $verbatim = $this->verbatim();
+        $attachment = $this->attachment();
 
         // Dispatch each channel on its own so a Google Chat outage never hides the fact
         // that the admins were already reached by email (and vice versa).
-        $emailSent = $this->dispatch(['email'], $summary, $firstName, $lastName, $email, $phone, $verbatim);
-        $chatSent = $this->dispatch(['chat/googlechat'], $summary, $firstName, $lastName, $email, $phone, $verbatim);
+        $emailSent = $this->dispatch(['email'], $summary, $firstName, $lastName, $email, $phone, $verbatim, $attachment);
+        $chatSent = $this->dispatch(['chat/googlechat'], $summary, $firstName, $lastName, $email, $phone, $verbatim, $attachment);
 
         if (!$emailSent && !$chatSent) {
             return ['status' => 'erreur', 'message' => 'L\'envoi a échoué. Invite la personne à réessayer plus tard ou à écrire à contact@cvvfcm.fr.'];
@@ -85,13 +86,26 @@ final readonly class SendContactMessageTool
     }
 
     /**
-     * @param list<string> $channels
+     * @param list<string>                                          $channels
+     * @param array{bytes: string, mime: string, name: string}|null $attachment
      */
-    private function dispatch(array $channels, string $summary, string $firstName, string $lastName, string $email, ?string $phone, string $verbatim): bool
+    private function dispatch(array $channels, string $summary, string $firstName, string $lastName, string $email, ?string $phone, string $verbatim, ?array $attachment): bool
     {
         try {
             $this->notifier->send(
-                new ForgieContactNotification($this->adminEmail, $summary, $firstName, $lastName, $email, $phone, $verbatim, $channels),
+                new ForgieContactNotification(
+                    $this->adminEmail,
+                    $summary,
+                    $firstName,
+                    $lastName,
+                    $email,
+                    $phone,
+                    $verbatim,
+                    $channels,
+                    $attachment['bytes'] ?? null,
+                    $attachment['mime'] ?? null,
+                    $attachment['name'] ?? null,
+                ),
                 new Recipient($this->adminEmail),
             );
 
@@ -101,6 +115,27 @@ final readonly class SendContactMessageTool
 
             return false;
         }
+    }
+
+    /**
+     * The image (if any) the visitor attached to the current turn, decoded ready to
+     * be attached to the admin email.
+     *
+     * @return array{bytes: string, mime: string, name: string}|null
+     */
+    private function attachment(): ?array
+    {
+        $upload = $this->context->getUpload();
+        if (null === $upload) {
+            return null;
+        }
+
+        $bytes = base64_decode($upload->data, true);
+        if (false === $bytes) {
+            return null;
+        }
+
+        return ['bytes' => $bytes, 'mime' => $upload->mimeType, 'name' => $upload->filename];
     }
 
     private function looksLikePlaceholder(string $firstName, string $lastName, string $email): bool
