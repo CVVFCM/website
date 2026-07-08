@@ -24,6 +24,8 @@ final class ForgieUploadRepository extends ServiceEntityRepository
     /**
      * The most recent image uploaded in a conversation, so the contact tool can
      * attach it even when it was sent a few turns before the coordinates.
+     *
+     * @psalm-suppress UnusedParam Same false positive as in ForgieConversationRepository.
      */
     public function findLatestForConversation(string $conversationId): ?ForgieUpload
     {
