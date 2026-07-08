@@ -98,7 +98,10 @@ final readonly class AskForgieHandler
         }
 
         $image = $this->imagePreparer->toModelImage($upload);
-        $vision = '' !== $text ? Message::ofUser($text, $image) : Message::ofUser($image);
+        // A text-less user turn (image only) leaves the model without an utterance to
+        // answer, so it falls back to "Je ne sais pas". Give it a neutral anchor.
+        $visionText = '' !== $text ? $text : 'Le visiteur a envoyé cette image, sans autre message.';
+        $vision = Message::ofUser($visionText, $image);
         $persisted = Message::ofUser(trim($text.' [Image envoyée : '.$upload->filename.']'));
 
         return [$vision, $persisted];

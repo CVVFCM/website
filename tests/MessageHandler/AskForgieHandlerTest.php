@@ -88,6 +88,33 @@ final class AskForgieHandlerTest extends TestCase
         $this->assertCount(1, $withImage);
     }
 
+    public function testItAnchorsAnImageOnlyMessageWithText(): void
+    {
+        // A text-less image turn must still carry a user utterance, else the model
+        // has nothing to answer and falls back to "Je ne sais pas".
+        $captured = null;
+        $agent = $this->createStub(AgentInterface::class);
+        $agent->method('call')->willReturnCallback(function (MessageBag $messages) use (&$captured): StreamResult {
+            $captured = $messages;
+
+            return new StreamResult((static function (): \Generator {
+                yield new TextDelta('ok');
+            })());
+        });
+
+        $updates = [];
+        $this->handler($agent, $updates, $this->upload(self::UUID), new ForgieConversationContext())(new AskForgie(self::UUID, '', self::UPLOAD_UUID));
+
+        $this->assertInstanceOf(MessageBag::class, $captured);
+        $withImage = array_values(array_filter(
+            $captured->getMessages(),
+            static fn (object $m): bool => $m instanceof UserMessage && $m->hasImageContent(),
+        ));
+        $this->assertCount(1, $withImage);
+        $this->assertInstanceOf(UserMessage::class, $withImage[0]);
+        $this->assertNotSame('', trim((string) $withImage[0]->asText()));
+    }
+
     public function testItIgnoresAnUploadFromAnotherConversation(): void
     {
         $agent = $this->agent(new TextDelta('ok'));
