@@ -1,0 +1,4 @@
+framework:
+    notifier:
+        chatter_transports:
+            googlechat: '%env(GOOGLE_CHAT_DSN)%'

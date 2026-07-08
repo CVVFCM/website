@@ -25,6 +25,7 @@ final readonly class ForgieChat
     public function __construct(
         private AgentInterface $agent,
         private ForgieMessageStore $store,
+        private ForgieConversationContext $context,
     ) {
     }
 
@@ -35,6 +36,9 @@ final readonly class ForgieChat
     {
         $messages = $this->store->load();
         $messages->add($message);
+
+        // Expose the live bag (incl. the current turn) to tools that need the verbatim.
+        $this->context->set($messages);
 
         // Tool-call turns mutate $messages in place (toolbox appends the assistant
         // tool_calls + tool result messages), so they end up persisted too.

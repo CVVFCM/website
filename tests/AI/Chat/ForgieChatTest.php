@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\AI\Chat;
 
 use App\AI\Chat\ForgieChat;
+use App\AI\Chat\ForgieConversationContext;
 use App\AI\Chat\ForgieMessageStore;
 use App\Entity\ForgieConversation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,15 +27,20 @@ final class ForgieChatTest extends TestCase
         // be accumulated too (the component's ChatStreamListener lost it, causing an
         // empty assistant message and a Mistral 400 on the next turn).
         $store = $this->createStore();
+        $context = new ForgieConversationContext();
         $chat = new ForgieChat($this->createAgent(
             new TextDelta('Bon'),
             new ToolCallStart('id', 'live_weather'),
             new TextDelta('jour !'),
-        ), $store);
+        ), $store, $context);
 
         $deltas = iterator_to_array($chat->stream(Message::ofUser('Salut')), false);
 
         $this->assertCount(3, $deltas);
+
+        // The live bag (incl. the current user turn) is exposed for tools.
+        $this->assertNotNull($context->get());
+        $this->assertSame('Salut', $context->get()->getMessages()[0]->asText());
 
         $messages = $store->load()->getMessages();
         $this->assertCount(2, $messages);
@@ -50,7 +56,7 @@ final class ForgieChatTest extends TestCase
     public function testItNeverPersistsAnEmptyAssistantMessage(): void
     {
         $store = $this->createStore();
-        $chat = new ForgieChat($this->createAgent(new ToolCallStart('id', 'live_weather')), $store);
+        $chat = new ForgieChat($this->createAgent(new ToolCallStart('id', 'live_weather')), $store, new ForgieConversationContext());
 
         iterator_to_array($chat->stream(Message::ofUser('Salut')), false);
 
