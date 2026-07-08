@@ -1,0 +1,19 @@
+<h1>Nouveau contact via Forgie</h1>
+
+<h2>Demande</h2>
+{{ summary|markdown_to_html }}
+
+<h2>Coordonnées</h2>
+<dl>
+    <dt>Prénom</dt>
+    <dd>{{ firstName }}</dd>
+    <dt>Nom</dt>
+    <dd>{{ lastName }}</dd>
+    <dt>Email</dt>
+    <dd>{{ contactEmail }}</dd>
+    <dt>Téléphone</dt>
+    <dd>{{ phone ?? 'Non communiqué' }}</dd>
+</dl>
+
+<h2>Conversation</h2>
+{{ verbatim|markdown_to_html }}

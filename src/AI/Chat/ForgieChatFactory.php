@@ -16,11 +16,12 @@ final readonly class ForgieChatFactory
     public function __construct(
         private AgentInterface $agent,
         private EntityManagerInterface $entityManager,
+        private ForgieConversationContext $context,
     ) {
     }
 
     public function create(string $conversationId): ForgieChat
     {
-        return new ForgieChat($this->agent, new ForgieMessageStore($this->entityManager, $conversationId));
+        return new ForgieChat($this->agent, new ForgieMessageStore($this->entityManager, $conversationId), $this->context);
     }
 }

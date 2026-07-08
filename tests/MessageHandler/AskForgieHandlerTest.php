@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\MessageHandler;
 
 use App\AI\Chat\ForgieChatFactory;
+use App\AI\Chat\ForgieConversationContext;
 use App\Message\AskForgie;
 use App\MessageHandler\AskForgieHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -66,7 +67,7 @@ final class AskForgieHandlerTest extends TestCase
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('find')->willReturn(null);
 
-        return new ForgieChatFactory($agent, $entityManager);
+        return new ForgieChatFactory($agent, $entityManager, new ForgieConversationContext());
     }
 
     /**

@@ -6,7 +6,10 @@ ai:
     agent:
         forgie:
             platform: 'ai.platform.mistral'
-            model: 'mistral-small-latest'
+            model:
+                name: 'mistral-small-latest'
+                options:
+                    temperature: 0.3
             tools:
                 - 'App\AI\Tool\CurrentDateTimeTool'
                 - 'App\AI\Tool\RegattaTool'
@@ -15,5 +18,6 @@ ai:
                 - 'App\AI\Tool\SeaTripTool'
                 - 'App\AI\Tool\EventTool'
                 - 'App\AI\Tool\SitePageTool'
+                - 'App\AI\Tool\SendContactMessageTool'
             prompt:
                 file: '%kernel.project_dir%/config/prompts/forgie.md'

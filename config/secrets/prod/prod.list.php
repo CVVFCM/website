@@ -6,4 +6,6 @@ return [
     'FACEBOOK_APP_ID' => null,
     'FACEBOOK_APP_SECRET' => null,
     'FACEBOOK_PAGE_ID' => null,
+    'GOOGLE_CHAT_DSN' => null,
+    'MISTRAL_API_KEY' => null,
 ];
