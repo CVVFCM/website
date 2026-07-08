@@ -8,6 +8,11 @@
     findUnusedBaselineEntry="true"
     findUnusedCode="true"
 >
+    <stubs>
+        <!-- ext-imagick is absent from the CI Psalm image; stub the members we use. -->
+        <file name="stubs/imagick.php" />
+    </stubs>
+
     <projectFiles>
         <directory name="src" />
         <ignoreFiles>

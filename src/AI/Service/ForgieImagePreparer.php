@@ -60,8 +60,8 @@ final readonly class ForgieImagePreparer
             $image = new \Imagick();
             $image->readImageBlob($binary);
 
-            $width = (int) $image->getImageWidth();
-            $height = (int) $image->getImageHeight();
+            $width = $image->getImageWidth();
+            $height = $image->getImageHeight();
             $longestSide = max($width, $height);
 
             if ($longestSide <= self::MAX_DIMENSION && \strlen($binary) <= self::MAX_BYTES) {
@@ -77,7 +77,7 @@ final readonly class ForgieImagePreparer
 
             $image->setImageFormat('jpeg');
             $image->setImageCompressionQuality(85);
-            $downscaled = (string) $image->getImageBlob();
+            $downscaled = $image->getImageBlob();
             $image->clear();
 
             return $downscaled;
