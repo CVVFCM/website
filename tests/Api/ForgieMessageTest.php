@@ -33,6 +33,46 @@ final class ForgieMessageTest extends WebTestCase
         $this->assertSame('Bonjour Forgie !', $message->message);
     }
 
+    public function testItCarriesTheUploadId(): void
+    {
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/api/forgie/messages',
+            server: ['CONTENT_TYPE' => 'application/ld+json'],
+            content: json_encode([
+                'conversationId' => self::UUID,
+                'message' => 'Décris cette image',
+                'uploadId' => '019779c9-2f74-7a3e-8bcb-1d6c02f0d999',
+            ], \JSON_THROW_ON_ERROR),
+        );
+
+        $this->assertResponseStatusCodeSame(202);
+
+        /** @var InMemoryTransport $transport */
+        $transport = static::getContainer()->get('messenger.transport.async');
+        $message = $transport->getSent()[0]->getMessage();
+        $this->assertInstanceOf(AskForgie::class, $message);
+        $this->assertSame('019779c9-2f74-7a3e-8bcb-1d6c02f0d999', $message->uploadId);
+    }
+
+    public function testItAcceptsAnImageOnlyMessage(): void
+    {
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/api/forgie/messages',
+            server: ['CONTENT_TYPE' => 'application/ld+json'],
+            content: json_encode([
+                'conversationId' => self::UUID,
+                'message' => '',
+                'uploadId' => '019779c9-2f74-7a3e-8bcb-1d6c02f0d999',
+            ], \JSON_THROW_ON_ERROR),
+        );
+
+        $this->assertResponseStatusCodeSame(202);
+    }
+
     public function testItRejectsABlankMessage(): void
     {
         $client = static::createClient();

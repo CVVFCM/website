@@ -41,7 +41,7 @@ final readonly class ForgieMessageProcessor implements ProcessorInterface
             throw new TooManyRequestsHttpException($limit->getRetryAfter()->getTimestamp() - time());
         }
 
-        $this->messageBus->dispatch(new AskForgie($data->conversationId, $data->message));
+        $this->messageBus->dispatch(new AskForgie($data->conversationId, $data->message, $data->uploadId));
 
         return null;
     }

@@ -60,6 +60,44 @@ final class ForgieContactNotificationTest extends TestCase
         $this->assertStringNotContainsString('**Visiteur :**', $chat->getSubject());
     }
 
+    public function testAsEmailMessageAttachesTheImageWhenPresent(): void
+    {
+        $notification = new ForgieContactNotification(
+            'CVVFCM <contact@cvvfcm.fr>',
+            'Résumé',
+            'Jean',
+            'Dupont',
+            'jean.dupont@voile.fr',
+            null,
+            'verbatim',
+            ['email', 'chat/googlechat'],
+            'IMGBYTES',
+            'image/png',
+            'photo.png',
+        );
+
+        $message = $notification->asEmailMessage(new Recipient('contact@cvvfcm.fr'));
+        $this->assertNotNull($message);
+        $email = $message->getMessage();
+        $this->assertInstanceOf(TemplatedEmail::class, $email);
+        $attachments = $email->getAttachments();
+        $this->assertCount(1, $attachments);
+        $this->assertSame('IMGBYTES', $attachments[0]->getBody());
+        $this->assertTrue($email->getContext()['hasAttachment']);
+
+        $chat = $notification->asChatMessage(new Recipient('contact@cvvfcm.fr'));
+        $this->assertNotNull($chat);
+        $this->assertStringContainsString('Image jointe (voir email).', $chat->getSubject());
+    }
+
+    public function testAsChatMessageHasNoAttachmentNoteWithoutImage(): void
+    {
+        $chat = $this->notification()->asChatMessage(new Recipient('contact@cvvfcm.fr'));
+
+        $this->assertNotNull($chat);
+        $this->assertStringNotContainsString('Image jointe', $chat->getSubject());
+    }
+
     private function notification(): ForgieContactNotification
     {
         return new ForgieContactNotification(

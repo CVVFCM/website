@@ -5,12 +5,21 @@ framework:
             policy: sliding_window
             limit: 10
             interval: '1 minute'
+        # Guards the image upload endpoint (storage + Mistral vision spend). Per client IP.
+        forgie_upload_api:
+            policy: sliding_window
+            limit: 20
+            interval: '1 minute'
 
 when@test:
     framework:
         rate_limiter:
             # The limiter cache persists in var/cache/test between runs; keep tests unthrottled.
             forgie_api:
+                policy: sliding_window
+                limit: 10000
+                interval: '1 minute'
+            forgie_upload_api:
                 policy: sliding_window
                 limit: 10000
                 interval: '1 minute'

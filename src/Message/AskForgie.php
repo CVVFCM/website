@@ -13,6 +13,7 @@ final readonly class AskForgie
     public function __construct(
         public string $conversationId,
         public string $message,
+        public ?string $uploadId = null,
     ) {
     }
 }

@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Agent\AgentInterface;
 use Symfony\AI\Platform\Message\AssistantMessage;
+use Symfony\AI\Platform\Message\Content\Image;
 use Symfony\AI\Platform\Message\Content\Text;
 use Symfony\AI\Platform\Message\Message;
 use Symfony\AI\Platform\Message\UserMessage;
@@ -21,6 +22,9 @@ use Symfony\AI\Platform\Result\StreamResult;
 
 final class ForgieChatTest extends TestCase
 {
+    // 1×1 transparent PNG.
+    private const string PNG_DATA_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
     public function testItPersistsTheFullStreamedTextAsAssistantMessage(): void
     {
         // Interleaved non-text delta mimics a tool-call turn: the text after it must
@@ -63,6 +67,33 @@ final class ForgieChatTest extends TestCase
         $messages = $store->load()->getMessages();
         $this->assertCount(1, $messages);
         $this->assertInstanceOf(UserMessage::class, $messages[0]);
+    }
+
+    public function testItPersistsThePlaceholderInsteadOfTheVisionImage(): void
+    {
+        // The model must see the image, but the bytes must never land in the stored
+        // history (a placeholder text takes their place so they aren't re-sent later).
+        $store = $this->createStore();
+        $context = new ForgieConversationContext();
+        $chat = new ForgieChat($this->createAgent(new TextDelta('Joli bateau !')), $store, $context);
+
+        $vision = Message::ofUser('Regarde', Image::fromDataUrl(self::PNG_DATA_URL));
+        $persisted = Message::ofUser('Regarde [Image envoyée : photo.png]');
+
+        iterator_to_array($chat->stream($vision, $persisted), false);
+
+        // Live bag (what the model saw) still carries the image.
+        $liveBag = $context->get();
+        $this->assertNotNull($liveBag);
+        $live = $liveBag->getMessages()[0];
+        $this->assertInstanceOf(UserMessage::class, $live);
+        $this->assertTrue($live->hasImageContent());
+
+        // Persisted bag holds the placeholder text, no image.
+        $messages = $store->load()->getMessages();
+        $this->assertInstanceOf(UserMessage::class, $messages[0]);
+        $this->assertFalse($messages[0]->hasImageContent());
+        $this->assertSame('Regarde [Image envoyée : photo.png]', $messages[0]->asText());
     }
 
     private function createAgent(TextDelta|ToolCallStart ...$deltas): AgentInterface
