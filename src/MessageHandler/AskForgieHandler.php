@@ -46,12 +46,13 @@ final readonly class AskForgieHandler
         try {
             $chat = $this->chats->create($message->conversationId);
 
-            // Reset every turn (shared singleton): the tool must never see a previous
-            // turn's image, and it needs this one to attach it to the admin email.
-            $upload = $this->resolveUpload($message);
-            $this->context->setUpload($upload);
+            // Only this turn's image is shown to the model (avoid re-feeding old images),
+            // but the contact tool may fire a few turns later — once the visitor gives
+            // their coordinates — so it attaches the conversation's most recent image.
+            $current = $this->resolveUpload($message);
+            $this->context->setUpload($current ?? $this->uploads->findLatestForConversation($message->conversationId));
 
-            [$vision, $persisted] = $this->buildMessages($message->message, $upload);
+            [$vision, $persisted] = $this->buildMessages($message->message, $current);
 
             foreach ($chat->stream($vision, $persisted) as $delta) {
                 if ($delta instanceof TextDelta) {

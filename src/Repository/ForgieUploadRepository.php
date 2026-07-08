@@ -22,6 +22,15 @@ final class ForgieUploadRepository extends ServiceEntityRepository
     }
 
     /**
+     * The most recent image uploaded in a conversation, so the contact tool can
+     * attach it even when it was sent a few turns before the coordinates.
+     */
+    public function findLatestForConversation(string $conversationId): ?ForgieUpload
+    {
+        return $this->findOneBy(['conversationId' => $conversationId], ['createdAt' => 'DESC']);
+    }
+
+    /**
      * @psalm-suppress UnusedParam Same false positive as in ForgieConversationRepository.
      */
     public function purgeOlderThan(\DateTimeImmutable $before): int
