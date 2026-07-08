@@ -326,6 +326,10 @@
 }
 
 /* Staged-image chip shown above the input bar. */
+.Forgie__preview[hidden] {
+    display: none;
+}
+
 .Forgie__preview {
     display: flex;
     align-items: center;
