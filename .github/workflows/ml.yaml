@@ -2,6 +2,8 @@ name: ML
 
 on:
     workflow_dispatch:
+    schedule:
+        - cron: '0 22 * * 0'   # Weekly retrain, Sunday 22:00 UTC
 
 jobs:
     build-ml-preprod:
@@ -39,9 +41,9 @@ jobs:
                 run: docker compose -fcompose.yaml run --rm --build -v./data/weather/ml:/app/data/weather/ml ml python src/train_forecast_model.py
 
             -   name: Copy to PREPROD
+                # model_weights.json + scaler_params.json are what the pure-PHP inference reads.
                 run: |
-                    docker compose -p cvvfcm-preprod -f compose.yaml cp ./data/weather/ml/model_pytorch.onnx php:/app/data/weather/ml/
-                    docker compose -p cvvfcm-preprod -f compose.yaml cp ./data/weather/ml/model_pytorch.onnx.data php:/app/data/weather/ml/
+                    docker compose -p cvvfcm-preprod -f compose.yaml cp ./data/weather/ml/model_weights.json php:/app/data/weather/ml/
                     docker compose -p cvvfcm-preprod -f compose.yaml cp ./data/weather/ml/scaler_params.json php:/app/data/weather/ml/
                 env:
                     DOCKER_HOST: 'ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}'

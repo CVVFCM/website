@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\DTO\LiveWeather;
 use App\Repository\LiveWeatherRecordRepository;
+use App\Weather\LiveWeatherComparison;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -33,6 +34,8 @@ use Symfony\Component\Uid\Uuid;
 #[Table]
 readonly class LiveWeatherRecord
 {
+    public const string RESOURCE_KEY = 'live_weather_records';
+
     #[Id]
     #[GeneratedValue(strategy: 'NONE')]
     #[Column(type: 'uuid')]
@@ -62,6 +65,21 @@ readonly class LiveWeatherRecord
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     public \DateTimeImmutable $createdAt;
 
+    // Signed wind gaps of this observation vs the matching forecast and vs the ML correction of that
+    // forecast. Speed gaps are percentages; direction gaps are degrees in (-180, 180]. Null when the
+    // reference (forecast / model) was unavailable at import time.
+    #[Column(type: Types::FLOAT, nullable: true)]
+    public ?float $windSpeedGapForecast;
+
+    #[Column(type: Types::FLOAT, nullable: true)]
+    public ?float $windDirectionGapForecast;
+
+    #[Column(type: Types::FLOAT, nullable: true)]
+    public ?float $windSpeedGapModel;
+
+    #[Column(type: Types::FLOAT, nullable: true)]
+    public ?float $windDirectionGapModel;
+
     private function __construct(
         \DateTimeImmutable $recordedAt,
         float $humidity,
@@ -70,6 +88,10 @@ readonly class LiveWeatherRecord
         int $windDirection,
         float $windSpeed,
         float $windGusts,
+        ?float $windSpeedGapForecast = null,
+        ?float $windDirectionGapForecast = null,
+        ?float $windSpeedGapModel = null,
+        ?float $windDirectionGapModel = null,
     ) {
         $this->id = Uuid::v6();
         $this->recordedAt = $recordedAt;
@@ -79,13 +101,17 @@ readonly class LiveWeatherRecord
         $this->windDirection = $windDirection;
         $this->windSpeed = $windSpeed;
         $this->windGusts = $windGusts;
+        $this->windSpeedGapForecast = $windSpeedGapForecast;
+        $this->windDirectionGapForecast = $windDirectionGapForecast;
+        $this->windSpeedGapModel = $windSpeedGapModel;
+        $this->windDirectionGapModel = $windDirectionGapModel;
         $this->createdAt = new \DateTimeImmutable();
     }
 
     /**
      * @param CSVLiveWeathertData $data
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data, ?LiveWeatherComparison $comparison = null): self
     {
         return new self(
             $data['recordedAt'],
@@ -95,10 +121,14 @@ readonly class LiveWeatherRecord
             (int) $data['windDirection'],
             (float) $data['windSpeed'],
             (float) $data['windGusts'],
+            $comparison?->windSpeedGapForecast,
+            $comparison?->windDirectionGapForecast,
+            $comparison?->windSpeedGapModel,
+            $comparison?->windDirectionGapModel,
         );
     }
 
-    public static function fromLiveWeather(LiveWeather $liveWeather): self
+    public static function fromLiveWeather(LiveWeather $liveWeather, ?LiveWeatherComparison $comparison = null): self
     {
         return new self(
             $liveWeather->updatedAt,
@@ -108,6 +138,10 @@ readonly class LiveWeatherRecord
             $liveWeather->windDirection,
             $liveWeather->windSpeed,
             $liveWeather->windGusts,
+            $comparison?->windSpeedGapForecast,
+            $comparison?->windDirectionGapForecast,
+            $comparison?->windSpeedGapModel,
+            $comparison?->windDirectionGapModel,
         );
     }
 }

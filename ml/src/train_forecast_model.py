@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from sklearn.metrics import r2_score
-from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Ridge
+from sklearn.metrics import mean_absolute_error, r2_score
+from sklearn.model_selection import TimeSeriesSplit
 from sklearn.preprocessing import StandardScaler
 from torch.export import Dim
 
@@ -16,145 +16,136 @@ CURRENT_DIR = pathlib.Path(__file__).parent.resolve()
 CSV_DATA_PATH = CURRENT_DIR / "../../data/weather/ml/ml.csv"
 ONNX_MODEL_PATH = CURRENT_DIR / "../../data/weather/ml/model_pytorch.onnx"
 SCALER_PARAMS_PATH = CURRENT_DIR / "../../data/weather/ml/scaler_params.json"
+# Layer weights/biases as JSON, for the dependency-free PHP inference service (App\ML).
+WEIGHTS_PATH = CURRENT_DIR / "../../data/weather/ml/model_weights.json"
 
+# Model input: 9 forecast/time features (the only ones available at inference time).
 FEATURE_COLS = [
     'forecast_pressure', 'forecast_wind_sin', 'forecast_wind_cos',
     'forecast_humidity', 'forecast_temperature',
     'day_sin', 'day_cos', 'hour_sin', 'hour_cos'
 ]
-TARGET_COLS = ['temperature', 'wind_sin', 'wind_cos']
+# The model predicts the RESIDUAL wind vector (observed - forecast), not the absolute wind. A
+# ridge (L2) linear model is used, not a deep net: with ~hundreds of rows a big MLP overfits and
+# scores *below* the forecast, while ridge on the residual measurably beats it (see CV report).
+# Temperature is dropped (unused, and it stole capacity from wind).
+OBSERVED_WIND_COLS = ['wind_sin', 'wind_cos']
+FORECAST_WIND_COLS = ['forecast_wind_sin', 'forecast_wind_cos']
+TARGET_COLS = ['wind_sin_residual', 'wind_cos_residual']
 
-df = pd.read_csv(CSV_DATA_PATH).dropna()
+RIDGE_ALPHA = 100.0
+CV_SPLITS = 5
 
-X = df[FEATURE_COLS].values.astype(np.float32)
-y = df[TARGET_COLS].values.astype(np.float32)
 
-# Scaler to export for later use in PHP-ORT
-scaler_X = StandardScaler()
-scaler_y = StandardScaler()
+def cartesian_to_polar_wind(sin_col, cos_col):
+    """Convert the (sin*speed, cos*speed) projection back to speed (kts) and bearing (degrees)."""
+    speed = np.sqrt(sin_col ** 2 + cos_col ** 2)
+    angle_deg = (np.degrees(np.arctan2(sin_col, cos_col)) + 360) % 360
+    return speed, angle_deg
 
-X_scaled = scaler_X.fit_transform(X)
-y_scaled = scaler_y.fit_transform(y)
 
-# Extract 20% of data for testing (won't be used in training), and convert to PyTorch Tensors
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_scaled, test_size=0.2, random_state=42, shuffle=True)
-X_train_th = torch.tensor(X_train)
-y_train_th = torch.tensor(y_train)
-X_test_th  = torch.tensor(X_test)
-y_test_th  = torch.tensor(y_test)
+def circular_abs_error(pred_deg, real_deg):
+    """Absolute angular error in degrees, wrapped to [0, 180]."""
+    diff = np.abs(pred_deg - real_deg) % 360
+    return np.minimum(diff, 360 - diff)
 
+
+def wind_scores(observed_wind, predicted_wind):
+    real_speed, real_dir = cartesian_to_polar_wind(observed_wind[:, 0], observed_wind[:, 1])
+    pred_speed, pred_dir = cartesian_to_polar_wind(predicted_wind[:, 0], predicted_wind[:, 1])
+    return (
+        mean_absolute_error(real_speed, pred_speed),
+        r2_score(real_speed, pred_speed),
+        circular_abs_error(pred_dir, real_dir).mean(),
+    )
+
+
+# Load and order chronologically so the split is a real forecast (past → future).
+df = pd.read_csv(CSV_DATA_PATH).dropna().sort_values('recorded_hour').reset_index(drop=True)
+X = df[FEATURE_COLS].values.astype(np.float64)
+observed_wind = df[OBSERVED_WIND_COLS].values.astype(np.float64)
+forecast_wind = df[FORECAST_WIND_COLS].values.astype(np.float64)
+residual = observed_wind - forecast_wind  # what the model learns
+
+# Honest evaluation: expanding-window CV (no leakage, no single-slice luck). Scaler + ridge are refit
+# inside each fold. We pool the out-of-sample predictions, then score once.
+print(f"Samples: {len(df)} — {CV_SPLITS}-fold TimeSeriesSplit CV\n")
+pooled_obs, pooled_model, pooled_forecast = [], [], []
+for train_idx, test_idx in TimeSeriesSplit(n_splits=CV_SPLITS).split(X):
+    fold_scaler = StandardScaler().fit(X[train_idx])
+    fold_ridge = Ridge(alpha=RIDGE_ALPHA).fit(fold_scaler.transform(X[train_idx]), residual[train_idx])
+    fold_pred_residual = fold_ridge.predict(fold_scaler.transform(X[test_idx]))
+
+    pooled_obs.append(observed_wind[test_idx])
+    pooled_model.append(forecast_wind[test_idx] + fold_pred_residual)
+    pooled_forecast.append(forecast_wind[test_idx])
+
+pooled_obs = np.vstack(pooled_obs)
+model_mae, model_r2, model_dir = wind_scores(pooled_obs, np.vstack(pooled_model))
+fc_mae, fc_r2, fc_dir = wind_scores(pooled_obs, np.vstack(pooled_forecast))
+print(f"{'':10}{'speed MAE':>10}{'speed R²':>10}{'dir MAE':>9}")
+print(f"{'Modèle':10}{model_mae:10.2f}{model_r2:10.3f}{model_dir:9.1f}")
+print(f"{'Prévision':10}{fc_mae:10.2f}{fc_r2:10.3f}{fc_dir:9.1f}")
+
+# Final model for export: fit scaler + ridge on ALL available data.
+scaler_X = StandardScaler().fit(X)
+ridge = Ridge(alpha=RIDGE_ALPHA).fit(scaler_X.transform(X), residual)
+
+# Ridge is a single affine layer on the scaled input. Transfer it into an nn.Linear so we can reuse
+# the existing ONNX export, and so App\ML\Mlp (generic dense layers) runs it unchanged.
 torch.manual_seed(42)
-class CustomWeatherForecastNet(nn.Module):
-    def __init__(self):
-        super(CustomWeatherForecastNet, self).__init__()
-
-        # 4 Layers of Affines neurons (y=xA^T+b)
-        self.layer1 = nn.Linear(9, 128)
-        self.layer2 = nn.Linear(128, 128)
-        self.layer3 = nn.Linear(128, 64)
-        self.output = nn.Linear(64, 3)
-
-        # ReLU returns max(0,x) (only positive values)
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(0.2)
-
-    def forward(self, x):
-        x = self.relu(self.layer1(x))
-        x = self.dropout(x)
-
-        x = self.relu(self.layer2(x))
-        x = self.dropout(x)
-
-        x = self.relu(self.layer3(x))
-        x = self.output(x)
-
-        return x
-
-model = CustomWeatherForecastNet()
-criterion = nn.MSELoss() # Measure Mean Squared Error
-optimizer = optim.Adam(model.parameters(), lr=0.001) # Adam Stochastic Optimization. Didn't understand, it's from docs.
-
-
-print("Start Training...")
-epochs = 500
-batch_size = 64
-n_samples = X_train_th.shape[0]
-
-for epoch in range(epochs):
-    model.train()
-    permutation = torch.randperm(n_samples)
-
-    for i in range(0, n_samples, batch_size):
-        indices = permutation[i:i+batch_size]
-        batch_x, batch_y = X_train_th[indices], y_train_th[indices]
-
-        optimizer.zero_grad()
-        outputs = model(batch_x)
-        loss = criterion(outputs, batch_y)
-        loss.backward()
-        optimizer.step()
-
-    if (epoch+1) % 50 == 0:
-        print(f"Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}")
-
-
-print("Training finished.")
-print("Evaluating on test data...")
-model.eval()
+linear = nn.Linear(len(FEATURE_COLS), len(TARGET_COLS))
 with torch.no_grad():
-    y_pred_scaled = model(X_test_th).numpy()
+    linear.weight.copy_(torch.tensor(ridge.coef_, dtype=torch.float32))
+    linear.bias.copy_(torch.tensor(ridge.intercept_, dtype=torch.float32))
+linear.eval()
 
-# Unscale to get Real physical values (kts and °C)
-y_pred_final = scaler_y.inverse_transform(y_pred_scaled)
-y_test_final = scaler_y.inverse_transform(y_test)
-
-r2 = r2_score(y_test_final, y_pred_final)
-print(f"R² : {r2:.4f}")
-
-# Export the model to ONNX format (portable and usable in PHP-ORT)
 print("\nONNX Export...")
-
 batch_dim = Dim("batch_size", min=1)
-dummy_input = torch.randn(1, 9)
-dynamic_shapes = {
-    "x": {0: batch_dim}
-}
-
+dummy_input = torch.randn(1, len(FEATURE_COLS))
 torch.onnx.export(
-    model,
+    linear,
     dummy_input,
     ONNX_MODEL_PATH,
     export_params=True,
     opset_version=18,
     do_constant_folding=True,
-    input_names = ['input'],
-    output_names = ['output'],
-    dynamic_shapes=dynamic_shapes
+    input_names=['input'],
+    output_names=['output'],
+    dynamic_shapes=({0: batch_dim},),
 )
-
 print("ONNX saved : " + str(ONNX_MODEL_PATH))
 
-# Scaler params to give to PHP-ORT later. We'll export it to JSON.
-print(f"Mean (Input) : {scaler_X.mean_}")
-print(f"Scale (Input)   : {scaler_X.scale_}")
-print(f"Mean (Target): {scaler_y.mean_}")
-print(f"Scale (Target)  : {scaler_y.scale_}")
-print("Scaler params saved : " + str(SCALER_PARAMS_PATH))
+# Single dense layer (no activation) for the pure-PHP inference service.
+weights = {
+    "layers": [
+        {
+            "weight": linear.weight.detach().numpy().tolist(),
+            "bias": linear.bias.detach().numpy().tolist(),
+            "relu": False,
+        }
+    ]
+}
+with open(WEIGHTS_PATH, "w") as f:
+    json.dump(weights, f)
+print("Weights saved : " + str(WEIGHTS_PATH))
 
+# Input scaler feeds the linear layer; the target is the raw residual (no scaling), so the target
+# transform is the identity — PHP applies mean/scale verbatim.
 scaler_params = {
     "input": {
         "mean": scaler_X.mean_.tolist(),
         "scale": scaler_X.scale_.tolist(),
     },
     "target": {
-        "mean": scaler_y.mean_.tolist(),
-        "scale": scaler_y.scale_.tolist()
+        "mean": [0.0] * len(TARGET_COLS),
+        "scale": [1.0] * len(TARGET_COLS),
     },
     "cols": {
         "input": FEATURE_COLS,
-        "target": TARGET_COLS
-    }
+        "target": TARGET_COLS,
+    },
 }
-
 with open(SCALER_PARAMS_PATH, "w") as f:
     json.dump(scaler_params, f)
+print("Scaler params saved : " + str(SCALER_PARAMS_PATH))

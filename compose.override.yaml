@@ -2,6 +2,9 @@ services:
     php:
         volumes:
             - '.:/app:rw'
+            # Share the ML artifacts with the `ml` service (overrides the image VOLUME) so the pure-PHP
+            # inference can read model_weights.json / scaler_params.json. In prod this path is a PVC.
+            - './data/weather/ml:/app/data/weather/ml:rw'
             - './.infra/docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini:ro'
         depends_on: [ mailer, s3 ]
         environment:

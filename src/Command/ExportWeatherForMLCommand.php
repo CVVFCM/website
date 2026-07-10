@@ -6,6 +6,7 @@ namespace App\Command;
 
 use App\Repository\LiveWeatherRecordRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -17,10 +18,13 @@ final readonly class ExportWeatherForMLCommand
     ) {
     }
 
-    public function __invoke(SymfonyStyle $io): int
-    {
+    public function __invoke(
+        SymfonyStyle $io,
+        #[Option('Write the consolidated CSV to this file instead of stdout')]
+        ?string $output = null,
+    ): int {
         $io = $io->getErrorStyle();
-        $output = new \SplFileObject('php://output', 'w');
+        $output = new \SplFileObject($output ?? 'php://output', 'w');
 
         $headerPrinted = false;
         foreach ($this->liveWeatherRecordRepository->findAllWithIterator() as $line) {
