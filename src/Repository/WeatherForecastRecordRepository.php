@@ -54,6 +54,22 @@ final class WeatherForecastRecordRepository extends ServiceEntityRepository
     }
 
     /**
+     * The most recent forecast fetch time (newest createdAt), or null when the table is empty. Used to
+     * decide whether the forecast is stale enough to refetch.
+     */
+    public function findLatestCreatedAt(): ?\DateTimeImmutable
+    {
+        /** @var ?WeatherForecastRecord $latest */
+        $latest = $this->createQueryBuilder('w')
+            ->orderBy('w.createdAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $latest?->createdAt;
+    }
+
+    /**
      * The forecast record closest in time to $when, or null if the nearest is further than
      * MAX_MATCH_SECONDS (no meaningful forecast for that moment).
      *
