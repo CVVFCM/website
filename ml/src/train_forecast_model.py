@@ -16,6 +16,8 @@ CURRENT_DIR = pathlib.Path(__file__).parent.resolve()
 CSV_DATA_PATH = CURRENT_DIR / "../../data/weather/ml/ml.csv"
 ONNX_MODEL_PATH = CURRENT_DIR / "../../data/weather/ml/model_pytorch.onnx"
 SCALER_PARAMS_PATH = CURRENT_DIR / "../../data/weather/ml/scaler_params.json"
+# Layer weights/biases as JSON, for the dependency-free PHP inference service (App\ML).
+WEIGHTS_PATH = CURRENT_DIR / "../../data/weather/ml/model_weights.json"
 
 # Kept stable: the ONNX input/output contract the PHP-ORT inference relies on (9 forecast/time
 # features in, 3 targets out). Only forecast-derived features are used — they are the only ones
@@ -204,6 +206,23 @@ torch.onnx.export(
 )
 
 print("ONNX saved : " + str(ONNX_MODEL_PATH))
+
+# Dense weights for the pure-PHP inference service. nn.Linear stores weight as [out, in], bias as
+# [out] and computes y = x·Wᵀ + b, which App\ML\Mlp replicates. ReLU on every layer but the output.
+ordered_layers = [model.layer1, model.layer2, model.layer3, model.output]
+weights = {
+    "layers": [
+        {
+            "weight": layer.weight.detach().numpy().tolist(),
+            "bias": layer.bias.detach().numpy().tolist(),
+            "relu": index < len(ordered_layers) - 1,
+        }
+        for index, layer in enumerate(ordered_layers)
+    ]
+}
+with open(WEIGHTS_PATH, "w") as f:
+    json.dump(weights, f)
+print("Weights saved : " + str(WEIGHTS_PATH))
 
 # Scaler params to give to PHP-ORT later. We'll export it to JSON.
 print(f"Mean (Input) : {scaler_X.mean_}")

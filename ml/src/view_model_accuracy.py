@@ -1,5 +1,6 @@
 import json
 import pathlib
+import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,7 +12,10 @@ from sklearn.metrics import mean_absolute_error, r2_score
 CURRENT_DIR = pathlib.Path(__file__).parent.resolve()
 ONNX_MODEL_PATH = CURRENT_DIR / ".." / ".." / "data" / "weather" / "ml" / "model_pytorch.onnx"
 SCALER_PARAMS_PATH = CURRENT_DIR /  ".." / ".." / "data" / "weather" / "ml" / "scaler_params.json"
+WEIGHTS_PATH = CURRENT_DIR / ".." / ".." / "data" / "weather" / "ml" / "model_weights.json"
 CSV_DATA_PATH = CURRENT_DIR / ".." / ".." / "data" / "weather" / "ml" / "ml.csv"
+# Committed parity bundle consumed by the PHP inference tests (tests/ML/Fixtures).
+FIXTURES_DIR = (CURRENT_DIR / ".." / ".." / "tests" / "ML" / "Fixtures").resolve()
 
 # Must match train_forecast_model.py so evaluation runs on the same unseen tail.
 TEST_FRACTION = 0.2
@@ -58,6 +62,42 @@ def load_and_prepare_data(csv_path):
 
     return X_norm, y_raw
 
+def export_parity_fixture(csv_path):
+    """Write the PHP parity bundle: known hold-out rows + random inputs, with ONNX expectations,
+    plus copies of the weights/scaler the PHP service consumes. Regenerated whenever the model is."""
+    FIXTURES_DIR.mkdir(parents=True, exist_ok=True)
+
+    df = pd.read_csv(csv_path).dropna().sort_values('recorded_hour').reset_index(drop=True)
+    n_test = int(len(df) * TEST_FRACTION)
+    known = df[FEATURE_COLS].iloc[len(df) - n_test:].head(10).values.astype(np.float32)
+
+    # Random raw feature vectors within mean ± 2·scale of each input.
+    rng = np.random.default_rng(42)
+    random_cases = (INPUT_MEAN + rng.uniform(-2, 2, size=(10, len(FEATURE_COLS))).astype(np.float32) * INPUT_SCALE)
+
+    features = np.vstack([known, random_cases]).astype(np.float32)
+    preds = run_onnx_inference((features - INPUT_MEAN) / INPUT_SCALE)
+    speed, direction = cartesian_to_polar_wind(preds[:, 1], preds[:, 2])
+
+    cases = [
+        {
+            "features": features[i].tolist(),
+            "expected": {
+                "temperature": float(preds[i, 0]),
+                "windSpeed": float(speed[i]),
+                "windDirection": int(round(float(direction[i]))) % 360,
+            },
+        }
+        for i in range(len(features))
+    ]
+
+    with open(FIXTURES_DIR / "inference_cases.json", "w") as f:
+        json.dump({"cases": cases}, f, indent=1)
+    shutil.copy(SCALER_PARAMS_PATH, FIXTURES_DIR / "scaler_params.json")
+    shutil.copy(WEIGHTS_PATH, FIXTURES_DIR / "model_weights.json")
+    print(f"Parity fixture written: {FIXTURES_DIR}")
+
+
 def run_onnx_inference(X_norm):
     print(f"Loads ONNX model : {ONNX_MODEL_PATH}...")
     sess = rt.InferenceSession(ONNX_MODEL_PATH, providers=["CPUExecutionProvider"])
@@ -85,6 +125,8 @@ if __name__ == "__main__":
     print(f"Vent (vitesse): R²={r2_score(real_speed, pred_speed):.4f}  "
           f"MAE={mean_absolute_error(real_speed, pred_speed):.2f} kts")
     print(f"Vent (direct.): MAE={circular_abs_error(pred_dir, real_dir).mean():.1f}° (circulaire)")
+
+    export_parity_fixture(CSV_DATA_PATH)
 
     r2_speed = r2_score(real_speed, pred_speed)
 
