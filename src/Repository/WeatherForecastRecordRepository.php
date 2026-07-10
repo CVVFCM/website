@@ -48,4 +48,12 @@ final class WeatherForecastRecordRepository extends ServiceEntityRepository
         $this->getEntityManager()->clear();
         $this->currentBatchSize = 0;
     }
+
+    /**
+     * @psalm-suppress UnusedParam Same false positive as the other methods here.
+     */
+    public function findForHour(\DateTimeImmutable $hour): ?WeatherForecastRecord
+    {
+        return $this->findOneBy(['date' => $hour]);
+    }
 }

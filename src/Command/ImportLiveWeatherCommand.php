@@ -6,6 +6,8 @@ namespace App\Command;
 
 use App\Entity\LiveWeatherRecord;
 use App\Repository\LiveWeatherRecordRepository;
+use App\Repository\WeatherForecastRecordRepository;
+use App\Weather\LiveWeatherComparator;
 use App\Weather\LiveWeatherProvider;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -19,6 +21,8 @@ final readonly class ImportLiveWeatherCommand
     public function __construct(
         private LiveWeatherProvider $liveWeatherProvider,
         private LiveWeatherRecordRepository $recordRepository,
+        private WeatherForecastRecordRepository $forecastRepository,
+        private LiveWeatherComparator $comparator,
     ) {
     }
 
@@ -33,7 +37,12 @@ final readonly class ImportLiveWeatherCommand
             return Command::FAILURE;
         }
 
-        $this->recordRepository->save(LiveWeatherRecord::fromLiveWeather($liveWeather));
+        // Compare the observation against the forecast for its hour (expected to already be stored)
+        // and against the ML correction of that forecast.
+        $hour = $liveWeather->updatedAt->setTime((int) $liveWeather->updatedAt->format('H'), 0);
+        $comparison = $this->comparator->compare($liveWeather, $this->forecastRepository->findForHour($hour));
+
+        $this->recordRepository->save(LiveWeatherRecord::fromLiveWeather($liveWeather, $comparison));
 
         $io->success('Live weather imported for date '.$liveWeather->updatedAt->format('c'));
 
