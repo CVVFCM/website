@@ -34,6 +34,8 @@ use Symfony\Component\Uid\Uuid;
 #[Table]
 readonly class LiveWeatherRecord
 {
+    public const string RESOURCE_KEY = 'live_weather_records';
+
     #[Id]
     #[GeneratedValue(strategy: 'NONE')]
     #[Column(type: 'uuid')]
@@ -109,7 +111,7 @@ readonly class LiveWeatherRecord
     /**
      * @param CSVLiveWeathertData $data
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data, ?LiveWeatherComparison $comparison = null): self
     {
         return new self(
             $data['recordedAt'],
@@ -119,6 +121,10 @@ readonly class LiveWeatherRecord
             (int) $data['windDirection'],
             (float) $data['windSpeed'],
             (float) $data['windGusts'],
+            $comparison?->windSpeedGapForecast,
+            $comparison?->windDirectionGapForecast,
+            $comparison?->windSpeedGapModel,
+            $comparison?->windDirectionGapModel,
         );
     }
 

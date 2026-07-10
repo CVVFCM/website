@@ -10,6 +10,9 @@ sulu_admin:
         facebook_tokens:
             routes:
                 list: app.get_facebook_tokens
+        live_weather_records:
+            routes:
+                list: app.get_live_weather_records
 
 sulu_core:
     locales:

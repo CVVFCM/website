@@ -15,6 +15,7 @@ ai:
                 - 'App\AI\Tool\RegattaTool'
                 - 'App\AI\Tool\WeatherForecastTool'
                 - 'App\AI\Tool\LiveWeatherTool'
+                - 'App\AI\Tool\HomeWeatherForecastTool'
                 - 'App\AI\Tool\SeaTripTool'
                 - 'App\AI\Tool\EventTool'
                 - 'App\AI\Tool\SitePageTool'

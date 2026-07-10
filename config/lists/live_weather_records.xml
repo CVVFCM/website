@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<list xmlns="http://schemas.sulu.io/list-builder/list">
+    <key>live_weather_records</key>
+
+    <properties>
+        <property name="id" visibility="no" translation="sulu_admin.id">
+            <field-name>id</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+
+        <property name="recordedAt" visibility="always" translation="Relevé le" type="datetime">
+            <field-name>recordedAt</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+
+        <property name="windSpeed" visibility="yes" searchability="no" translation="Vent (nœuds)">
+            <field-name>windSpeed</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+
+        <property name="windGusts" visibility="no" searchability="no" translation="Rafales (nœuds)">
+            <field-name>windGusts</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+
+        <property name="windDirection" visibility="yes" searchability="no" translation="Direction (°)">
+            <field-name>windDirection</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+
+        <property name="temperature" visibility="no" searchability="no" translation="Température (°C)">
+            <field-name>temperature</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+
+        <property name="windSpeedGapForecast" visibility="yes" searchability="no" translation="Écart vitesse / prévision (%)">
+            <field-name>windSpeedGapForecast</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+
+        <property name="windDirectionGapForecast" visibility="yes" searchability="no" translation="Écart direction / prévision (°)">
+            <field-name>windDirectionGapForecast</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+
+        <property name="windSpeedGapModel" visibility="yes" searchability="no" translation="Écart vitesse / modèle (%)">
+            <field-name>windSpeedGapModel</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+
+        <property name="windDirectionGapModel" visibility="yes" searchability="no" translation="Écart direction / modèle (°)">
+            <field-name>windDirectionGapModel</field-name>
+            <entity-name>App\Entity\LiveWeatherRecord</entity-name>
+        </property>
+    </properties>
+</list>

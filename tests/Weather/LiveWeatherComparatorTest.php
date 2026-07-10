@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Weather;
 
-use App\DTO\LiveWeather;
 use App\Entity\WeatherForecastRecord;
 use App\ML\WeatherModelInference;
 use App\Weather\LiveWeatherComparator;
@@ -18,7 +17,7 @@ final class LiveWeatherComparatorTest extends TestCase
     {
         $comparator = new LiveWeatherComparator($this->inference(self::FIXTURES.'/model_weights.json'));
 
-        $comparison = $comparator->compare($this->observed(12.0, 100), $this->forecast(10.0, 80));
+        $comparison = $comparator->compare(12.0, 100, $this->forecast(10.0, 80));
 
         // Forecast gaps: (12-10)/10*100 = +20 %, direction 100 vs 80 = +20°.
         $this->assertEqualsWithDelta(20.0, $comparison->windSpeedGapForecast, 1e-9);
@@ -36,7 +35,7 @@ final class LiveWeatherComparatorTest extends TestCase
     {
         $comparator = new LiveWeatherComparator($this->inference(self::FIXTURES.'/model_weights.json'));
 
-        $comparison = $comparator->compare($this->observed(12.0, 100), null);
+        $comparison = $comparator->compare(12.0, 100, null);
 
         $this->assertNull($comparison->windSpeedGapForecast);
         $this->assertNull($comparison->windDirectionGapForecast);
@@ -48,7 +47,7 @@ final class LiveWeatherComparatorTest extends TestCase
     {
         $comparator = new LiveWeatherComparator($this->inference(self::FIXTURES.'/does-not-exist.json'));
 
-        $comparison = $comparator->compare($this->observed(12.0, 100), $this->forecast(10.0, 80));
+        $comparison = $comparator->compare(12.0, 100, $this->forecast(10.0, 80));
 
         // Forecast gaps still computed; model gaps degrade to null.
         $this->assertEqualsWithDelta(20.0, $comparison->windSpeedGapForecast, 1e-9);
@@ -59,15 +58,6 @@ final class LiveWeatherComparatorTest extends TestCase
     private function inference(string $weightsPath): WeatherModelInference
     {
         return new WeatherModelInference($weightsPath, self::FIXTURES.'/scaler_params.json');
-    }
-
-    private function observed(float $windSpeed, int $windDirection): LiveWeather
-    {
-        $weather = new LiveWeather();
-        $weather->windSpeed = $windSpeed;
-        $weather->windDirection = $windDirection;
-
-        return $weather;
     }
 
     private function forecast(float $windSpeed, int $windDirection): WeatherForecastRecord

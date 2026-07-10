@@ -6,6 +6,8 @@ namespace App\Command;
 
 use App\Entity\LiveWeatherRecord;
 use App\Repository\LiveWeatherRecordRepository;
+use App\Repository\WeatherForecastRecordRepository;
+use App\Weather\LiveWeatherComparator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -27,6 +29,8 @@ final readonly class ImportLiveWeatherCSVCommand
 
     public function __construct(
         private LiveWeatherRecordRepository $recordRepository,
+        private WeatherForecastRecordRepository $forecastRepository,
+        private LiveWeatherComparator $comparator,
         #[Autowire('%kernel.project_dir%')] private string $projectDir,
     ) {
     }
@@ -122,7 +126,13 @@ final readonly class ImportLiveWeatherCSVCommand
                     continue;
                 }
 
-                $this->recordRepository->saveDeferred(LiveWeatherRecord::fromArray($data));
+                $comparison = $this->comparator->compare(
+                    (float) $data['windSpeed'],
+                    (int) $data['windDirection'],
+                    $this->forecastRepository->findNearest($data['recordedAt']),
+                );
+
+                $this->recordRepository->saveDeferred(LiveWeatherRecord::fromArray($data, $comparison));
             }
         }
 

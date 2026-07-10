@@ -37,10 +37,12 @@ final readonly class ImportLiveWeatherCommand
             return Command::FAILURE;
         }
 
-        // Compare the observation against the forecast for its hour (expected to already be stored)
-        // and against the ML correction of that forecast.
-        $hour = $liveWeather->updatedAt->setTime((int) $liveWeather->updatedAt->format('H'), 0);
-        $comparison = $this->comparator->compare($liveWeather, $this->forecastRepository->findForHour($hour));
+        // Compare the observation against the nearest forecast and the ML correction of it.
+        $comparison = $this->comparator->compare(
+            $liveWeather->windSpeed,
+            $liveWeather->windDirection,
+            $this->forecastRepository->findNearest($liveWeather->updatedAt),
+        );
 
         $this->recordRepository->save(LiveWeatherRecord::fromLiveWeather($liveWeather, $comparison));
 

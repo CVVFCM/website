@@ -6,11 +6,15 @@ namespace App\Repository;
 
 use App\Entity\WeatherForecastRecord;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 final class WeatherForecastRecordRepository extends ServiceEntityRepository
 {
     private const int BATCH_SIZE = 1000;
+    // Forecasts are hourly; anything further than this from an observation is not a meaningful match.
+    private const int MAX_MATCH_SECONDS = 3 * 3600;
+
     private int $currentBatchSize = 0;
 
     /**
@@ -50,10 +54,30 @@ final class WeatherForecastRecordRepository extends ServiceEntityRepository
     }
 
     /**
+     * The forecast record closest in time to $when, or null if the nearest is further than
+     * MAX_MATCH_SECONDS (no meaningful forecast for that moment).
+     *
      * @psalm-suppress UnusedParam Same false positive as the other methods here.
      */
-    public function findForHour(\DateTimeImmutable $hour): ?WeatherForecastRecord
+    public function findNearest(\DateTimeImmutable $when): ?WeatherForecastRecord
     {
-        return $this->findOneBy(['date' => $hour]);
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addRootEntityFromClassMetadata(WeatherForecastRecord::class, 'w');
+
+        /** @var ?WeatherForecastRecord $record */
+        $record = $this->getEntityManager()
+            ->createNativeQuery(
+                'SELECT '.$rsm->generateSelectClause().' FROM weather_forecast_record w '
+                .'ORDER BY ABS(EXTRACT(EPOCH FROM (w.date - :when))) ASC LIMIT 1',
+                $rsm,
+            )
+            ->setParameter('when', $when->format('Y-m-d H:i:s'))
+            ->getOneOrNullResult();
+
+        if (null === $record || abs($record->date->getTimestamp() - $when->getTimestamp()) > self::MAX_MATCH_SECONDS) {
+            return null;
+        }
+
+        return $record;
     }
 }

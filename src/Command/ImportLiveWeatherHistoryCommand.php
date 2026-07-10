@@ -6,6 +6,8 @@ namespace App\Command;
 
 use App\Entity\LiveWeatherRecord;
 use App\Repository\LiveWeatherRecordRepository;
+use App\Repository\WeatherForecastRecordRepository;
+use App\Weather\LiveWeatherComparator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -38,6 +40,8 @@ final readonly class ImportLiveWeatherHistoryCommand
     public function __construct(
         private HttpClientInterface $httpClient,
         private LiveWeatherRecordRepository $recordRepository,
+        private WeatherForecastRecordRepository $forecastRepository,
+        private LiveWeatherComparator $comparator,
         #[Autowire('%env(WEATHER_CLOUD_DEVICE_CODE)%')] private string $deviceCode,
     ) {
     }
@@ -75,15 +79,19 @@ final readonly class ImportLiveWeatherHistoryCommand
                 continue;
             }
 
+            $windSpeed = $windAndGust[$timestamp]['speed'] * self::MS_TO_KNOTS;
+            $windDirection = $direction[$timestamp] ?? 0;
+            $comparison = $this->comparator->compare($windSpeed, $windDirection, $this->forecastRepository->findNearest($recordedAt));
+
             $this->recordRepository->saveDeferred(LiveWeatherRecord::fromArray([
                 'recordedAt' => $recordedAt,
                 'humidity' => (string) $humidity[$timestamp],
                 'pressure' => (string) $pressure[$timestamp],
                 'temperature' => (string) $temp,
-                'windDirection' => (string) ($direction[$timestamp] ?? 0),
-                'windSpeed' => (string) ($windAndGust[$timestamp]['speed'] * self::MS_TO_KNOTS),
+                'windDirection' => (string) $windDirection,
+                'windSpeed' => (string) $windSpeed,
                 'windGusts' => (string) ($windAndGust[$timestamp]['gust'] * self::MS_TO_KNOTS),
-            ]));
+            ], $comparison));
             ++$imported;
         }
 
