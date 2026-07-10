@@ -41,6 +41,7 @@ final readonly class OpenMeteoAromeWeatherForecastProvider implements WeatherFor
                         '::end_hour::' => new \DateTimeImmutable('tomorrow 23:00')->format('Y-m-d\TH:00'),
                     ],
                 ),
+                ['timeout' => 10],
             );
 
             /**

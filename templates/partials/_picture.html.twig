@@ -1,0 +1,53 @@
+{#
+  Responsive <picture> for a Sulu media object: AVIF + WebP sources (smaller than JPEG/PNG) with an
+  original-format <img> fallback. Renders nothing when the media or its base format is missing.
+
+  Params (options hash):
+    media    Sulu media object (has .thumbnails / .formats)
+    format   base format key used for the fallback <img> and single-size sources (e.g. 'sulu-400x400')
+    alt      alt text
+    options.widths   optional list of [formatKey, widthPx] pairs → builds a multi-resolution srcset,
+                     e.g. [['640x',640],['1024x',1024],['1600x',1600],['sulu-1920x',1920]]
+    options.sizes    the sizes attribute (required when widths is set), e.g. '100vw'
+    options.loading  'lazy' (default) or 'eager'
+    options.class    class attribute for the <img>
+    options.width / options.height  intrinsic px, when known (fixed-size formats) — reserves space (CLS)
+#}
+{% macro render(media, format, alt, options = {}) %}
+    {% if media and media.thumbnails is defined and media.thumbnails[format] is not defined %}
+        {# Requested format not generated for this media — degrade to the original file, no <picture>. #}
+        <img src="{{ media.url }}"
+             alt="{{ alt }}"
+             loading="{{ options.loading|default('lazy') }}"
+             {%- if options.title is defined and options.title %} title="{{ options.title }}"{% endif %}
+             {%- if options.class is defined %} class="{{ options.class }}"{% endif %} />
+    {% elseif media and media.thumbnails is defined and media.thumbnails[format] is defined %}
+        {% set widths = options.widths|default([]) %}
+        {% set sizes = options.sizes|default('') %}
+        {% set loading = options.loading|default('lazy') %}
+        {% set avif = [] %}
+        {% set webp = [] %}
+        {% set fallback = [] %}
+        {% for w in widths %}
+            {% set avif = avif|merge([media.formats[w.0 ~ '.avif'] ~ ' ' ~ w.1 ~ 'w']) %}
+            {% set webp = webp|merge([media.formats[w.0 ~ '.webp'] ~ ' ' ~ w.1 ~ 'w']) %}
+            {% set fallback = fallback|merge([media.thumbnails[w.0] ~ ' ' ~ w.1 ~ 'w']) %}
+        {% endfor %}
+        <picture>
+            <source type="image/avif"
+                    srcset="{{ widths is empty ? media.formats[format ~ '.avif'] : avif|join(', ') }}"
+                    {%- if sizes %} sizes="{{ sizes }}"{% endif %} />
+            <source type="image/webp"
+                    srcset="{{ widths is empty ? media.formats[format ~ '.webp'] : webp|join(', ') }}"
+                    {%- if sizes %} sizes="{{ sizes }}"{% endif %} />
+            <img src="{{ media.thumbnails[format] }}"
+                 {%- if widths is not empty %} srcset="{{ fallback|join(', ') }}" sizes="{{ sizes }}"{% endif %}
+                 alt="{{ alt }}"
+                 loading="{{ loading }}"
+                 {%- if options.title is defined and options.title %} title="{{ options.title }}"{% endif %}
+                 {%- if options.width is defined %} width="{{ options.width }}"{% endif %}
+                 {%- if options.height is defined %} height="{{ options.height }}"{% endif %}
+                 {%- if options.class is defined %} class="{{ options.class }}"{% endif %} />
+        </picture>
+    {% endif %}
+{% endmacro %}

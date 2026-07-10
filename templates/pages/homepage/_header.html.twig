@@ -1,12 +1,12 @@
+{% import 'partials/_picture.html.twig' as picture %}
 <header class="Header SectionPadded">
     <div class="Header__background">
-        {% if block.header_media.thumbnails is defined and block.header_media.thumbnails['sulu-1920x'] is defined %}
-            <img src="{{ block.header_media.thumbnails['sulu-1920x'] }}" alt="" class="Header__backgroundImage" />
-        {% elseif block.header_media.formats is defined and block.header_media.formats['sulu-1920x.webp'] is defined %}
-            <img src="{{ block.header_media.formats['sulu-1920x.webp'] }}" alt="" class="Header__backgroundImage" />
-        {% else %}
-            <img src="{{ block.header_media.thumbnails['sulu-400x400'] ?? block.header_media.url }}" alt="" class="Header__backgroundImage" />
-        {% endif %}
+        {{ picture.render(block.header_media|default(null), '1920x', '', {
+            widths: [['640x', 640], ['1024x', 1024], ['1600x', 1600], ['1920x', 1920]],
+            sizes: '100vw',
+            loading: 'eager',
+            class: 'Header__backgroundImage',
+        }) }}
     </div>
 
     <div class="Header__titleContainer">
@@ -21,7 +21,11 @@
             {% for cta in block.header_ctas %}
                 <a href="{{ cta.url }}" class="CtaCard">
                     {% if cta.image is defined and cta.image %}
-                        <img src="{{ cta.image.thumbnails['sulu-400x400'] ?? cta.image.url }}" alt="" class="CtaCard__image" />
+                        {{ picture.render(cta.image, 'sulu-400x400', '', {
+                            class: 'CtaCard__image',
+                            width: 400,
+                            height: 400,
+                        }) }}
                     {% endif %}
                     <div class="CtaCard__content">
                         <h2 class="CtaCard__title">{{ cta.title }}</h2>

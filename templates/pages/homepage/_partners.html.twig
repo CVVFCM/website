@@ -1,3 +1,4 @@
+{% import 'partials/_picture.html.twig' as picture %}
 <section class="HomepagePartners SectionPadded">
     <div class="HomepagePartners__header">
         <h2 class="HomepagePartners__title">{{ block.title }}</h2>
@@ -15,17 +16,21 @@
                        target="_blank"
                        rel="noopener"
                        title="{{ partner.name }}">
-                        <img src="{{ partner.media.thumbnails['sulu-400x400'] }}"
-                             alt="{{ partner.name }}"
-                             class="HomepagePartners__logo"
-                             loading="lazy" />
+                        {{ picture.render(partner.media, 'sulu-400x400', partner.name, {
+                            class: 'HomepagePartners__logo',
+                            loading: 'lazy',
+                            width: 400,
+                            height: 400,
+                        }) }}
                     </a>
                 {% else %}
                     <div class="HomepagePartners__logoWrapper">
-                        <img src="{{ partner.media.thumbnails['sulu-400x400'] }}"
-                             alt="{{ partner.name }}"
-                             class="HomepagePartners__logo"
-                             loading="lazy" />
+                        {{ picture.render(partner.media, 'sulu-400x400', partner.name, {
+                            class: 'HomepagePartners__logo',
+                            loading: 'lazy',
+                            width: 400,
+                            height: 400,
+                        }) }}
                     </div>
                 {% endif %}
             </li>
