@@ -55,6 +55,26 @@ consumer:
   tolerations: []
   affinity: {}
 
+# One-shot Doctrine migration Job, run as a Helm release hook (post-install,pre-upgrade)
+# from the same php image. Applies migrations/ before the new web/consumer pods roll.
+migrate:
+  enabled: true
+  # migrate is idempotent, so retrying is safe; keep it low to fail fast on real errors.
+  backoffLimit: 2
+  # Hard cap on the whole Job (incl. the entrypoint's up-to-60s DB wait) so a hung
+  # migration can't block a `helm upgrade --wait` indefinitely.
+  activeDeadlineSeconds: 600
+  resources:
+    requests:
+      cpu: 50m
+      memory: 192Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
 # rtsp-to-web webcam streaming service. The Caddyfile reverse-proxies /stream/* to the
 # Service named exactly "rtsp-to-web" (see rtsp-service.yaml).
 rtsp:
