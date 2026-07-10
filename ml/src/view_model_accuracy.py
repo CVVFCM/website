@@ -54,13 +54,15 @@ def load_and_prepare_data(csv_path):
 
     X_raw = df[FEATURE_COLS].values.astype(np.float32)
     y_raw = df[TARGET_COLS].values.astype(np.float32)
+    # Raw forecast wind vector (baseline to beat): the forecast_* columns straight from the CSV.
+    forecast_wind = df[['forecast_wind_sin', 'forecast_wind_cos']].values.astype(np.float32)
 
     # (Raw - Mean) / Scale : manual normalization. Same will be done in PHP-ORT
     X_norm = (X_raw - INPUT_MEAN) / INPUT_SCALE
 
     print(f"{len(df)} hold-out lines loaded and normalized.")
 
-    return X_norm, y_raw
+    return X_norm, y_raw, forecast_wind
 
 def export_parity_fixture(csv_path):
     """Write the PHP parity bundle: known hold-out rows + random inputs, with ONNX expectations,
@@ -111,20 +113,27 @@ def run_onnx_inference(X_norm):
     return preds_physical
 
 if __name__ == "__main__":
-    X_norm, y_real_physical = load_and_prepare_data(CSV_DATA_PATH)
+    X_norm, y_real_physical, forecast_wind = load_and_prepare_data(CSV_DATA_PATH)
 
     y_pred_physical = run_onnx_inference(X_norm)
 
     real_speed, real_dir = cartesian_to_polar_wind(y_real_physical[:, 1], y_real_physical[:, 2])
     pred_speed, pred_dir = cartesian_to_polar_wind(y_pred_physical[:, 1], y_pred_physical[:, 2])
+    fc_speed, fc_dir = cartesian_to_polar_wind(forecast_wind[:, 0], forecast_wind[:, 1])
+    mean_speed = np.full_like(real_speed, real_speed.mean())
 
-    # Per-target metrics on the hold-out slice (temperature / wind speed / wind direction).
-    print("\n--- Test (hold-out) ---")
-    print(f"Température   : R²={r2_score(y_real_physical[:, 0], y_pred_physical[:, 0]):.4f}  "
-          f"MAE={mean_absolute_error(y_real_physical[:, 0], y_pred_physical[:, 0]):.2f} °C")
-    print(f"Vent (vitesse): R²={r2_score(real_speed, pred_speed):.4f}  "
-          f"MAE={mean_absolute_error(real_speed, pred_speed):.2f} kts")
-    print(f"Vent (direct.): MAE={circular_abs_error(pred_dir, real_dir).mean():.1f}° (circulaire)")
+    # Does the model beat the raw forecast (and the naive mean) on the unseen tail?
+    # R²>0 means "better than always predicting the mean"; compare Modèle vs Prévision to see if the
+    # ML correction adds anything over the forecast we already have.
+    print("\n--- Vent : vitesse (hold-out) ---")
+    for label, pred in (("Modèle   ", pred_speed), ("Prévision", fc_speed), ("Moyenne  ", mean_speed)):
+        print(f"{label} : R²={r2_score(real_speed, pred):.4f}  MAE={mean_absolute_error(real_speed, pred):.2f} kts")
+
+    print("\n--- Vent : direction (hold-out) ---")
+    print(f"Modèle    : MAE={circular_abs_error(pred_dir, real_dir).mean():.1f}° (circulaire)")
+    print(f"Prévision : MAE={circular_abs_error(fc_dir, real_dir).mean():.1f}° (circulaire)")
+
+    print(f"\nTempérature (info) : Modèle R²={r2_score(y_real_physical[:, 0], y_pred_physical[:, 0]):.4f}")
 
     export_parity_fixture(CSV_DATA_PATH)
 
