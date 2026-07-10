@@ -6,12 +6,15 @@ import numpy as np
 import onnxruntime as rt
 import pandas as pd
 import seaborn as sns
-from sklearn.metrics import r2_score
+from sklearn.metrics import mean_absolute_error, r2_score
 
 CURRENT_DIR = pathlib.Path(__file__).parent.resolve()
 ONNX_MODEL_PATH = CURRENT_DIR / ".." / ".." / "data" / "weather" / "ml" / "model_pytorch.onnx"
 SCALER_PARAMS_PATH = CURRENT_DIR /  ".." / ".." / "data" / "weather" / "ml" / "scaler_params.json"
 CSV_DATA_PATH = CURRENT_DIR / ".." / ".." / "data" / "weather" / "ml" / "ml.csv"
+
+# Must match train_forecast_model.py so evaluation runs on the same unseen tail.
+TEST_FRACTION = 0.2
 
 sns.set_theme(style="whitegrid")
 
@@ -33,9 +36,17 @@ def cartesian_to_polar_wind(sin_col, cos_col):
 
     return speed, angle_deg
 
+def circular_abs_error(pred_deg, real_deg):
+    """Absolute angular error in degrees, wrapped to [0, 180]."""
+    diff = np.abs(pred_deg - real_deg) % 360
+    return np.minimum(diff, 360 - diff)
+
 def load_and_prepare_data(csv_path):
     print("Loads CSV data...")
-    df = pd.read_csv(csv_path).dropna()
+    # Same chronological order + hold-out tail as training, so we score only unseen rows.
+    df = pd.read_csv(csv_path).dropna().sort_values('recorded_hour').reset_index(drop=True)
+    n_test = int(len(df) * TEST_FRACTION)
+    df = df.iloc[len(df) - n_test:]
 
     X_raw = df[FEATURE_COLS].values.astype(np.float32)
     y_raw = df[TARGET_COLS].values.astype(np.float32)
@@ -43,7 +54,7 @@ def load_and_prepare_data(csv_path):
     # (Raw - Mean) / Scale : manual normalization. Same will be done in PHP-ORT
     X_norm = (X_raw - INPUT_MEAN) / INPUT_SCALE
 
-    print(f"{len(df)} lines loaded and normalized.")
+    print(f"{len(df)} hold-out lines loaded and normalized.")
 
     return X_norm, y_raw
 
@@ -67,8 +78,15 @@ if __name__ == "__main__":
     real_speed, real_dir = cartesian_to_polar_wind(y_real_physical[:, 1], y_real_physical[:, 2])
     pred_speed, pred_dir = cartesian_to_polar_wind(y_pred_physical[:, 1], y_pred_physical[:, 2])
 
+    # Per-target metrics on the hold-out slice (temperature / wind speed / wind direction).
+    print("\n--- Test (hold-out) ---")
+    print(f"Température   : R²={r2_score(y_real_physical[:, 0], y_pred_physical[:, 0]):.4f}  "
+          f"MAE={mean_absolute_error(y_real_physical[:, 0], y_pred_physical[:, 0]):.2f} °C")
+    print(f"Vent (vitesse): R²={r2_score(real_speed, pred_speed):.4f}  "
+          f"MAE={mean_absolute_error(real_speed, pred_speed):.2f} kts")
+    print(f"Vent (direct.): MAE={circular_abs_error(pred_dir, real_dir).mean():.1f}° (circulaire)")
+
     r2_speed = r2_score(real_speed, pred_speed)
-    print(f"\n--- R² score on speed : {r2_speed:.4f} ---")
 
     plt.figure(figsize=(8, 8))
     plt.scatter(real_speed, pred_speed, alpha=0.2, s=10, color='purple')
