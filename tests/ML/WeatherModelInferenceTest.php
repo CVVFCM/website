@@ -25,7 +25,6 @@ final class WeatherModelInferenceTest extends TestCase
         $prediction = $this->inference()->predict($features);
 
         $this->assertInstanceOf(WeatherPrediction::class, $prediction);
-        $this->assertTrue(is_finite($prediction->temperature));
         $this->assertTrue(is_finite($prediction->windSpeed));
         $this->assertGreaterThanOrEqual(0.0, $prediction->windSpeed);
         $this->assertGreaterThanOrEqual(0, $prediction->windDirection);
@@ -40,7 +39,6 @@ final class WeatherModelInferenceTest extends TestCase
         $first = $inference->predict($features);
         $second = $inference->predict($features);
 
-        $this->assertSame($first->temperature, $second->temperature);
         $this->assertSame($first->windSpeed, $second->windSpeed);
         $this->assertSame($first->windDirection, $second->windDirection);
     }

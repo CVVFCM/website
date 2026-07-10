@@ -7,7 +7,7 @@ import numpy as np
 import onnxruntime as rt
 import pandas as pd
 import seaborn as sns
-from sklearn.metrics import mean_absolute_error, r2_score
+from sklearn.metrics import r2_score
 
 CURRENT_DIR = pathlib.Path(__file__).parent.resolve()
 ONNX_MODEL_PATH = CURRENT_DIR / ".." / ".." / "data" / "weather" / "ml" / "model_pytorch.onnx"
@@ -53,8 +53,9 @@ def load_and_prepare_data(csv_path):
     df = df.iloc[len(df) - n_test:]
 
     X_raw = df[FEATURE_COLS].values.astype(np.float32)
-    y_raw = df[TARGET_COLS].values.astype(np.float32)
-    # Raw forecast wind vector (baseline to beat): the forecast_* columns straight from the CSV.
+    # Observed wind (ground truth) and raw forecast wind (baseline to beat). The model outputs a
+    # residual, so we reconstruct absolute wind as forecast + residual downstream.
+    observed_wind = df[['wind_sin', 'wind_cos']].values.astype(np.float32)
     forecast_wind = df[['forecast_wind_sin', 'forecast_wind_cos']].values.astype(np.float32)
 
     # (Raw - Mean) / Scale : manual normalization. Same will be done in PHP-ORT
@@ -62,7 +63,7 @@ def load_and_prepare_data(csv_path):
 
     print(f"{len(df)} hold-out lines loaded and normalized.")
 
-    return X_norm, y_raw, forecast_wind
+    return X_norm, observed_wind, forecast_wind
 
 def export_parity_fixture(csv_path):
     """Write the PHP parity bundle: known hold-out rows + random inputs, with ONNX expectations,
@@ -78,14 +79,15 @@ def export_parity_fixture(csv_path):
     random_cases = (INPUT_MEAN + rng.uniform(-2, 2, size=(10, len(FEATURE_COLS))).astype(np.float32) * INPUT_SCALE)
 
     features = np.vstack([known, random_cases]).astype(np.float32)
-    preds = run_onnx_inference((features - INPUT_MEAN) / INPUT_SCALE)
-    speed, direction = cartesian_to_polar_wind(preds[:, 1], preds[:, 2])
+    residual = run_onnx_inference((features - INPUT_MEAN) / INPUT_SCALE)
+    # Reconstruct absolute wind: forecast (features[1]=sin, features[2]=cos) + predicted residual.
+    predicted_wind = features[:, 1:3] + residual
+    speed, direction = cartesian_to_polar_wind(predicted_wind[:, 0], predicted_wind[:, 1])
 
     cases = [
         {
             "features": features[i].tolist(),
             "expected": {
-                "temperature": float(preds[i, 0]),
                 "windSpeed": float(speed[i]),
                 "windDirection": int(round(float(direction[i]))) % 360,
             },
@@ -108,33 +110,23 @@ def run_onnx_inference(X_norm):
     print("Runs inference...")
     preds_norm = sess.run(None, {input_name: X_norm.astype(np.float32)})[0]
 
-    preds_physical = (preds_norm * TARGET_SCALE) + TARGET_MEAN
+    # De-scaled residual wind vector (observed - forecast).
+    residual = (preds_norm * TARGET_SCALE) + TARGET_MEAN
 
-    return preds_physical
+    return residual
 
 if __name__ == "__main__":
-    X_norm, y_real_physical, forecast_wind = load_and_prepare_data(CSV_DATA_PATH)
+    X_norm, observed_wind, forecast_wind = load_and_prepare_data(CSV_DATA_PATH)
 
-    y_pred_physical = run_onnx_inference(X_norm)
+    residual = run_onnx_inference(X_norm)
+    predicted_wind = forecast_wind + residual  # reconstruct absolute wind from the residual
 
-    real_speed, real_dir = cartesian_to_polar_wind(y_real_physical[:, 1], y_real_physical[:, 2])
-    pred_speed, pred_dir = cartesian_to_polar_wind(y_pred_physical[:, 1], y_pred_physical[:, 2])
-    fc_speed, fc_dir = cartesian_to_polar_wind(forecast_wind[:, 0], forecast_wind[:, 1])
-    mean_speed = np.full_like(real_speed, real_speed.mean())
+    real_speed, real_dir = cartesian_to_polar_wind(observed_wind[:, 0], observed_wind[:, 1])
+    pred_speed, pred_dir = cartesian_to_polar_wind(predicted_wind[:, 0], predicted_wind[:, 1])
 
-    # Does the model beat the raw forecast (and the naive mean) on the unseen tail?
-    # R²>0 means "better than always predicting the mean"; compare Modèle vs Prévision to see if the
-    # ML correction adds anything over the forecast we already have.
-    print("\n--- Vent : vitesse (hold-out) ---")
-    for label, pred in (("Modèle   ", pred_speed), ("Prévision", fc_speed), ("Moyenne  ", mean_speed)):
-        print(f"{label} : R²={r2_score(real_speed, pred):.4f}  MAE={mean_absolute_error(real_speed, pred):.2f} kts")
-
-    print("\n--- Vent : direction (hold-out) ---")
-    print(f"Modèle    : MAE={circular_abs_error(pred_dir, real_dir).mean():.1f}° (circulaire)")
-    print(f"Prévision : MAE={circular_abs_error(fc_dir, real_dir).mean():.1f}° (circulaire)")
-
-    print(f"\nTempérature (info) : Modèle R²={r2_score(y_real_physical[:, 0], y_pred_physical[:, 0]):.4f}")
-
+    # NOTE: honest generalization metrics live in train_forecast_model.py (TimeSeriesSplit CV). The
+    # exported model is fit on ALL data, so scoring it here is in-sample — these plots are only a
+    # visual sanity check of the fit, not a performance claim.
     export_parity_fixture(CSV_DATA_PATH)
 
     r2_speed = r2_score(real_speed, pred_speed)

@@ -10,7 +10,6 @@ namespace App\ML;
 final readonly class WeatherPrediction
 {
     public function __construct(
-        public float $temperature,
         public float $windSpeed,
         public int $windDirection,
     ) {

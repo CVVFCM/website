@@ -33,12 +33,6 @@ final class InferenceParityTest extends TestCase
             $expected = $case['expected'];
 
             $this->assertEqualsWithDelta(
-                $expected['temperature'],
-                $prediction->temperature,
-                self::VALUE_TOLERANCE,
-                sprintf('temperature mismatch on case #%d', $index),
-            );
-            $this->assertEqualsWithDelta(
                 $expected['windSpeed'],
                 $prediction->windSpeed,
                 self::VALUE_TOLERANCE,
@@ -59,13 +53,13 @@ final class InferenceParityTest extends TestCase
     }
 
     /**
-     * @return list<array{features: list<float>, expected: array{temperature: float, windSpeed: float, windDirection: int}}>
+     * @return list<array{features: list<float>, expected: array{windSpeed: float, windDirection: int}}>
      */
     private function cases(): array
     {
         $raw = (string) file_get_contents(__DIR__.'/Fixtures/inference_cases.json');
 
-        /** @var array{cases: list<array{features: list<float>, expected: array{temperature: float, windSpeed: float, windDirection: int}}>} $data */
+        /** @var array{cases: list<array{features: list<float>, expected: array{windSpeed: float, windDirection: int}}>} $data */
         $data = json_decode($raw, true, flags: \JSON_THROW_ON_ERROR);
 
         return $data['cases'];

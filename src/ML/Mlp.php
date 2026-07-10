@@ -13,7 +13,8 @@ final readonly class Mlp
 {
     /**
      * @param list<array{weight: list<list<float>>, bias: list<float>, relu: bool}> $layers
-     *                                                                                      Each layer: `weight` is [out][in] (PyTorch nn.Linear layout), `bias` is [out].
+     *
+     * Each layer: `weight` is [out][in] (PyTorch nn.Linear layout), `bias` is [out].
      */
     public function __construct(private array $layers)
     {

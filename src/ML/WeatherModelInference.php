@@ -28,6 +28,11 @@ final class WeatherModelInference
         'day_sin', 'day_cos', 'hour_sin', 'hour_cos',
     ];
 
+    // The model outputs a RESIDUAL wind vector; absolute wind is the forecast wind (carried in the
+    // input features) plus that residual.
+    private const int FORECAST_WIND_SIN_INDEX = 1;
+    private const int FORECAST_WIND_COS_INDEX = 2;
+
     private ?Mlp $mlp = null;
 
     /** @var list<float> */
@@ -63,12 +68,13 @@ final class WeatherModelInference
 
         $output = $mlp->forward($normalized);
 
-        $temperature = $output[0] * $this->targetScale[0] + $this->targetMean[0];
-        $windSin = $output[1] * $this->targetScale[1] + $this->targetMean[1];
-        $windCos = $output[2] * $this->targetScale[2] + $this->targetMean[2];
+        // De-scale the residual, then reconstruct the absolute wind vector: forecast + residual.
+        $residualSin = $output[0] * $this->targetScale[0] + $this->targetMean[0];
+        $residualCos = $output[1] * $this->targetScale[1] + $this->targetMean[1];
+        $windSin = $features[self::FORECAST_WIND_SIN_INDEX] + $residualSin;
+        $windCos = $features[self::FORECAST_WIND_COS_INDEX] + $residualCos;
 
         return new WeatherPrediction(
-            $temperature,
             sqrt($windSin * $windSin + $windCos * $windCos),
             (int) round(fmod(rad2deg(atan2($windSin, $windCos)) + 360.0, 360.0)) % 360,
         );
