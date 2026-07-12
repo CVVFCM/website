@@ -1,5 +1,6 @@
 .HomepageFacebook {
-    --fb-blue: #1877F2;
+    /* Darkened Facebook blue: used for button/link text; meets WCAG AA (6:1 on/against white). */
+    --fb-blue: #0B5FCC;
 
     background-color: var(--color-white);
 }

@@ -1,6 +1,6 @@
 .HomepageCalendar {
-    --calendar-accent: #e85a3c;
-    --calendar-accent-hover: #d14a2e;
+    --calendar-accent: #C4381B;
+    --calendar-accent-hover: #A32E16;
 
     container-type: inline-size;
     background: linear-gradient(135deg, #003258, #032648);

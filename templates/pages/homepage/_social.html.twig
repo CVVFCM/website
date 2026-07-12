@@ -56,7 +56,7 @@
     <ul class="HomepageInstagram__grid">
         {% for post in instagram_feed()|slice(0, 10) %}
             <li class="HomepageInstagram__item">
-                <a href="{{ post.permalink }}" class="HomepageInstagram__link" target="_blank" rel="noopener">
+                <a href="{{ post.permalink }}" class="HomepageInstagram__link" target="_blank" rel="noopener" aria-label="{{ post.caption|default('Publication Instagram')|striptags|slice(0, 100) }}">
                     <img src="{{ post.thumbnailUrl ?? post.mediaUrl }}" alt="{{ post.caption|default('')|striptags|slice(0, 100) }}" class="HomepageInstagram__image" loading="lazy" />
 
                     {% if post.type == 'VIDEO' %}

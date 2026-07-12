@@ -6,8 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     {% block meta %}
+        {# Ensure a <meta name="description"> is always emitted: SEO field → excerpt → site default.
+           The Sulu SEO partial only renders the tag when seo.description is set, so we default it here. #}
+        {% set seoWithDefaults = (extension.seo|default([]))|merge({
+            description: extension.seo.description|default(
+                extension.excerpt.description|default(
+                    'Club de voile du lac des Vieilles Forges : école de voile, régates et location de bateaux à Charleville-Mézières.',
+                ),
+            ),
+        }) %}
         {{ include('@SuluWebsite/Extension/seo.html.twig', {
-            seo: extension.seo|default([]),
+            seo: seoWithDefaults,
             content: content|default([]),
             localizations: localizations|default([]),
             shadowBaseLocale: shadowBaseLocale|default(),
