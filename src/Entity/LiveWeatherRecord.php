@@ -29,56 +29,58 @@ use Symfony\Component\Uid\Uuid;
  *      windGusts: string,
  *  }
  */
+// Not a `readonly class`: opcache preload compiles Doctrine's generated proxy, which is non-readonly
+// and may not extend a readonly class. Per-property `readonly` keeps the same immutability guarantee.
 #[Index(fields: ['recordedAt'])]
 #[Entity(repositoryClass: LiveWeatherRecordRepository::class)]
 #[Table]
-readonly class LiveWeatherRecord
+class LiveWeatherRecord
 {
     public const string RESOURCE_KEY = 'live_weather_records';
 
     #[Id]
     #[GeneratedValue(strategy: 'NONE')]
     #[Column(type: 'uuid')]
-    public Uuid $id;
+    public readonly Uuid $id;
 
     #[Column(type: Types::FLOAT)]
-    public float $humidity;
+    public readonly float $humidity;
 
     #[Column(type: Types::FLOAT)]
-    public float $pressure;
+    public readonly float $pressure;
 
     #[Column(type: Types::FLOAT)]
-    public float $temperature;
+    public readonly float $temperature;
 
     #[Column(type: Types::INTEGER)]
-    public int $windDirection;
+    public readonly int $windDirection;
 
     #[Column(type: Types::FLOAT)]
-    public float $windSpeed;
+    public readonly float $windSpeed;
 
     #[Column(type: Types::FLOAT)]
-    public float $windGusts;
+    public readonly float $windGusts;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]
-    public \DateTimeImmutable $recordedAt;
+    public readonly \DateTimeImmutable $recordedAt;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]
-    public \DateTimeImmutable $createdAt;
+    public readonly \DateTimeImmutable $createdAt;
 
     // Signed wind gaps of this observation vs the matching forecast and vs the ML correction of that
     // forecast. Speed gaps are percentages; direction gaps are degrees in (-180, 180]. Null when the
     // reference (forecast / model) was unavailable at import time.
     #[Column(type: Types::FLOAT, nullable: true)]
-    public ?float $windSpeedGapForecast;
+    public readonly ?float $windSpeedGapForecast;
 
     #[Column(type: Types::FLOAT, nullable: true)]
-    public ?float $windDirectionGapForecast;
+    public readonly ?float $windDirectionGapForecast;
 
     #[Column(type: Types::FLOAT, nullable: true)]
-    public ?float $windSpeedGapModel;
+    public readonly ?float $windSpeedGapModel;
 
     #[Column(type: Types::FLOAT, nullable: true)]
-    public ?float $windDirectionGapModel;
+    public readonly ?float $windDirectionGapModel;
 
     private function __construct(
         \DateTimeImmutable $recordedAt,

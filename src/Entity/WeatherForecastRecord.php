@@ -27,41 +27,43 @@ use Symfony\Component\Uid\Uuid;
  *     windSpeed: string,
  * }
  */
+// Not a `readonly class`: opcache preload compiles Doctrine's generated proxy, which is non-readonly
+// and may not extend a readonly class. Per-property `readonly` keeps the same immutability guarantee.
 #[Index(fields: ['date'])]
 #[Entity(repositoryClass: WeatherForecastRecordRepository::class)]
 #[Table]
-readonly class WeatherForecastRecord
+class WeatherForecastRecord
 {
     #[Id]
     #[GeneratedValue(strategy: 'NONE')]
     #[Column(type: 'uuid')]
-    public Uuid $id;
+    public readonly Uuid $id;
 
     #[Column(type: Types::FLOAT)]
-    public float $humidity;
+    public readonly float $humidity;
 
     #[Column(type: Types::FLOAT)]
-    public float $pressure;
+    public readonly float $pressure;
 
     #[Column(type: Types::FLOAT)]
-    public float $temperature;
+    public readonly float $temperature;
 
     #[Column(type: Types::INTEGER)]
-    public int $windDirection;
+    public readonly int $windDirection;
 
     #[Column(type: Types::FLOAT)]
-    public float $windSpeed;
+    public readonly float $windSpeed;
 
     // WMO weather interpretation code (open-meteo). Nullable: CSV-imported rows and rows written before
     // this column existed have none — {@see toWeatherForecast} coalesces null to 0 (clear sky).
     #[Column(type: Types::INTEGER, nullable: true)]
-    public ?int $weatherCode;
+    public readonly ?int $weatherCode;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]
-    public \DateTimeImmutable $date;
+    public readonly \DateTimeImmutable $date;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]
-    public \DateTimeImmutable $createdAt;
+    public readonly \DateTimeImmutable $createdAt;
 
     private function __construct(
         float $humidity,
