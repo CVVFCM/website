@@ -50,6 +50,10 @@
     --color-accent-primary: #f26d4f;
     --color-accent-secondary: #e85a3c;
     --color-accent-hover: #d14a2e;
+
+    /* Darkened accent for text/labels: meets WCAG AA (5.3:1 on white). Use for text; keep
+       --color-accent-secondary for large decorative fills. */
+    --color-accent-text: #C4381B;
     
     /* Colors - Backgrounds */
     --color-bg-primary: #fff;
