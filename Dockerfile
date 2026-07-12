@@ -105,8 +105,8 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
     mkdir -p var/cache var/log; \
     composer dump-autoload --optimize --no-dev --classmap-authoritative; \
     chmod +x bin/console; \
-    php bin/console cache:clear; \
-    php bin/console cache:warmup -eprod; \
+    php -d memory_limit=-1 bin/console cache:clear; \
+    php -d memory_limit=-1 bin/console cache:warmup -eprod; \
     php bin/console importmap:install; \
     php bin/console asset-map:compile; \
     sync
