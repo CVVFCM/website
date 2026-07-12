@@ -70,6 +70,32 @@ final class WeatherForecastRecordRepository extends ServiceEntityRepository
     }
 
     /**
+     * All forecast records whose date falls on $day (Europe/Paris), ordered chronologically. Read on
+     * the homepage for the "prévisions" block instead of calling open-meteo on every render.
+     *
+     * @return list<WeatherForecastRecord>
+     *
+     * @psalm-suppress UnusedParam Same false positive as the other methods here.
+     */
+    public function findForDay(\DateTimeImmutable $day): array
+    {
+        $start = $day->setTime(0, 0);
+        $end = $start->modify('+1 day');
+
+        /** @var list<WeatherForecastRecord> $records */
+        $records = $this->createQueryBuilder('w')
+            ->where('w.date >= :start')
+            ->andWhere('w.date < :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('w.date', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $records;
+    }
+
+    /**
      * The forecast record closest in time to $when, or null if the nearest is further than
      * MAX_MATCH_SECONDS (no meaningful forecast for that moment).
      *

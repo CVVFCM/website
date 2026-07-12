@@ -50,6 +50,22 @@ final class LiveWeatherRecordRepository extends ServiceEntityRepository
     }
 
     /**
+     * The most recent observation, or null when the table is empty. Read on the homepage instead of
+     * calling the live station on every render (the app:import:live-weather cron keeps it fresh).
+     */
+    public function findLatest(): ?LiveWeatherRecord
+    {
+        /** @var ?LiveWeatherRecord $record */
+        $record = $this->createQueryBuilder('l')
+            ->orderBy('l.recordedAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $record;
+    }
+
+    /**
      * @return list<array{
      *     recorded_hour: string,
      *     humidity: float,

@@ -52,6 +52,11 @@ readonly class WeatherForecastRecord
     #[Column(type: Types::FLOAT)]
     public float $windSpeed;
 
+    // WMO weather interpretation code (open-meteo). Nullable: CSV-imported rows and rows written before
+    // this column existed have none — {@see toWeatherForecast} coalesces null to 0 (clear sky).
+    #[Column(type: Types::INTEGER, nullable: true)]
+    public ?int $weatherCode;
+
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     public \DateTimeImmutable $date;
 
@@ -65,6 +70,7 @@ readonly class WeatherForecastRecord
         int $windDirection,
         float $windSpeed,
         \DateTimeImmutable $date,
+        ?int $weatherCode = null,
     ) {
         $this->id = Uuid::v6();
         $this->humidity = $humidity;
@@ -73,6 +79,7 @@ readonly class WeatherForecastRecord
         $this->windDirection = $windDirection;
         $this->windSpeed = $windSpeed;
         $this->date = $date;
+        $this->weatherCode = $weatherCode;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -100,6 +107,25 @@ readonly class WeatherForecastRecord
             $forecast->windDirection,
             $forecast->windSpeed,
             $forecast->date,
+            $forecast->weatherCode,
+        );
+    }
+
+    /**
+     * Rebuild the value object the templates consume. Precipitation is not persisted (unused on the
+     * homepage) so it defaults to 0.0; a missing weather code degrades to 0 (clear sky).
+     */
+    public function toWeatherForecast(): WeatherForecast
+    {
+        return new WeatherForecast(
+            $this->date,
+            $this->temperature,
+            $this->pressure,
+            (int) $this->humidity,
+            0.0,
+            $this->windSpeed,
+            $this->windDirection,
+            $this->weatherCode ?? 0,
         );
     }
 }

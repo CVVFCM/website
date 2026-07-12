@@ -1,4 +1,33 @@
 {% extends 'base.html.twig' %}
+{% import 'partials/_picture.html.twig' as picture %}
+
+{% block structured_data %}
+    {{ parent() }}
+    {% set event_place = {
+        '@type': 'Place',
+        name: content.location.title|default('Lac des Vieilles Forges'),
+        geo: {
+            '@type': 'GeoCoordinates',
+            latitude: content.location.lat|default(49.8712),
+            longitude: content.location.long|default(4.5947),
+        },
+    } %}
+    <script type="application/ld+json">
+    {{- {
+        '@context': 'https://schema.org',
+        '@type': 'Event',
+        name: content.title,
+        startDate: content.begin_date|date('c'),
+        endDate: (content.end_date ?? content.begin_date)|date('c'),
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        url: app.request.uri,
+        location: event_place,
+        image: content.main_media ? app.request.schemeAndHttpHost ~ content.main_media.thumbnails['sulu-400x400'] : null,
+        organizer: {'@type': 'Organization', name: 'CVVFCM', url: app.request.schemeAndHttpHost ~ sulu_content_root_path()},
+    }|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
+    </script>
+{% endblock %}
 
 {% block pageclass 'EventPage' %}
 
@@ -25,11 +54,13 @@
 
             {% if content.main_media %}
                 <div class="EventPage__headerImageWrapper" aria-hidden="true">
-                    <img
-                        class="EventPage__headerImage"
-                        src="{{ content.main_media.formats['sulu-400x400.webp'] }}"
-                        alt="{{ content.main_media.title }}"
-                        title="{{ content.main_media.description|default(content.main_media.title) }}" />
+                    {{ picture.render(content.main_media, 'sulu-400x400', content.main_media.title, {
+                        class: 'EventPage__headerImage',
+                        loading: 'eager',
+                        title: content.main_media.description|default(content.main_media.title),
+                        width: 400,
+                        height: 400,
+                    }) }}
                 </div>
             {% endif %}
 
@@ -148,10 +179,10 @@
                 <ul>
                     {% for media in content.media %}
                         <li>
-                            <img
-                                src="{{ media.thumbnails['x800'] }}"
-                                alt="{{ media.title }}"
-                                title="{{ media.description|default(media.title) }}" />
+                            {{ picture.render(media, 'x800', media.title, {
+                                loading: 'lazy',
+                                title: media.description|default(media.title),
+                            }) }}
                         </li>
                     {% endfor %}
                 </ul>

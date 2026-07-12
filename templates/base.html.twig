@@ -14,9 +14,36 @@
         }) }}
     {% endblock %}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" />
+    {% block structured_data %}
+        {# Site-wide organisation/location schema. sameAs is pulled from the editor-managed footer_social
+           snippet; geo is the Lac des Vieilles Forges. Postal address intentionally omitted until a
+           confirmed one is available. #}
+        {% set footer_social = sulu_snippet_load_by_area('footer_social') %}
+        {% set social_urls = [] %}
+        {% if footer_social and footer_social.content.links is defined %}
+            {% for link in footer_social.content.links %}
+                {% if link.url is defined and link.url %}{% set social_urls = social_urls|merge([link.url]) %}{% endif %}
+            {% endfor %}
+        {% endif %}
+        <script type="application/ld+json">
+        {{- {
+            '@context': 'https://schema.org',
+            '@type': 'SportsActivityLocation',
+            name: 'CVVFCM',
+            description: 'Club de voile du lac des Vieilles Forges',
+            url: app.request.schemeAndHttpHost ~ sulu_content_root_path(),
+            logo: app.request.schemeAndHttpHost ~ asset('images/logo_cvvfcm.svg'),
+            image: app.request.schemeAndHttpHost ~ asset('images/logo_cvvfcm.svg'),
+            sport: 'Sailing',
+            geo: {'@type': 'GeoCoordinates', latitude: 49.8712, longitude: 4.5947},
+            sameAs: social_urls,
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
+        </script>
+    {% endblock %}
+
+    {# Self-hosted DM Sans (see styles/variables.css). Preload the latin subset — it is used on every
+       page and is discovered late (referenced from CSS), so preloading avoids a flash of fallback. #}
+    <link rel="preload" href="{{ asset('fonts/dm-sans-latin.woff2') }}" as="font" type="font/woff2" crossorigin />
 
     {% block styles '' %}
 

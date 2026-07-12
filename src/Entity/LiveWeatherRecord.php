@@ -144,4 +144,36 @@ readonly class LiveWeatherRecord
             $comparison?->windDirectionGapModel,
         );
     }
+
+    /**
+     * Rebuild the value object the homepage variants consume. Only instantaneous values are persisted,
+     * so the min/max/average/rain/solar fields (shown only on the live page, which still uses the live
+     * provider) are filled from the stored values as neutral placeholders.
+     */
+    public function toLiveWeather(): LiveWeather
+    {
+        $liveWeather = new LiveWeather();
+        $liveWeather->updatedAt = $this->recordedAt;
+        $liveWeather->humidity = $this->humidity;
+        $liveWeather->humidityMin = $this->humidity;
+        $liveWeather->humidityMax = $this->humidity;
+        $liveWeather->pressure = $this->pressure;
+        $liveWeather->pressureMin = $this->pressure;
+        $liveWeather->pressureMax = $this->pressure;
+        $liveWeather->rainRate = 0.0;
+        $liveWeather->rainTotal = 0.0;
+        $liveWeather->solarRadiation = 0;
+        $liveWeather->temperature = $this->temperature;
+        $liveWeather->temperatureMin = $this->temperature;
+        $liveWeather->temperatureMax = $this->temperature;
+        $liveWeather->windDirection = $this->windDirection;
+        $liveWeather->windSpeed = $this->windSpeed;
+        $liveWeather->windGusts = $this->windGusts;
+        $liveWeather->windDirectionAverage = $this->windDirection;
+        $liveWeather->windSpeedAverage = $this->windSpeed;
+        $liveWeather->windSpeedMax = $this->windSpeed;
+        $liveWeather->windSpeedMin = $this->windSpeed;
+
+        return $liveWeather;
+    }
 }

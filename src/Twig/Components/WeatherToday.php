@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Twig\Components;
 
 use App\DTO\WeatherForecast;
-use App\Weather\WeatherForecastProvider;
+use App\Repository\WeatherForecastRecordRepository;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent]
@@ -20,26 +20,30 @@ final readonly class WeatherToday
     ];
 
     public function __construct(
-        private WeatherForecastProvider $weatherForecastProvider,
+        private WeatherForecastRecordRepository $forecastRepository,
     ) {
     }
 
     /**
      * Morning + afternoon forecast for the relevant day. After 19h (Europe/Paris) the day rolls over
-     * to tomorrow. A slot is null when the API has no matching forecast.
+     * to tomorrow. A slot is null when no persisted forecast matches. Reads the DB (kept fresh by the
+     * app:import:live-weather cron) rather than calling open-meteo on every render.
      *
      * @return array<string, WeatherForecast|null>
      */
     public function getPrevisions(): array
     {
         $now = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
-        $target = ((int) $now->format('G') >= 19 ? $now->modify('+1 day') : $now)->format('Y-m-d');
+        $targetDay = (int) $now->format('G') >= 19 ? $now->modify('+1 day') : $now;
 
-        $forecasts = $this->weatherForecastProvider->get();
+        $forecasts = array_map(
+            static fn ($record) => $record->toWeatherForecast(),
+            $this->forecastRepository->findForDay($targetDay),
+        );
 
         $previsions = [];
         foreach (self::SLOTS as $label => $hour) {
-            $previsions[$label] = $this->findForecast($forecasts, $target, $hour);
+            $previsions[$label] = $this->findForecast($forecasts, $targetDay->format('Y-m-d'), $hour);
         }
 
         return $previsions;

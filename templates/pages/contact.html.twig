@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'partials/_picture.html.twig' as picture %}
 
 {% block styles %}
     <link rel="stylesheet" href="{{ asset('styles/contact.css') }}" />
@@ -10,10 +11,12 @@
             <h1>{{ content.title }}</h1>
             {% if content.media %}
                 <div>
-                    <img
-                        src="{{ content.media.formats['sulu-400x400.webp'] }}"
-                        alt="{{ content.media.title }}"
-                        title="{{ content.media.description|default(content.media.title) }}" />
+                    {{ picture.render(content.media, 'sulu-400x400', content.media.title, {
+                        loading: 'eager',
+                        title: content.media.description|default(content.media.title),
+                        width: 400,
+                        height: 400,
+                    }) }}
                 </div>
             {% endif %}
 

@@ -35,4 +35,34 @@
         </meta>
         <scale y="800" forceRatio="false" />
     </format>
+
+    <!-- Aspect-preserving width steps for responsive <picture> srcset (see partials/_picture.html.twig).
+         Combined with the built-in sulu-1920x for the largest step. -->
+    <format key="640x">
+        <meta>
+            <title lang="fr">Largeur 640px</title>
+        </meta>
+        <scale x="640" forceRatio="false" />
+    </format>
+
+    <format key="1024x">
+        <meta>
+            <title lang="fr">Largeur 1024px</title>
+        </meta>
+        <scale x="1024" forceRatio="false" />
+    </format>
+
+    <format key="1600x">
+        <meta>
+            <title lang="fr">Largeur 1600px</title>
+        </meta>
+        <scale x="1600" forceRatio="false" />
+    </format>
+
+    <format key="1920x">
+        <meta>
+            <title lang="fr">Largeur 1920px</title>
+        </meta>
+        <scale x="1920" forceRatio="false" />
+    </format>
 </formats>
