@@ -1,6 +1,11 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents (Claude Code, and any tool that reads `AGENTS.md`)
+when working with code in this repository. Area-specific rules live in nested `AGENTS.md` files —
+they attach automatically when you edit files under that directory:
+- `src/AGENTS.md` — PHP / Symfony / Doctrine
+- `templates/AGENTS.md` — Twig / HTML
+- `assets/website/styles/AGENTS.md` — CSS
 
 ## Project Context
 
@@ -55,7 +60,18 @@ make reset-test   # Same as reset but for test environment
 - `templates/pages/` — Twig page templates
 - `templates/fragments/` — Twig fragment templates
 - `templates/snippets/` — Twig snippet templates
-- `templates/components/` — Twig component templates
+- `templates/components/` — Twig component templates (paired with `src/Twig/Components/*` + a CSS file)
+- `templates/partials/` — shared macros/includes (notably `_picture.html.twig`, the responsive-image macro)
+- `templates/emails/`, `templates/error/`, `templates/search/`, `templates/forgie/` — mail, error pages, search UI, Forgie feature
+- `templates/bundles/` — third-party (Sulu) template overrides
+
+### Responsive images
+Never emit a bare `<img>` for Sulu media. Import the macro and let it build the AVIF/WebP `<picture>`:
+```twig
+{% import 'partials/_picture.html.twig' as picture %}
+{{ picture.render(media, 'sulu-400x400', alt, { widths: [['640x',640],['1024x',1024]], sizes: '100vw' }) }}
+```
+Width formats are declared in `config/image-formats.xml`.
 
 ### CSS File Organization (`assets/website/styles/`)
 - `variables.css` — global CSS custom properties (colors, etc.)
@@ -67,7 +83,8 @@ make reset-test   # Same as reset but for test environment
 ### Key Bundles
 - `sulu/sulu` — CMS core (pages, media, snippets, forms)
 - `sulu/form-bundle` — Sulu forms
-- `symfony/ux-twig-component` + `symfony/ux-live-component` — Twig/Live Components
+- `symfony/ux-twig-component` — Twig Components (the primary UX pattern here)
+- `symfony/ux-live-component` — **installed but currently unused on the frontend** (its JS/controllers were removed from `importmap.php` + `controllers.json`). Don't re-wire it unless a feature needs it.
 - `symfony/ux-turbo` — Hotwire Turbo (navigation)
 - `symfony/stimulus-bundle` — Stimulus controllers (`assets/controllers/`)
 - `symfony/asset-mapper` — no-build asset pipeline (importmap)
@@ -87,34 +104,30 @@ make reset-test   # Same as reset but for test environment
 - `make stylelint` **must pass after each CSS edit** — same rule: run immediately, not batched.
 - `make test` **must pass before finishing any task** — the PHPUnit suite is the final gate; a red test means the task is not done.
 
-### PHP
-- Always `declare(strict_types=1);`
-- Type all properties, parameters, and return values
-- Use PHP 8.4+ native features (readonly, enums, etc.)
-- Use constructor injection everywhere
-- Use Attributes for routes and entity mapping (not YAML/XML)
+### Area-specific rules (nested `AGENTS.md`)
+The detailed PHP, Twig, and CSS conventions live next to the code so they attach only when relevant:
+- **PHP / Symfony / Doctrine** → `src/AGENTS.md` (strict types, typing, constructor injection,
+  attribute mapping, the entity `readonly` caveat, DualKernel).
+- **Twig / HTML** → `templates/AGENTS.md` (the component triad, `{% block styles %}`, self-closing
+  tags, Sulu vars, accessibility, `_picture.html.twig`).
+- **CSS** → `assets/website/styles/AGENTS.md` (BEM PascalCase, one-block-one-file, mobile-first,
+  rem/em only, `variables.css` colors, folder map).
 
-### Twig Components
-When creating `src/Twig/Components/Foo.php`, you **must** also create:
-- `templates/components/Foo.html.twig`
-- `assets/website/styles/components/Foo.css`
+One rule bears repeating everywhere: creating `src/Twig/Components/Foo.php` **requires** also creating
+`templates/components/Foo.html.twig` and `assets/website/styles/components/Foo.css`.
 
-### Twig Templates
-- Override `{% block styles %}` in every page template to load its CSS file:
-  ```twig
-  {% block styles %}<link rel="stylesheet" href="{{ asset('styles/homepage.css') }}" />{% endblock %}
-  ```
-- Use `{% types %}` tag to document template variables
-- Use self-closing tags: `<img />`, `<br />`, `<link />`
-- Sulu content variables: `content.*`, `extension.excerpt.*`, `extension.seo.*`, `urls`, `view.*`
+## How to Work
 
-### CSS
-- BEM with PascalCase blocks: `.HeroSection__title--modifier`
-- One block = one file, named exactly after the BEM block class
-- **Never** use `px` for layout/fonts — use `rem`/`em` (`1px` only for borders)
-- Mobile-first: base styles without media queries, desktop via `@media (min-width: ...rem)`
-- No color literals — always use CSS custom properties from `variables.css`
-- Only define new custom properties if reused 3+ times across blocks
+- **Ask, don't guess.** When requirements, scope, or behaviour are unclear, ask the user — prefer high
+  confidence over assumptions. This overrides any urge to "just pick something".
+- **Empty beats broken.** If a design/layout is hard to get right, ship clean, simple, semantic
+  structure (or leave it empty) rather than a subpar complex build. Structure + a11y first.
+- **Verify frontend work in the browser** at `https://localhost` before calling it done: check
+  rendering, responsive behaviour, and the console for errors. If no browser MCP is connected, ask the
+  user to eyeball it. (See the `verify-in-browser` skill / `frontend-verifier` agent.)
+- **Iterate, then report blockers.** Loop at most ~3 times on a stuck problem; after that, explain
+  what's not working and ask for guidance instead of thrashing.
+- **Minimal, surgical changes.** Modify only what the task needs; extract rather than duplicate.
 
 ## Symfony Superpowers (plugin)
 
