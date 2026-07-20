@@ -132,11 +132,11 @@ COPY --chown=www-data:www-data src src/
 COPY --chown=www-data:www-data translations translations/
 
 RUN --mount=type=cache,target=/var/www/.cache/composer \
-    mkdir -p var/cache var/log; \
-    composer dump-autoload --optimize --no-dev --classmap-authoritative; \
-    chmod +x bin/console; \
-    php bin/console cache:clear; \
-    php bin/console cache:warmup -eprod; \
+    mkdir -p var/cache var/log && \
+    composer dump-autoload --optimize --no-dev --classmap-authoritative && \
+    chmod +x bin/console && \
+    php bin/console cache:clear && \
+    php bin/console cache:warmup -eprod && \
     sync
 
 HEALTHCHECK CMD echo "OK"

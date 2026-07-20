@@ -43,8 +43,14 @@ php:80, localhost:80, {$SERVER_NAME:localhost} {
 	}
 
 	# AssetMapper compiles every file under /assets/ with a content digest in its name, so the URL
-	# changes whenever the content does — they are safe to cache forever (immutable).
-	@immutableAssets path /assets/*
+	# changes whenever the content does — they are safe to cache forever (immutable). The `file`
+	# condition scopes this to assets that exist on disk, so a missing/renamed asset that falls
+	# through to index.php (404/500) is never cached immutable — otherwise one broken-deploy window
+	# poisons Cloudflare + every browser for a year.
+	@immutableAssets {
+		path /assets/*
+		file
+	}
 	header @immutableAssets Cache-Control "public, max-age=31536000, immutable"
 
 	# Sulu writes resized/format images to public/uploads/media once generated, then Caddy serves them
