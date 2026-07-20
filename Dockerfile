@@ -102,13 +102,13 @@ COPY --chown=www-data:www-data importmap.php ./
 COPY --from=node --chown=www-data:www-data /app/public/build public/build
 
 RUN --mount=type=cache,target=/var/www/.cache/composer \
-    mkdir -p var/cache var/log; \
-    composer dump-autoload --optimize --no-dev --classmap-authoritative; \
-    chmod +x bin/console; \
-    php -d memory_limit=-1 bin/console cache:clear; \
-    php -d memory_limit=-1 bin/console cache:warmup -eprod; \
-    php bin/console importmap:install; \
-    php bin/console asset-map:compile; \
+    mkdir -p var/cache var/log && \
+    composer dump-autoload --optimize --no-dev --classmap-authoritative && \
+    chmod +x bin/console && \
+    php -d memory_limit=-1 bin/console cache:clear && \
+    php -d memory_limit=-1 bin/console cache:warmup -eprod && \
+    php bin/console importmap:install && \
+    php bin/console asset-map:compile && \
     sync
 
 COPY --from=ghcr.io/alexandre-daubois/ember:latest /ember /usr/local/bin/ember
