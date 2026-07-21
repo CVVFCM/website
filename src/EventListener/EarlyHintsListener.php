@@ -16,12 +16,19 @@ use Symfony\Component\WebLink\Link;
 
 /**
  * Emits an HTTP 103 Early Hints response for the render-critical front-end assets before Sulu renders
- * the page, so the browser can fetch the CSS/JS/font during server think-time.
+ * the page, so the browser can fetch the render-blocking CSS + font during server think-time.
  *
  * The preload list is derived from the `app` importmap entrypoint (never hardcoded, so it tracks the
  * importmap), plus the self-hosted font that {@see templates/base.html.twig} preloads (it is not an
  * importmap entry). {@see Response::sendHeaders()} is a no-op unless the FrankenPHP-only `headers_send`
  * function exists, so this is safe under CLI/tests and only emits a real 103 on FrankenPHP.
+ *
+ * JS modules are intentionally excluded: a `modulepreload` in the 103 starts module loading before the
+ * HTML's `<script type="importmap">` is parsed, and Firefox then rejects the entire import map
+ * ("Import maps are not allowed after a module load or preload has started"), leaving every bare/logical
+ * specifier unmapped so the assets 404 as text/html. Chrome tolerates it; Firefox does not. The in-head
+ * `<link rel="modulepreload">` that importmap() emits still preloads the modules safely (it comes after
+ * the map), and `type=module` scripts are deferred anyway, so the 103 loses little by omitting them.
  */
 #[AsEventListener(event: KernelEvents::REQUEST, priority: 512)]
 final readonly class EarlyHintsListener
@@ -79,18 +86,23 @@ final readonly class EarlyHintsListener
     {
         $links = [];
 
-        // Mirror ImportMapRenderer's classification of the entrypoint's preloaded assets.
+        // Mirror ImportMapRenderer's classification of the entrypoint's preloaded assets, but skip JS
+        // modules: emitting `modulepreload` here (in the 103) breaks Firefox's import map — see the
+        // class docblock. Only the render-blocking CSS (and the JSON loader assets) are hinted.
         foreach ($this->importMapGenerator->getImportMapData(['app']) as $data) {
             if (!($data['preload'] ?? false)) {
                 continue;
             }
 
             $path = $data['path'];
-            $links[] = match ($data['type']) {
+            $link = match ($data['type']) {
                 'css' => (new Link('preload', $path))->withAttribute('as', 'style'),
                 'json' => (new Link('preload', $path))->withAttribute('as', 'fetch'),
-                default => new Link('modulepreload', $path),
+                default => null,
             };
+            if (null !== $link) {
+                $links[] = $link;
+            }
         }
 
         // The self-hosted latin font subset is referenced from CSS (not the importmap), so add it
