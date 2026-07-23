@@ -150,6 +150,7 @@ CMD [ "php", "bin/console", "messenger:consume", "async", "scheduler_default", "
 # to an S3 repository with GFS retention (see .infra/docker/backup/backup.sh). Run by the Helm CronJob.
 FROM postgres:18-alpine AS backup
 
+# hadolint ignore=DL3018
 RUN apk add --no-cache restic
 
 COPY --chmod=755 .infra/docker/backup/backup.sh /usr/local/bin/backup.sh
