@@ -75,6 +75,37 @@ migrate:
   tolerations: []
   affinity: {}
 
+# Nightly PostgreSQL backup to a restic repository on S3 (k8s CronJob, backup image).
+# Repo lives under s3://<app.s3Bucket>/<repoPrefix>; the per-env bucket keeps preprod/prod repos
+# separate. Retention is a Grandfather-Father-Son forget policy.
+backup:
+  enabled: false
+  # UTC (no timeZone) — 02:00 daily.
+  schedule: "0 2 * * *"
+  repoPrefix: db-backups
+  keep:
+    daily: 8
+    weekly: 4
+    monthly: 12
+  image:
+    # Tag is shared with image.tag (built/pushed alongside php/consumer/rtsp).
+    repository: ghcr.io/cvvfcm/website/backup
+  backoffLimit: 1
+  activeDeadlineSeconds: 3600
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
 # rtsp-to-web webcam streaming service. The Caddyfile reverse-proxies /stream/* to the
 # Service named exactly "rtsp-to-web" (see rtsp-service.yaml).
 rtsp:
@@ -193,6 +224,9 @@ secrets:
   mercureJwtSecret: "!ChangeThisMercureHubJWTSecretKey!"
   # Mistral API key for the Forgie agent.
   mistralApiKey: ""
+  # restic repository password for the DB backup CronJob (required when backup.enabled).
+  # CRITICAL: losing it makes every backup permanently unrecoverable — keep an off-cluster copy.
+  backupResticPassword: ""
 
 # Gateway API parentRef for the HTTPRoutes (the shared cluster Gateway).
 gateway:

@@ -143,3 +143,15 @@ HEALTHCHECK CMD echo "OK"
 
 # Receivers named explicitly: async (Forgie & co) + the Symfony Scheduler transport.
 CMD [ "php", "bin/console", "messenger:consume", "async", "scheduler_default", "--time-limit=3600", "--failure-limit=10", "-vv" ]
+
+
+# Database backup runner. Standalone (not FROM base): it needs the PostgreSQL 18 client, not PHP.
+# postgres:18-alpine is multi-arch and ships a pg_dump >= the bundled server; restic streams the dump
+# to an S3 repository with GFS retention (see .infra/docker/backup/backup.sh). Run by the Helm CronJob.
+FROM postgres:18-alpine AS backup
+
+RUN apk add --no-cache restic
+
+COPY --chmod=755 .infra/docker/backup/backup.sh /usr/local/bin/backup.sh
+
+ENTRYPOINT ["/usr/local/bin/backup.sh"]

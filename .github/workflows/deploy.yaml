@@ -118,6 +118,8 @@ jobs:
                       --set secrets.rtspHttpPassword="${{ secrets.RTSP_TO_WEB_HTTP_PASSWORD }}" \
                       --set secrets.mercureJwtSecret="${{ secrets.MERCURE_JWT_SECRET }}" \
                       --set secrets.mistralApiKey="${{ secrets.MISTRAL_API_KEY }}" \
+                      --set backup.enabled=true \
+                      --set secrets.backupResticPassword="${{ secrets.BACKUP_RESTIC_PASSWORD }}" \
                       --set app.s3Bucket="${{ inputs.s3-bucket }}" \
                       "${EXTRA[@]}" \
                       --wait --rollback-on-failure --timeout 5m
