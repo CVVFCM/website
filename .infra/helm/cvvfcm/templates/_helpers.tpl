@@ -86,3 +86,26 @@ so the runtime substitution resolves. Empty unless postgresql.enabled.
   value: {{ printf "postgresql://%s:$(PGPASSWORD)@%s-postgresql:5432/%s?serverVersion=%s&charset=utf8" .Values.postgresql.auth.username .Release.Name .Values.postgresql.auth.database .Values.externalDatabase.serverVersion | quote }}
 {{- end }}
 {{- end }}
+
+{{/*
+Discrete libpq env for the backup CronJob's pg_dump: the Doctrine DATABASE_URL carries
+serverVersion/charset query params that libpq rejects, so pg_dump reads PG* vars instead.
+Bundled DB only (both deployed envs use it); external DB would supply these explicitly.
+*/}}
+{{- define "cvvfcm.backupPgEnv" -}}
+{{- if .Values.postgresql.enabled }}
+- name: PGHOST
+  value: {{ printf "%s-postgresql" .Release.Name | quote }}
+- name: PGPORT
+  value: "5432"
+- name: PGUSER
+  value: {{ .Values.postgresql.auth.username | quote }}
+- name: PGDATABASE
+  value: {{ .Values.postgresql.auth.database | quote }}
+- name: PGPASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.postgresql.auth.existingSecret | default (printf "%s-postgresql" .Release.Name) }}
+      key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey | default "password" }}
+{{- end }}
+{{- end }}

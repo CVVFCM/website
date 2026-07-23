@@ -1,0 +1,111 @@
+{{- if .Values.backup.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "cvvfcm.fullname" . }}-backup
+  labels:
+    {{- include "cvvfcm.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backup
+spec:
+  # Schedule is UTC (no timeZone field) by design.
+  schedule: {{ .Values.backup.schedule | quote }}
+  # Never run two dumps at once; a slow one just skips the next tick.
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.backup.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.backup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.backup.failedJobsHistoryLimit }}
+  jobTemplate:
+    metadata:
+      labels:
+        {{- include "cvvfcm.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backup
+    spec:
+      backoffLimit: {{ .Values.backup.backoffLimit }}
+      activeDeadlineSeconds: {{ .Values.backup.activeDeadlineSeconds }}
+      template:
+        metadata:
+          labels:
+            {{- include "cvvfcm.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: backup
+        spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.serviceAccount.name }}
+          serviceAccountName: {{ .Values.serviceAccount.name }}
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: "{{ .Values.backup.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 16 }}
+              env:
+                # S3 credentials for the restic S3 backend (reuses the media-storage keys).
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "cvvfcm.fullname" . }}-secret
+                      key: S3_KEY
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "cvvfcm.fullname" . }}-secret
+                      key: S3_SECRET
+                # Defined in `env` (not envFrom) so the $(VAR) interpolation below is guaranteed.
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: {{ include "cvvfcm.fullname" . }}-config
+                      key: S3_ENDPOINT
+                - name: S3_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: {{ include "cvvfcm.fullname" . }}-config
+                      key: S3_BUCKET
+                - name: RESTIC_REPOSITORY
+                  value: "s3:$(S3_ENDPOINT)/$(S3_BUCKET)/{{ .Values.backup.repoPrefix }}"
+                - name: RESTIC_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "cvvfcm.fullname" . }}-secret
+                      key: RESTIC_PASSWORD
+                # uid 33 has no home; give restic a writable cache/home on the emptyDir below.
+                - name: HOME
+                  value: /tmp
+                - name: RESTIC_CACHE_DIR
+                  value: /tmp/restic
+                - name: BACKUP_ENV
+                  value: {{ .Release.Name | quote }}
+                - name: KEEP_DAILY
+                  value: {{ .Values.backup.keep.daily | quote }}
+                - name: KEEP_WEEKLY
+                  value: {{ .Values.backup.keep.weekly | quote }}
+                - name: KEEP_MONTHLY
+                  value: {{ .Values.backup.keep.monthly | quote }}
+                {{- include "cvvfcm.backupPgEnv" . | nindent 16 }}
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+              resources:
+                {{- toYaml .Values.backup.resources | nindent 16 }}
+          volumes:
+            - name: tmp
+              emptyDir: {}
+          {{- with .Values.backup.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

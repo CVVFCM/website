@@ -70,6 +70,15 @@ services:
                 EXTERNAL_USER_ID: ${EXTERNAL_USER_ID}
         environment: *php-env
 
+    # DB backup runner (pg_dump | restic → S3). Not started with the stack; built here so the CI
+    # bake picks it up as a target, and runnable on demand: `docker compose run --rm backup`.
+    backup:
+        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}backup:${IMAGE_TAG:-latest}
+        profiles: [ backup ]
+        build:
+            target: backup
+        depends_on: [ database ]
+
     database:
         image: postgres:18
         environment:

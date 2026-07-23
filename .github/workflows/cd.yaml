@@ -59,6 +59,7 @@ jobs:
                         php
                         consumer
                         rtsp-to-web
+                        backup
                     push: true
                     set: |
                         *.platform=${{ matrix.platform }}
@@ -66,12 +67,15 @@ jobs:
                         php.output=type=image,name=ghcr.io/cvvfcm/website/php,push-by-digest=true,name-canonical=true,push=true
                         consumer.output=type=image,name=ghcr.io/cvvfcm/website/consumer,push-by-digest=true,name-canonical=true,push=true
                         rtsp-to-web.output=type=image,name=ghcr.io/cvvfcm/website/rtsp-to-web,push-by-digest=true,name-canonical=true,push=true
+                        backup.output=type=image,name=ghcr.io/cvvfcm/website/backup,push-by-digest=true,name-canonical=true,push=true
                         php.cache-from=type=registry,ref=ghcr.io/cvvfcm/website/php:cache-${{ matrix.arch }}
                         php.cache-to=type=registry,ref=ghcr.io/cvvfcm/website/php:cache-${{ matrix.arch }},mode=max
                         consumer.cache-from=type=registry,ref=ghcr.io/cvvfcm/website/consumer:cache-${{ matrix.arch }}
                         consumer.cache-to=type=registry,ref=ghcr.io/cvvfcm/website/consumer:cache-${{ matrix.arch }},mode=max
                         rtsp-to-web.cache-from=type=registry,ref=ghcr.io/cvvfcm/website/rtsp-to-web:cache-${{ matrix.arch }}
                         rtsp-to-web.cache-to=type=registry,ref=ghcr.io/cvvfcm/website/rtsp-to-web:cache-${{ matrix.arch }},mode=max
+                        backup.cache-from=type=registry,ref=ghcr.io/cvvfcm/website/backup:cache-${{ matrix.arch }}
+                        backup.cache-to=type=registry,ref=ghcr.io/cvvfcm/website/backup:cache-${{ matrix.arch }},mode=max
 
             -   name: Export digests
                 run: |
@@ -131,7 +135,7 @@ jobs:
                     # Always tag with the commit SHA (Helm deploys image.tag=${{ github.sha }}).
                     TAGS: "${{ steps.meta.outputs.version }},${{ github.sha }}${{ github.event_name == 'release' && ',latest' || '' }}"
                 run: |
-                    for image in php consumer rtsp-to-web; do
+                    for image in php consumer rtsp-to-web backup; do
                         repository="ghcr.io/cvvfcm/website/${image}"
                         tag_args=""
                         for tag in ${TAGS//,/ }; do
@@ -144,7 +148,7 @@ jobs:
 
             -   name: Inspect manifests
                 run: |
-                    for image in php consumer rtsp-to-web; do
+                    for image in php consumer rtsp-to-web backup; do
                         docker buildx imagetools inspect "ghcr.io/cvvfcm/website/${image}:${{ github.sha }}"
                     done
 
