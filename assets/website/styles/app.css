@@ -111,9 +111,27 @@ a {
     & a {
         color: var(--blue-note-text);
         text-decoration: none;
+        display: inline-flex;
+        align-items: center;
 
         &:hover {
             text-decoration: underline;
         }
     }
+}
+
+.BreadCrumb__homeIcon {
+    width: 1em;
+    height: 1em;
+    font-size: 1.25em;
+}
+
+/* Kept in the accessibility tree for screen readers, visually replaced by the home icon. */
+.BreadCrumb__srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
