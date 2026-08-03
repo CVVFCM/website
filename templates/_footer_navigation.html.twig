@@ -33,12 +33,14 @@
             {% set all_footer_links = all_footer_links|merge(footer_social.content.links) %}
         {% endif %}
         {% if all_footer_links is not empty %}
+            {# Map the snake_case display enum (content data) to camelCase BEM modifiers. #}
+            {% set display_class_map = {header_top: 'headerTop', header_right: 'headerRight', hidden_text: 'hiddenText'} %}
             <ul class="NavigationLinks__list">
                 {% for link in all_footer_links %}
                     {% set display_modifier = '' %}
                     {% if link.display is defined and link.display %}
                         {% for display_value in link.display %}
-                            {% set display_modifier = display_modifier ~ ' NavigationLinks__item--' ~ display_value %}
+                            {% set display_modifier = display_modifier ~ ' NavigationLinks__item--' ~ (display_class_map[display_value] ?? display_value) %}
                         {% endfor %}
                     {% endif %}
                     <li class="NavigationLinks__item{{ display_modifier }}">
