@@ -45,11 +45,7 @@
 
         <div class="EventPage__headerMain">
              <div class="EventPage__headerNav">
-                <ul class="BreadCrumb" aria-label="Fil d'Ariane">
-                    {% for item in sulu_page_breadcrumb(resource.uuid)|slice(0, -1) %}
-                        <li><a href="{{ sulu_content_path(item.url) }}">{{ item.title }}</a></li>
-                    {% endfor %}
-                </ul>
+                {{ include('partials/_breadcrumb.html.twig', {uuid: resource.uuid}, with_context: false) }}
             </div>
 
             {% if content.main_media %}
