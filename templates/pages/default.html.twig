@@ -1,5 +1,4 @@
 {% extends 'base.html.twig' %}
-{% import 'partials/_picture.html.twig' as picture %}
 
 {% block pageclass 'DefaultPage' %}
 
@@ -11,6 +10,9 @@
     <header class="Page__header">
         {{ include('partials/logo_topbar.html.twig') }}
         {% block pageHeader %}
+        {# Import inside the block: Sulu preview renders blocks in isolation (renderBlock), so
+           top-level imports never execute there. #}
+        {% import 'partials/_picture.html.twig' as picture %}
         <div class="Page__headerMain">
             <div class="Page__headerBody">
                  <div class="Page__headerNav">
@@ -38,6 +40,7 @@
         {% endblock %}
     </header>
     {% block MainContent %}
+        {% import 'partials/_picture.html.twig' as picture %}
         {% if content.blocks is defined and content.blocks is not empty %}
             <div class="DefaultPage__blocks">
                 {% for block in content.blocks %}

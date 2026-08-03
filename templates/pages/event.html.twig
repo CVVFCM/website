@@ -1,5 +1,4 @@
 {% extends 'base.html.twig' %}
-{% import 'partials/_picture.html.twig' as picture %}
 
 {% block structured_data %}
     {{ parent() }}
@@ -36,6 +35,9 @@
 {% endblock %}
 
 {% block content %}
+    {# Import inside the block: Sulu preview renders blocks in isolation (renderBlock), so
+       top-level imports never execute there. #}
+    {% import 'partials/_picture.html.twig' as picture %}
 
     {% set days_diff = ((content.begin_date|date('U') - 'now'|date('U')) / 86400)|round(0, 'floor') %}
 
