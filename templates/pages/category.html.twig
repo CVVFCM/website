@@ -1,7 +1,9 @@
 {% extends 'base.html.twig' %}
-{% import 'partials/_picture.html.twig' as picture %}
 
 {% block content %}
+    {# Import inside the block: Sulu preview renders blocks in isolation (renderBlock), so
+       top-level imports never execute there. #}
+    {% import 'partials/_picture.html.twig' as picture %}
     <article>
         <header>
             <h1>{{ content.title }}</h1>
