@@ -23,7 +23,7 @@
                     </li>
                 {% endfor %}
             </ul>
-            {% if list_view is not empty and list_view.paginated %}
+            {% if list_view is not empty and list_view.paginated and list_view.maxPage > 1 %}
                 <footer class="ListPage__pagerFooter">
                     {{ include('_pager.html.twig', {content: content, list_view: list_view}, with_context: false) }}
                 </footer>
