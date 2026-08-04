@@ -16,6 +16,7 @@ use Sulu\Bundle\ContactBundle\Entity\EmailType;
 use Sulu\Bundle\ContactBundle\Entity\Phone;
 use Sulu\Bundle\ContactBundle\Entity\PhoneType;
 use Sulu\Bundle\ContactBundle\Entity\Position;
+use Sulu\Bundle\TagBundle\Entity\Tag;
 
 final class ContactsFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -42,6 +43,11 @@ final class ContactsFixtures extends Fixture implements DependentFixtureInterfac
         $treasurer = new Position();
         $treasurer->setPosition('Trésorier');
         $manager->persist($treasurer);
+
+        // Contacts carrying this tag are exposed by Forgie's board_members tool.
+        $forgieTag = new Tag();
+        $forgieTag->setName('Forgie');
+        $manager->persist($forgieTag);
 
         $data = [
             ['Yohan', 'Giarelli', 'yohan@cvvfcm.fr', '+33630741240', 'M', $president],
@@ -76,6 +82,7 @@ final class ContactsFixtures extends Fixture implements DependentFixtureInterfac
             $accountContact->setMain(true);
 
             $contact->addAccountContact($accountContact);
+            $contact->addTag($forgieTag);
 
             $manager->persist($contact);
         }
