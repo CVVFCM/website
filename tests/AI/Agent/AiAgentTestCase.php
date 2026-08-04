@@ -11,6 +11,7 @@ use Symfony\AI\Agent\Toolbox\TraceableToolbox;
 use Symfony\AI\Platform\Exception\AuthenticationException;
 use Symfony\AI\Platform\Exception\BadRequestException;
 use Symfony\AI\Platform\Exception\RateLimitExceededException;
+use Symfony\AI\Platform\Exception\RuntimeException;
 use Symfony\AI\Platform\Message\Message;
 use Symfony\AI\Platform\Message\MessageBag;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -31,7 +32,7 @@ abstract class AiAgentTestCase extends KernelTestCase
      *
      * @return T
      */
-    protected function callOrSkip(callable $call, int $rateLimitRetries = 3): mixed
+    protected function callOrSkip(callable $call, int $rateLimitRetries = 5): mixed
     {
         try {
             return $call();
@@ -54,6 +55,20 @@ abstract class AiAgentTestCase extends KernelTestCase
             }
 
             throw $e;
+        } catch (RuntimeException $e) {
+            // Server-side hiccups (e.g. Gemini 503 "high demand") surface as a generic
+            // platform RuntimeException with the HTTP status in the message.
+            if (1 === preg_match('/Error "5\d\d"|UNAVAILABLE|overloaded/i', $e->getMessage())) {
+                if ($rateLimitRetries > 0) {
+                    sleep(5);
+
+                    return $this->callOrSkip($call, $rateLimitRetries - 1);
+                }
+
+                self::markTestSkipped('AI API unavailable: '.$e->getMessage());
+            }
+
+            throw $e;
         }
     }
 
@@ -61,6 +76,10 @@ abstract class AiAgentTestCase extends KernelTestCase
     {
         /** @var AgentInterface $forgie */
         $forgie = static::getContainer()->get('ai.agent.forgie');
+
+        // Light pacing: a tool-call turn fires several API requests back to back,
+        // and consecutive tests otherwise trip Mistral's per-second rate limit.
+        sleep(1);
 
         $content = $this->callOrSkip(
             static fn (): mixed => $forgie->call(

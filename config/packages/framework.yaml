@@ -1,6 +1,10 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 parameters:
     env(SERVER_NAME): 'localhost'
+    # Test-env vault location (see when@test below). CI points TEST_VAULT_DIR at the
+    # prod vault and provides SYMFONY_DECRYPTION_SECRET; locally the dev vault is
+    # readable through the (gitignored) dev decrypt key.
+    env(TEST_VAULT_DIR): '%kernel.project_dir%/config/secrets/dev'
 
 framework:
     secret: '%env(APP_SECRET)%'
@@ -24,9 +28,9 @@ when@test:
         session:
             storage_factory_id: session.storage.factory.mock_file
         # The AI-judged tests need real API keys. There is no test vault; read the
-        # dev one (decrypted by the local dev key). Real env vars still win.
+        # dev one (or whatever TEST_VAULT_DIR points at). Real env vars still win.
         secrets:
-            vault_directory: '%kernel.project_dir%/config/secrets/dev'
+            vault_directory: '%env(TEST_VAULT_DIR)%'
 
 when@stage:
     framework:

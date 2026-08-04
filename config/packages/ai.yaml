@@ -7,7 +7,9 @@ ai:
         forgie:
             platform: 'ai.platform.mistral'
             model:
-                name: 'mistral-small-latest'
+                # medium, not small: small cannot reliably answer German/Dutch visitors
+                # in their language (covered by tests/AI/Agent/ForgiePromptTest).
+                name: 'mistral-medium-latest'
                 options:
                     temperature: 0.3
             tools:
