@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<template xmlns="http://schemas.sulu.io/template/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
+
+    <key>legal_document</key>
+
+    <meta>
+        <title lang="fr">Document officiel</title>
+    </meta>
+
+    <properties>
+        <property name="title" type="text_line" mandatory="true">
+            <meta><title lang="fr">Titre</title></meta>
+            <tag name="sulu.node.name"/>
+        </property>
+
+        <property name="document_key" type="single_select" mandatory="true">
+            <meta>
+                <title lang="fr">Document</title>
+                <info_text lang="fr">Identifie le document pour l'assistant Forgie (outil club_rules).</info_text>
+            </meta>
+            <params>
+                <param name="values" type="collection">
+                    <param name="statuts"><meta><title lang="fr">Statuts de l'association</title></meta></param>
+                    <param name="reglement_interieur"><meta><title lang="fr">Règlement intérieur</title></meta></param>
+                    <param name="reglement_lac"><meta><title lang="fr">Règlement du lac (arrêté préfectoral)</title></meta></param>
+                </param>
+            </params>
+        </property>
+
+        <property name="reference" type="text_line">
+            <meta><title lang="fr">Référence (date d'adoption, arrêté…)</title></meta>
+        </property>
+
+        <property name="content" type="text_editor" mandatory="true">
+            <meta><title lang="fr">Contenu</title></meta>
+        </property>
+    </properties>
+</template>
