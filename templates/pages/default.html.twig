@@ -106,9 +106,18 @@
     {% endblock %}
 
     {% if content.form is defined and content.form %}
-        {% set form = content.form %}
+        <section class="DynamicForm SectionPadded">
+            {% if app.request.get('send') == 'true' %}
+                {# The form bundle redirects here after a successful submission. #}
+                <div class="DynamicForm__success">
+                    {{ view.form.entity.successText|default('<p>Votre message a bien été envoyé.</p>')|raw }}
+                </div>
+            {% else %}
+                {% set form = content.form %}
 
-        {% form_theme form '@SuluForm/themes/basic.html.twig' %}
-        {{ form(form) }}
+                {% form_theme form 'forms/dynamic_form_theme.html.twig' %}
+                {{ form(form) }}
+            {% endif %}
+        </section>
     {% endif %}
 {% endblock %}

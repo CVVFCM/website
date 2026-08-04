@@ -1,0 +1,6 @@
+# Website translations. The Sulu form bundle ships its "messages" catalogue
+# only in de/en — these keys back the salutation field on dynamic forms.
+sulu_form.salutation_please_choose: 'Veuillez choisir'
+sulu_form.salutation_ms: 'Madame'
+sulu_form.salutation_mr: 'Monsieur'
+sulu_form.salutation_neutral: 'Neutre'

@@ -7,6 +7,7 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Sulu\Bundle\FormBundle\Entity\Form;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
 use Sulu\Content\Application\ContentWorkflow\ContentWorkflowInterface;
 use Sulu\Content\Domain\Model\WorkflowInterface;
@@ -51,7 +52,7 @@ final class ContactFixtures extends Fixture implements DependentFixtureInterface
                     [
                         'title' => 'Contact',
                         'url' => '/contact',
-                        'template' => 'contact',
+                        'template' => 'default',
                         'locale' => 'fr',
                     ],
                 ),
@@ -69,6 +70,7 @@ final class ContactFixtures extends Fixture implements DependentFixtureInterface
                 'url' => '/contact',
                 'description' => '<p>Contactez le CVVFCM</p>',
                 'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'form' => $this->getReference(ContactFormFixtures::CONTACT_FORM_REFERENCE, Form::class)->getId(),
             ]);
         }
 
@@ -83,6 +85,7 @@ final class ContactFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             MediaFixtures::class,
+            ContactFormFixtures::class,
         ];
     }
 }

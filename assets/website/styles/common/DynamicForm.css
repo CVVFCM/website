@@ -1,0 +1,190 @@
+/* Sulu FormBundle dynamic form — rendered by templates/forms/dynamic_form_theme.html.twig. */
+.DynamicForm {
+    max-width: 48rem;
+    margin-inline: auto;
+
+    & .DynamicForm__rows {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+
+    & .DynamicForm__row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        flex-basis: 100%;
+    }
+
+    & .DynamicForm__label {
+        font-weight: 700;
+        color: var(--base-text-color);
+
+        &.DynamicForm__label--required::after {
+            content: ' *';
+            color: var(--red-act-text);
+        }
+    }
+
+    & .DynamicForm__input,
+    & .DynamicForm__select,
+    & .DynamicForm__textarea {
+        font: inherit;
+        color: var(--base-text-color);
+        background-color: var(--color-white);
+        border: 1px solid var(--utility-grey);
+        border-radius: 2rem;
+        padding: 0.75em 1.25em;
+        width: 100%;
+        box-sizing: border-box;
+
+        &:focus-visible {
+            outline: 0.15rem solid var(--red-act-text);
+            outline-offset: 0.1rem;
+        }
+
+        &::placeholder {
+            color: var(--color-gray-400);
+        }
+    }
+
+    & .DynamicForm__textarea {
+        border-radius: 1rem;
+        min-height: 8rem;
+        resize: vertical;
+    }
+
+    & .DynamicForm__selectWrap {
+        position: relative;
+        display: block;
+
+        &::after {
+            content: '';
+            position: absolute;
+            right: 1.25em;
+            top: 50%;
+            width: 0.6em;
+            height: 0.6em;
+            border: solid var(--blue-note-text);
+            border-width: 0 0.125em 0.125em 0;
+            transform: translateY(-70%) rotate(45deg);
+            pointer-events: none;
+        }
+    }
+
+    & .DynamicForm__select {
+        appearance: none;
+        cursor: pointer;
+    }
+
+    & .DynamicForm__file {
+        font: inherit;
+        color: var(--base-text-color);
+
+        &:focus-visible {
+            outline: 0.15rem solid var(--red-act-text);
+            outline-offset: 0.1rem;
+        }
+
+        &::file-selector-button {
+            font: inherit;
+            font-weight: 700;
+            font-size: 0.9em;
+            color: var(--blue-note-text);
+            background-color: var(--color-white);
+            border: 1px solid var(--blue-note-text);
+            border-radius: 5em;
+            padding: 0.6em 1.4em;
+            margin-right: 1em;
+            cursor: pointer;
+        }
+    }
+
+    & .DynamicForm__submit {
+        border: none;
+        cursor: pointer;
+        margin-top: 0.5rem;
+
+        &:focus-visible {
+            outline: 0.15rem solid var(--red-act-text);
+            outline-offset: 0.1rem;
+        }
+
+        &:disabled {
+            background-color: var(--color-gray-400);
+            cursor: wait;
+        }
+    }
+
+    /* Radio / checkbox item (expanded choices). */
+    & .DynamicForm__choice {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+
+        & .DynamicForm__label {
+            font-weight: 450;
+        }
+
+        & input {
+            accent-color: var(--red-act-text);
+            width: 1.1em;
+            height: 1.1em;
+
+            &:focus-visible {
+                outline: 0.15rem solid var(--red-act-text);
+                outline-offset: 0.1rem;
+            }
+        }
+    }
+
+    & .DynamicForm__error {
+        color: var(--red-act-text);
+        font-size: 0.85em;
+        margin: 0;
+    }
+
+    & .DynamicForm__headline {
+        flex-basis: 100%;
+        color: var(--red-act-text);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin: 0;
+    }
+
+    & .DynamicForm__freeText {
+        margin: 0;
+    }
+
+    & .DynamicForm__success {
+        background-color: var(--color-bg-light);
+        border: 1px solid var(--blue-note-text);
+        border-radius: var(--white-card-radius);
+        color: var(--base-text-color);
+        padding: 1.5rem 2rem;
+    }
+}
+
+@media (width >= 48rem) {
+    .DynamicForm {
+        & .DynamicForm__row--half {
+            flex-basis: calc(50% - 0.625rem);
+        }
+
+        & .DynamicForm__row--oneThird {
+            flex-basis: calc(33.333% - 0.834rem);
+        }
+
+        & .DynamicForm__row--twoThirds {
+            flex-basis: calc(66.666% - 0.417rem);
+        }
+
+        & .DynamicForm__row--oneQuarter {
+            flex-basis: calc(25% - 0.938rem);
+        }
+
+        & .DynamicForm__row--threeQuarters {
+            flex-basis: calc(75% - 0.313rem);
+        }
+    }
+}
