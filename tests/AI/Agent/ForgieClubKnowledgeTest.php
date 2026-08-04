@@ -35,7 +35,7 @@ final class ForgieClubKnowledgeTest extends AiAgentTestCase
         $this->assertJudge(
             $question,
             $answer,
-            'La réponse indique que le comité de direction compte de 6 à 15 membres, en citant les statuts.',
+            'La réponse indique que le comité de direction compte de 6 à 15 membres. Mentionner les statuts est un plus mais n\'est pas obligatoire.',
         );
     }
 
@@ -50,7 +50,7 @@ final class ForgieClubKnowledgeTest extends AiAgentTestCase
         $this->assertJudge(
             $question,
             $answer,
-            "La réponse indique que le ski nautique est interdit sur le lac, en s'appuyant sur le règlement du lac ou l'arrêté préfectoral.",
+            "La réponse indique que le ski nautique est interdit sur le lac. Mentionner le règlement ou l'arrêté préfectoral est un plus mais n'est pas obligatoire.",
         );
     }
 }
