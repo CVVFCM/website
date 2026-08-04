@@ -22,3 +22,15 @@ ai:
                 - 'App\AI\Tool\SendContactMessageTool'
             prompt:
                 file: '%kernel.project_dir%/config/prompts/forgie.md'
+
+when@test:
+    ai:
+        agent:
+            # LLM-as-judge used by the AI-judged PHPUnit tests (tests/AI/Agent) to
+            # evaluate forgie's answers. No tools on purpose.
+            judge:
+                platform: 'ai.platform.gemini'
+                model:
+                    name: 'gemini-flash-lite-latest'
+                    options:
+                        temperature: 0

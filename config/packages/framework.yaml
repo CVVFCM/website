@@ -23,6 +23,10 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+        # The AI-judged tests need real API keys. There is no test vault; read the
+        # dev one (decrypted by the local dev key). Real env vars still win.
+        secrets:
+            vault_directory: '%kernel.project_dir%/config/secrets/dev'
 
 when@stage:
     framework:
