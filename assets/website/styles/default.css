@@ -1,6 +1,7 @@
 /* Default page styles - minimal common blocks only */
 @import url('./app.css');
 @import url('./list.css');
+@import url('./common/DynamicForm.css');
 
 
 .Page__header {

@@ -1,0 +1,94 @@
+{# Site theme for Sulu FormBundle dynamic forms — BEM block "DynamicForm".
+   Extends the bundle theme, which handles grid widths, honeypot, CSRF and
+   the freeText/headline/spacer pseudo-fields; this file only maps the
+   rendered markup onto the DynamicForm__* classes (styles/common/DynamicForm.css). #}
+{% extends '@SuluForm/themes/basic.html.twig' %}
+
+{%- block form_start -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' DynamicForm__form')|trim}) %}
+    {{- parent() -}}
+{%- endblock form_start -%}
+
+{# The root compound widget is the div wrapping every row — it carries the flex grid. #}
+{%- block form_widget_compound -%}
+    {%- if form.parent is null -%}
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' DynamicForm__rows')|trim}) %}
+    {%- endif -%}
+    {{- parent() -}}
+{%- endblock form_widget_compound -%}
+
+{%- block sulu_form_row_class_name -%}
+    {# The bundle's kebab-case width keys become camelCase BEM modifiers. #}
+    {%- set width_class_map = {
+        'one-third': 'oneThird',
+        'two-thirds': 'twoThirds',
+        'one-quarter': 'oneQuarter',
+        'three-quarters': 'threeQuarters',
+        'one-sixth': 'oneSixth',
+        'five-sixths': 'fiveSixths',
+    } -%}
+    {%- set width = attr.width|default('full') -%}
+    {%- set className = 'DynamicForm__row DynamicForm__row--' ~ width_class_map[width]|default(width) -%}
+    {%- if attr.lastWidth|default(false) -%}
+        {%- set className = className ~ ' DynamicForm__row--last' %}
+    {%- endif -%}
+    {{- className -}}
+{%- endblock sulu_form_row_class_name -%}
+
+{%- block form_label -%}
+    {%- set label_class = 'DynamicForm__label' ~ (required|default(false) ? ' DynamicForm__label--required' : '') -%}
+    {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' ' ~ label_class)|trim}) %}
+    {{- parent() -}}
+{%- endblock form_label -%}
+
+{%- block form_errors -%}
+    {%- if errors|length > 0 -%}
+        <p class="DynamicForm__error" id="{{ form.vars.id }}_error" role="alert">
+            {%- for error in errors -%}
+                {{ error.message }}{% if not loop.last %}<br />{% endif %}
+            {%- endfor -%}
+        </p>
+    {%- endif -%}
+{%- endblock form_errors -%}
+
+{%- block form_widget_simple -%}
+    {%- set widget_class = type|default('') == 'file' ? 'DynamicForm__file' : 'DynamicForm__input' -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' ' ~ widget_class)|trim}) %}
+    {%- if errors|length > 0 -%}
+        {% set attr = attr|merge({'aria-invalid': 'true', 'aria-describedby': id ~ '_error'}) %}
+    {%- endif -%}
+    {{- parent() -}}
+{%- endblock form_widget_simple -%}
+
+{%- block textarea_widget -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' DynamicForm__textarea')|trim}) %}
+    {%- if errors|length > 0 -%}
+        {% set attr = attr|merge({'aria-invalid': 'true', 'aria-describedby': id ~ '_error'}) %}
+    {%- endif -%}
+    {{- parent() -}}
+{%- endblock textarea_widget -%}
+
+{%- block choice_widget_collapsed -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' DynamicForm__select')|trim}) %}
+    {%- if errors|length > 0 -%}
+        {% set attr = attr|merge({'aria-invalid': 'true', 'aria-describedby': id ~ '_error'}) %}
+    {%- endif -%}
+    <span class="DynamicForm__selectWrap">{{- parent() -}}</span>
+{%- endblock choice_widget_collapsed -%}
+
+{%- block sulu_form_choice_class_name -%}
+    {{- 'DynamicForm__choice' -}}
+{%- endblock sulu_form_choice_class_name -%}
+
+{%- block button_widget -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' DynamicForm__submit CallToAction--btn')|trim}) %}
+    {{- parent() -}}
+{%- endblock button_widget -%}
+
+{%- block headline_widget -%}
+    <h2 class="DynamicForm__headline">{{- label|raw -}}</h2>
+{%- endblock headline_widget -%}
+
+{%- block freeText_widget -%}
+    <p class="DynamicForm__freeText">{{- label|raw -}}</p>
+{%- endblock freeText_widget -%}
