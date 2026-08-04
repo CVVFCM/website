@@ -17,6 +17,12 @@ final class HealthzController
     #[Route('/healthz', name: 'healthz', methods: ['GET'])]
     public function __invoke(): Response
     {
-        return new Response('ok', Response::HTTP_OK, ['Cache-Control' => 'no-store']);
+        // text/plain is load-bearing: Sulu's AppendAnalyticsListener queries the
+        // we_analytics table for every text/html response, which breaks the DB-free
+        // guarantee on a container that starts before the schema exists.
+        return new Response('ok', Response::HTTP_OK, [
+            'Cache-Control' => 'no-store',
+            'Content-Type' => 'text/plain',
+        ]);
     }
 }
