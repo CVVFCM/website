@@ -28,7 +28,7 @@ RUN sed -i -r s/"(www-data:x:)([[:digit:]]+):([[:digit:]]+):"/""\\1${EXTERNAL_US
     mkdir -p /app/ml /var/www /app/data/weather/ml; \
     chown -R ${EXTERNAL_USER_ID}:${EXTERNAL_USER_ID} /app /var/www /app/data/weather/ml
 
-USER www-data
+USER ${EXTERNAL_USER_ID}
 WORKDIR /app/ml
 
 VOLUME /app/data/weather/ml
