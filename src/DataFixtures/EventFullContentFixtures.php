@@ -67,6 +67,8 @@ final class EventFullContentFixtures extends Fixture implements DependentFixture
         $this->createFullEvent($manager, $events, $medias, $contacts, $slugger, 'Événement Full', 'default');
         $this->createFullEvent($manager, $events, $medias, $contacts, $slugger, 'Régate Full', 'regatta');
         $this->createFullEvent($manager, $events, $medias, $contacts, $slugger, 'Sortie en mer Full', 'sea_trip');
+        $this->createFullEvent($manager, $events, $medias, $contacts, $slugger, 'Stage Full', 'stage');
+        $this->createFullEvent($manager, $events, $medias, $contacts, $slugger, 'Événement sans image', 'default', withMainMedia: false);
     }
 
     /**
@@ -81,6 +83,7 @@ final class EventFullContentFixtures extends Fixture implements DependentFixture
         AsciiSlugger $slugger,
         string $title,
         string $eventType,
+        bool $withMainMedia = true,
     ): void {
         $url = '/evenements/'.$slugger->slug($title)->lower()->ascii();
         $begin = new \DateTimeImmutable('next saturday 10:00');
@@ -107,7 +110,7 @@ final class EventFullContentFixtures extends Fixture implements DependentFixture
             'title' => $title,
             'featured' => false,
             'event_type' => $eventType,
-            'main_media' => ['id' => $medias[array_rand($medias)]->getId()],
+            'main_media' => $withMainMedia ? ['id' => $medias[array_rand($medias)]->getId()] : null,
             'media' => [
                 'displayOption' => null,
                 'ids' => array_map(
