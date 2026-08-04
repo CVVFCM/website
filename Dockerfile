@@ -17,7 +17,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-eux", "-c"]
 ARG EXTERNAL_USER_ID
 
 # persistent / runtime deps
-# hadolint ignore=DL3008
+# hadolint ignore=SC2016,DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update; \
@@ -63,7 +63,7 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 ARG APP_ENV=prod
 ARG APP_DEBUG=false
 
-USER www-data
+USER ${EXTERNAL_USER_ID}
 WORKDIR /app
 
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
@@ -130,7 +130,7 @@ COPY --from=ghcr.io/alexandre-daubois/ember:latest /ember /usr/local/bin/ember
 
 # Through PHP on purpose: a poisoned worker thread must turn the container unhealthy,
 # which Caddy's :2019/metrics endpoint (no PHP execution) can never detect.
-HEALTHCHECK --start-period=60s CMD curl -fs http://localhost/healthz || exit 1
+HEALTHCHECK --start-period=60s CMD [ "curl", "-fs", "http://localhost/healthz", "||", "exit 1" ]
 
 CMD [ "frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile" ]
 
@@ -156,7 +156,7 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
     php bin/console cache:warmup -eprod && \
     sync
 
-HEALTHCHECK CMD echo "OK"
+HEALTHCHECK CMD [ "echo", "OK" ]
 
 # Receivers named explicitly: async (Forgie & co) + the Symfony Scheduler transport.
 CMD [ "php", "bin/console", "messenger:consume", "async", "scheduler_default", "--time-limit=3600", "--failure-limit=10", "-vv" ]
