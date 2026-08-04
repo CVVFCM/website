@@ -24,8 +24,23 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get install -y --no-install-recommends git unzip ca-certificates sqlite3; \
     php -v; \
     install-php-extensions apcu imagick intl opcache pcntl pdo_pgsql zip; \
+    php -r 'foreach (["apcu", "imagick", "intl", "pcntl", "pdo_pgsql", "zip", "Zend OPcache"] as $ext) { extension_loaded($ext) || throw new RuntimeException("Extension not loaded: ".$ext); } new Imagick();'; \
     mkdir -p /app; \
     sync
+
+# ImageMagick's OpenMP threads conflict with FrankenPHP's worker threads
+# (https://frankenphp.dev/docs/known-issues/) — cap ImageMagick to one thread.
+ENV MAGICK_THREAD_LIMIT=1
+
+# libgomp (pulled in by imagick.so) requires static TLS. When a FrankenPHP thread
+# reboot re-dlopens imagick.so with dozens of threads alive, the static TLS surplus
+# can be exhausted ("cannot allocate memory in static TLS block") and the thread is
+# left without imagick until the process restarts. Preloading libgomp reserves its
+# TLS up front, before any thread exists. It must go through /etc/ld.so.preload:
+# the frankenphp binary carries cap_net_bind_service, so the loader runs in
+# secure-execution mode and ignores the LD_PRELOAD environment variable.
+RUN ldconfig -p | awk '$1 == "libgomp.so.1" { print $NF; exit }' > /etc/ld.so.preload; \
+    test -s /etc/ld.so.preload
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -113,7 +128,9 @@ RUN --mount=type=cache,target=/var/www/.cache/composer \
 
 COPY --from=ghcr.io/alexandre-daubois/ember:latest /ember /usr/local/bin/ember
 
-HEALTHCHECK CMD curl -f http://localhost:2019/metrics || exit 1
+# Through PHP on purpose: a poisoned worker thread must turn the container unhealthy,
+# which Caddy's :2019/metrics endpoint (no PHP execution) can never detect.
+HEALTHCHECK --start-period=60s CMD curl -fs http://localhost/healthz || exit 1
 
 CMD [ "frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile" ]
 
