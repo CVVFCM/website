@@ -8,15 +8,35 @@
 
 
 .Header__background {
+    --background-color: #003258;
+
     position: absolute;
     inset: 0;
     z-index: -1;
+
+    background-color: var(--background-color);
+    isolation: isolate;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            transparent 0%,
+            transparent 55%,
+            color-mix(in srgb, var(--background-color) 85%, transparent) 85%,
+            var(--background-color) 100%
+        );
+    }
 }
 
 .Header__backgroundImage {
     width: 100%;
     height: 100%;
     object-fit: cover;
+
+    mix-blend-mode: luminosity;
 }
 
 .Header__titleContainer {
