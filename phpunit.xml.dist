@@ -53,6 +53,14 @@
         </testsuite>
     </testsuites>
 
+    <!-- The AI-judged tests (tests/AI/Agent) call real LLM APIs: excluded from the
+         default run, executed explicitly by selecting the "ai" group (make test-ai). -->
+    <groups>
+        <exclude>
+            <group>ai</group>
+        </exclude>
+    </groups>
+
     <source>
         <include>
             <directory>src</directory>
