@@ -1,6 +1,6 @@
 DOCKER_COMPOSE = EXTERNAL_USER_ID=$(shell id -u) docker compose
 
-.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test cc css hadolint cs stylelint psalm psalm_strict
+.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test test-ai cc css hadolint cs stylelint psalm psalm_strict
 
 run: .configured up
 
@@ -55,6 +55,9 @@ reset-test:
 
 test:
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/phpunit --colors=always --testdox
+
+test-ai: ## Run the AI-judged tests (needs API keys: dev vault locally, prod vault in CI)
+	@$(DOCKER_COMPOSE) exec php ./vendor/bin/phpunit --colors=always --testdox --group ai
 
 cc: ## Clear Symfony cache (website + admin)
 	@$(DOCKER_COMPOSE) exec php bin/websiteconsole cache:clear

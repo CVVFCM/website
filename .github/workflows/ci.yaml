@@ -91,6 +91,16 @@ jobs:
                 run: docker compose exec -T php composer reset-test
             -   name: Run PHPUnit
                 run: docker compose exec -T php bin/phpunit
+            # AI-judged tests: keys are revealed from the prod vault. Missing secret or
+            # provider outage makes the tests skip themselves — the step stays green.
+            -   name: Run AI PHPUnit tests
+                env:
+                    SYMFONY_DECRYPTION_SECRET: ${{ secrets.SYMFONY_DECRYPTION_SECRET }}
+                run: |
+                    docker compose exec -T -e SYMFONY_DECRYPTION_SECRET php sh -c '
+                        export MISTRAL_API_KEY="$(bin/console secrets:reveal MISTRAL_API_KEY -e prod 2>/dev/null || true)"
+                        export GEMINI_API_KEY="$(bin/console secrets:reveal GEMINI_API_KEY -e prod 2>/dev/null || true)"
+                        bin/phpunit --group ai'
             -   name: Doctrine Schema Validator
                 run: docker compose exec -T php bin/console -e test doctrine:schema:validate
 
