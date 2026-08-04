@@ -8,6 +8,7 @@ return [
     'FACEBOOK_DEFAULT_TOKEN' => null,
     'FACEBOOK_PAGE_ID' => null,
     'FACEBOOK_PAGE_TOKEN' => null,
+    'GEMINI_API_KEY' => null,
     'GOOGLE_CHAT_DSN' => null,
     'MISTRAL_API_KEY' => null,
 ];

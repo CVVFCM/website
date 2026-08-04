@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "20c1e8d4e2ee4903e042b9d6f0c50c01",
+    "content-hash": "dd652ed5eed6188a9667f884594d54fe",
     "packages": [
         {
             "name": "api-platform/core",
@@ -7367,6 +7367,93 @@
             ],
             "support": {
                 "source": "https://github.com/symfony/ai-chat/tree/v0.10.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-06-15T22:48:31+00:00"
+        },
+        {
+            "name": "symfony/ai-gemini-platform",
+            "version": "v0.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/ai-gemini-platform.git",
+                "reference": "a0355024672ec87e7c6c3f6747392b7679d68f5e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/ai-gemini-platform/zipball/a0355024672ec87e7c6c3f6747392b7679d68f5e",
+                "reference": "a0355024672ec87e7c6c3f6747392b7679d68f5e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/ai-platform": "^0.10",
+                "symfony/http-client": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^11.5.53",
+                "symfony/ai-agent": "^0.10"
+            },
+            "type": "symfony-ai-platform",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/ai",
+                    "name": "symfony/ai"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\AI\\Platform\\Bridge\\Gemini\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christopher Hertel",
+                    "email": "mail@christopher-hertel.de"
+                },
+                {
+                    "name": "Oskar Stark",
+                    "email": "oskarstark@googlemail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Google Gemini platform bridge for Symfony AI",
+            "keywords": [
+                "Bridge",
+                "Gemini",
+                "ai",
+                "google",
+                "platform"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/ai-gemini-platform/tree/v0.10.0"
             },
             "funding": [
                 {

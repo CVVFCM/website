@@ -52,4 +52,7 @@ return [
     'marked' => [
         'version' => '18.0.5',
     ],
+    '@symfony/ux-live-component' => [
+        'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
+    ],
 ];
