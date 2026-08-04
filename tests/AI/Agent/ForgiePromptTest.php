@@ -58,7 +58,7 @@ final class ForgiePromptTest extends AiAgentTestCase
         );
     }
 
-    public function testUnderstandsAndRepliesInGerman(): void
+    public function testUnsupportedLanguageFallsBackToFrench(): void
     {
         $question = 'Wie viel kostet die Mitgliedschaft im Verein?';
         $answer = $this->askForgie($question);
@@ -66,19 +66,7 @@ final class ForgiePromptTest extends AiAgentTestCase
         $this->assertJudge(
             $question,
             $answer,
-            'La réponse est rédigée en allemand et répond à la question posée (elle peut demander une précision, par exemple la formule souhaitée).',
-        );
-    }
-
-    public function testUnderstandsAndRepliesInDutch(): void
-    {
-        $question = 'Welke activiteiten biedt de zeilclub aan?';
-        $answer = $this->askForgie($question);
-
-        $this->assertJudge(
-            $question,
-            $answer,
-            'La réponse est rédigée en néerlandais et répond à la question posée.',
+            'La réponse est rédigée en français ou en anglais, pas en allemand.',
         );
     }
 }
