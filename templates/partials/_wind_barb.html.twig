@@ -19,10 +19,11 @@
 {% set pennants = (v / 50)|round(0, 'floor') %}
 {% set fulls = (v % 50 / 10)|round(0, 'floor') %}
 {% set half = v % 10 >= 5 %}
-{# Feathers stack from the windward end inward: pennants, full barbs, half-barb.
-   A lone half-barb (5 kt) sits one step in from the end, per convention. #}
-{% set fulls_base = 92 - pennants * 14 %}
-{% set half_y = pennants == 0 and fulls == 0 ? 84 : fulls_base - fulls * 9 %}
+{# Feathers stack from the tail end inward (pennants, full barbs, half-barb) and
+   slant outward, away from the tip. A lone half-barb (5 kt) sits one step in
+   from the end, per convention. #}
+{% set fulls_bottom = 92 - pennants * 14 %}
+{% set half_bottom = pennants == 0 and fulls == 0 ? 83 : fulls_bottom - fulls * 9 %}
 <svg {% if class|default %}class="{{ class }}" {% endif %}style="--wind-rotation: {{ rotation }}deg"
      role="img"
      aria-label="{{ label }}"
@@ -38,11 +39,11 @@
     {% endif %}
     {% if fulls > 0 %}
         {% for i in 1..fulls %}
-            {% set y = fulls_base - (i - 1) * 9 %}
-            <line data-part="barb" x1="50" y1="{{ y }}" x2="71" y2="{{ y - 9 }}" stroke="currentColor" stroke-width="3" />
+            {% set y = fulls_bottom - (i - 1) * 9 %}
+            <line data-part="barb" x1="50" y1="{{ y - 9 }}" x2="71" y2="{{ y }}" stroke="currentColor" stroke-width="3" />
         {% endfor %}
     {% endif %}
     {% if half %}
-        <line data-part="half-barb" x1="50" y1="{{ half_y }}" x2="60.5" y2="{{ half_y - 4.5 }}" stroke="currentColor" stroke-width="3" />
+        <line data-part="half-barb" x1="50" y1="{{ half_bottom - 4.5 }}" x2="60.5" y2="{{ half_bottom }}" stroke="currentColor" stroke-width="3" />
     {% endif %}
 </svg>
