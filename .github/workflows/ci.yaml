@@ -91,10 +91,85 @@ jobs:
                 run: docker compose exec -T php composer reset-test
             -   name: Run PHPUnit
                 run: docker compose exec -T php bin/phpunit
-            # AI-judged tests: the test kernel reads the API keys straight from the prod
-            # vault (TEST_VAULT_DIR + decryption secret) — key values never touch the
-            # shell or the log. Missing secret or provider outage makes the tests skip
-            # themselves and the step stays green.
+            -   name: Doctrine Schema Validator
+                run: docker compose exec -T php bin/console -e test doctrine:schema:validate
+
+    # AI-judged tests (phpunit group "ai") run against real LLM APIs — parallel to the
+    # regular suite so provider latency never delays it. The test kernel reads the API
+    # keys straight from the prod vault (TEST_VAULT_DIR + decryption secret) — key
+    # values never touch the shell or the log. Missing secret or provider outage makes
+    # the tests skip themselves and the job stays green.
+    tests-ai:
+        name: AI Tests
+        runs-on: ubuntu-latest
+        env:
+            EXTERNAL_USER_ID: 1001
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+            -   name: Set up Docker Buildx
+                uses: docker/setup-buildx-action@v4
+            # Read-only cache: the Tests job owns cache-to for this branch scope.
+            -   name: Build Docker images
+                uses: docker/bake-action@v7
+                with:
+                    pull: true
+                    load: true
+                    push: false
+                    files: |
+                        compose.yaml
+                        compose.override.yaml
+                    set: |
+                        php.cache-from=type=gha,scope=php-main
+                        php.cache-from=type=gha,scope=php-${{ github.ref_name }}
+                        consumer.cache-from=type=gha,scope=consumer-main
+                        consumer.cache-from=type=gha,scope=consumer-${{ github.ref_name }}
+                        ml.cache-from=type=gha,scope=ml-main
+                        ml.cache-from=type=gha,scope=ml-${{ github.ref_name }}
+                        rtsp-to-web.cache-from=type=gha,scope=rtsp-main
+                        rtsp-to-web.cache-from=type=gha,scope=rtsp-${{ github.ref_name }}
+            -   name: Set up Docker Compose
+                uses: docker/setup-compose-action@v2
+                with:
+                    version: latest
+            -   name: Install mkcert & Generate SSL certificates
+                run: |
+                    sudo apt-get install libnss3-tools
+                    wget -O mkcert "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+                    sudo mv mkcert /usr/local/bin/mkcert
+                    sudo chmod +x /usr/local/bin/mkcert
+                    mkcert -install
+                    mkdir -p .infra/tls
+                    mkcert -key-file .infra/tls/key.pem -cert-file .infra/tls/cert.pem localhost
+            -   name: Cache Composer dependencies
+                uses: actions/cache@v5
+                with:
+                    path: vendor
+                    key: composer-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
+            -   name: Composer install
+                run: |
+                    mkdir -p var/cache/dev var/cache/test var/log
+                    docker compose run --rm php composer install
+            -   name: Cache NPM dependencies
+                uses: actions/cache@v5
+                with:
+                    path: assets/admin/node_modules
+                    key: npm-admin-${{ hashFiles('assets/admin/package-lock.json') }}
+                    restore-keys: npm-admin-
+            -   name: Admin NPM install
+                run: |
+                    docker run --rm -v ${PWD}:/app -w /app/assets/admin node:22-bookworm-slim npm install
+                    docker run --rm -v ${PWD}:/app -w /app/assets/admin node:22-bookworm-slim npm run build
+            -   name: Start services
+                run: |
+                    docker compose up --wait php --wait consumer --no-build || {
+                        docker inspect website-php-1 --format '{{json .State.Health}}'
+                        docker compose logs
+                        exit 1
+                    }
+            -   name: Create test database
+                run: docker compose exec -T php composer reset-test
             -   name: Run AI PHPUnit tests
                 env:
                     SYMFONY_DECRYPTION_SECRET: ${{ secrets.SYMFONY_DECRYPTION_SECRET }}
@@ -103,8 +178,6 @@ jobs:
                     -e SYMFONY_DECRYPTION_SECRET
                     -e TEST_VAULT_DIR=/app/config/secrets/prod
                     php bin/phpunit --group ai --display-skipped
-            -   name: Doctrine Schema Validator
-                run: docker compose exec -T php bin/console -e test doctrine:schema:validate
 
     psalm:
         runs-on: ubuntu-latest
