@@ -1,10 +1,11 @@
 {#
-  Wind barb: vertical staff with the tip pointing downwind and, on the windward
-  (bottom) end, feathers encoding the speed — half-barb = 5 kt, full barb = 10 kt,
+  Wind barb: vertical staff whose tip points at the wind's origin, with feathers
+  on the tail encoding the speed — half-barb = 5 kt, full barb = 10 kt,
   pennant = 50 kt (speed rounded to the nearest 5 kt; bare staff below 5 kt).
 
-  At rotation 0 the tip points up (wind from the south); the rotation is exposed
-  as the --wind-rotation custom property, applied by the caller's CSS class.
+  At rotation 0 the tip points up (wind from the north): pass windDirection
+  directly. The rotation is exposed as the --wind-rotation custom property,
+  applied by the caller's CSS class.
 
   The colour follows currentColor: set it via the caller's CSS class.
 #}

@@ -88,7 +88,7 @@
                  {{ include('partials/_wind_barb.html.twig', {
                      class: 'HomepageLive__windBarb',
                      speed: liveWeather.windSpeed,
-                     rotation: (liveWeather.windDirection + 180) % 360,
+                     rotation: liveWeather.windDirection,
                      label: (wind_cardinal.name == 'VARIABLE' ? 'Vent variable' : 'Vent de ' ~ wind_cardinal.value|lower) ~ ', ' ~ liveWeather.windSpeed|round ~ ' nœuds',
                  }) }}
                 </div>
