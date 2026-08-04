@@ -73,6 +73,7 @@
                             <param name="default"><meta><title lang="fr">Événement</title></meta></param>
                             <param name="regatta"><meta><title lang="fr">Régate</title></meta></param>
                             <param name="sea_trip"><meta><title lang="fr">Sortie en mer</title></meta></param>
+                            <param name="stage"><meta><title lang="fr">Stage</title></meta></param>
                         </param>
                     </params>
                 </property>

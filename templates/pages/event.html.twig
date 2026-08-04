@@ -69,7 +69,7 @@
                         <span class="EventPage__headerCountdown">J-{{ days_diff }}</span>
                     {% endif %}
                     {% if content.event_type %}
-                        {% set eventTypeLabels = {default: 'Événement', regatta: 'Régate', sea_trip: 'Sortie en mer'} %}
+                        {% set eventTypeLabels = {default: 'Événement', regatta: 'Régate', sea_trip: 'Sortie en mer', stage: 'Stage'} %}
                         <span class="EventPage__headerType">{{ eventTypeLabels[content.event_type]|default('Événement')|upper }}</span>
                     {% endif %}
                 </div>

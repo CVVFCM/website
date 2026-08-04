@@ -15,13 +15,14 @@ use function Symfony\Component\Clock\now;
  * Calendar overview of ALL the club's events (any type), 12-month window each way.
  * Details for régates / sorties en mer live in their dedicated tools.
  */
-#[AsTool('events', 'Vue calendrier de tous les événements du club (12 mois en arrière ou en avant) avec leur type (Événement, Régate, Sortie en mer), dates, lieu et lien. Pour les détails d\'une régate ou d\'une sortie en mer, utiliser les outils dédiés.')]
+#[AsTool('events', 'Vue calendrier de tous les événements du club (12 mois en arrière ou en avant) avec leur type (Événement, Régate, Sortie en mer, Stage), dates, lieu et lien. Pour les détails d\'une régate ou d\'une sortie en mer, utiliser les outils dédiés.')]
 final readonly class EventTool
 {
     private const array TYPES = [
         'default' => 'Événement',
         'regatta' => 'Régate',
         'sea_trip' => 'Sortie en mer',
+        'stage' => 'Stage',
     ];
 
     public function __construct(

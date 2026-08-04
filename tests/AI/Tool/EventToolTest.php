@@ -25,7 +25,7 @@ final class EventToolTest extends KernelTestCase
                 ['titre', 'type', 'debut', 'fin', 'lieu', 'url', 'description'],
                 array_keys($event),
             );
-            $this->assertContains($event['type'], ['Événement', 'Régate', 'Sortie en mer']);
+            $this->assertContains($event['type'], ['Événement', 'Régate', 'Sortie en mer', 'Stage']);
             $types[] = $event['type'];
 
             $begin = new \DateTimeImmutable($event['debut']);
