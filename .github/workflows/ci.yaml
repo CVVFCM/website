@@ -81,7 +81,12 @@ jobs:
                     docker run --rm -v ${PWD}:/app -w /app/assets/admin node:22-bookworm-slim npm install
                     docker run --rm -v ${PWD}:/app -w /app/assets/admin node:22-bookworm-slim npm run build
             -   name: Start services
-                run: docker compose up --wait php --wait consumer --no-build || (docker compose logs && exit 1)
+                run: |
+                    docker compose up --wait php --wait consumer --no-build || {
+                        docker inspect website-php-1 --format '{{json .State.Health}}'
+                        docker compose logs
+                        exit 1
+                    }
             -   name: Create test database
                 run: docker compose exec -T php composer reset-test
             -   name: Run PHPUnit
