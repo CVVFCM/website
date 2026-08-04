@@ -28,15 +28,6 @@ services:
             'string $facebookAppSecret': '%facebook_app_secret%'
             'string $facebookPageId': '%facebook_page_id%'
 
-    # HTTP client for the AI platforms (Mistral, Gemini): transparently retries
-    # rate limits (429) and transient server errors (5xx) with exponential backoff
-    # — 1s, 2s, 4s, 8s — instead of surfacing them to the caller.
-    app.ai.retryable_http_client:
-        class: Symfony\Component\HttpClient\RetryableHttpClient
-        arguments:
-            $client: '@http_client'
-            $maxRetries: 4
-
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:

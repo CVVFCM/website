@@ -1,0 +1,13 @@
+framework:
+    http_client:
+        scoped_clients:
+            # Client used by the AI platforms (Mistral, Gemini). LLM providers under
+            # load can stay silent past the default 60s idle timeout, and transient
+            # 429/5xx answers are retried with exponential backoff instead of
+            # surfacing to the visitor or the AI-judged tests.
+            ai.http_client:
+                scope: 'https://.*'
+                timeout: 180
+                max_duration: 600
+                retry_failed:
+                    max_retries: 4
