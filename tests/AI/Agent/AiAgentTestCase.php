@@ -37,8 +37,10 @@ abstract class AiAgentTestCase extends KernelTestCase
         try {
             return $call();
         } catch (RateLimitExceededException $e) {
+            // Backstop for limits that survive the HTTP-layer retries (see
+            // app.ai.retryable_http_client): quotas are per-minute windows.
             if ($rateLimitRetries > 0) {
-                sleep(min($e->getRetryAfter() ?? 5, 15));
+                sleep(min($e->getRetryAfter() ?? 15, 60));
 
                 return $this->callOrSkip($call, $rateLimitRetries - 1);
             }

@@ -2,3 +2,4 @@ ai:
     platform:
         gemini:
             api_key: '%env(GEMINI_API_KEY)%'
+            http_client: 'app.ai.retryable_http_client'
