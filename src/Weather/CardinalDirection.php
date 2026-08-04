@@ -43,7 +43,7 @@ enum CardinalDirection: string
 
     public static function fromDirection(int $direction): CardinalDirection
     {
-        $direction = (float) $direction;
+        $direction = fmod(fmod((float) $direction, 360.) + 360., 360.);
 
         foreach (self::cases() as $case) {
             if (self::VARIABLE === $case) {
@@ -53,7 +53,12 @@ enum CardinalDirection: string
             $min = fmod($case->getMinDirection() + 360., 360.);
             $max = fmod($case->getMaxDirection(), 360.);
 
-            if ($direction > $min && $direction <= $max) {
+            // The north window wraps around 0° (337.5°..22.5°).
+            $inWindow = $min > $max
+                ? $direction > $min || $direction <= $max
+                : $direction > $min && $direction <= $max;
+
+            if ($inWindow) {
                 return $case;
             }
         }

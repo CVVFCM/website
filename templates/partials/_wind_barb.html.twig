@@ -1,0 +1,49 @@
+{#
+  Wind barb: vertical staff whose tip points at the wind's origin, with feathers
+  on the tail encoding the speed — half-barb = 5 kt, full barb = 10 kt,
+  pennant = 50 kt (speed rounded to the nearest 5 kt; bare staff below 5 kt).
+
+  At rotation 0 the tip points up (wind from the north): pass windDirection
+  directly. The rotation is exposed as the --wind-rotation custom property,
+  applied by the caller's CSS class.
+
+  The colour follows currentColor: set it via the caller's CSS class.
+#}
+{% types {
+    speed: 'number',
+    rotation: 'int',
+    label: 'string',
+    class: 'string',
+} %}
+{% set v = (speed / 5)|round * 5 %}
+{% set pennants = (v / 50)|round(0, 'floor') %}
+{% set fulls = (v % 50 / 10)|round(0, 'floor') %}
+{% set half = v % 10 >= 5 %}
+{# Feathers stack from the tail end inward (pennants, full barbs, half-barb) and
+   slant outward, away from the tip. A lone half-barb (5 kt) sits one step in
+   from the end, per convention. #}
+{% set fulls_bottom = 92 - pennants * 14 %}
+{% set half_bottom = pennants == 0 and fulls == 0 ? 83 : fulls_bottom - fulls * 9 %}
+<svg {% if class|default %}class="{{ class }}" {% endif %}style="--wind-rotation: {{ rotation }}deg"
+     role="img"
+     aria-label="{{ label }}"
+     viewBox="0 0 100 100"
+     xmlns="http://www.w3.org/2000/svg">
+    <line x1="50" y1="8" x2="50" y2="92" stroke="currentColor" stroke-width="3" />
+    <polygon points="50,2 43,15 57,15" fill="currentColor" />
+    {% if pennants > 0 %}
+        {% for i in 1..pennants %}
+            {% set y = 92 - (i - 1) * 14 %}
+            <polygon data-part="pennant" points="50,{{ y }} 71,{{ y - 6 }} 50,{{ y - 13 }}" fill="currentColor" />
+        {% endfor %}
+    {% endif %}
+    {% if fulls > 0 %}
+        {% for i in 1..fulls %}
+            {% set y = fulls_bottom - (i - 1) * 9 %}
+            <line data-part="barb" x1="50" y1="{{ y - 9 }}" x2="71" y2="{{ y }}" stroke="currentColor" stroke-width="3" />
+        {% endfor %}
+    {% endif %}
+    {% if half %}
+        <line data-part="half-barb" x1="50" y1="{{ half_bottom - 4.5 }}" x2="60.5" y2="{{ half_bottom }}" stroke="currentColor" stroke-width="3" />
+    {% endif %}
+</svg>
