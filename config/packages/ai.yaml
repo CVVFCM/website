@@ -23,6 +23,7 @@ ai:
                 - 'App\AI\Tool\EventTool'
                 - 'App\AI\Tool\SitePageTool'
                 - 'App\AI\Tool\BoardMemberTool'
+                - 'App\AI\Tool\LegalDocumentTool'
                 - 'App\AI\Tool\SendContactMessageTool'
             prompt:
                 file: '%kernel.project_dir%/config/prompts/forgie.md'
