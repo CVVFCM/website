@@ -60,6 +60,11 @@ a {
 
 .Logo__headerTopBar {
     font-size: 1rem;
+
+    /* Compensate the var(--site-header-offset) pull-up so the logo keeps
+       breathing room below the header controls (SectionPadded provides the
+       base padding, the calc adds the clipped offset back). */
+    padding-top: calc(var(--site-header-offset) + 2rem);
 }
 
 .Logo__headerLogoLink {
