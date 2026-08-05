@@ -131,3 +131,38 @@
 }
 
 
+/* ______________________________________ rich-text (CKEditor) containers */
+
+.ContentBlock__description,
+.ContentBlock__text,
+.Page__headerDescription {
+    /* Inside centered containers, keep the list visually centered as a block
+       but left-align its items so the markers stay attached to the text. */
+    ul, ol {
+        text-align: left;
+        width: fit-content;
+        margin-inline: auto;
+    }
+
+    /* Editor links need a resting underline to be identifiable as links. */
+    a {
+        text-decoration: underline;
+    }
+}
+
+
+/* ______________________________________ dark gradient sections */
+
+/* The global link blue is illegible on the gradient: render rich-text links
+   white. Self-styled links ([class], e.g. the CTA button or the logo) and the
+   white .Page__headerBody panel (breadcrumb, header description) keep their
+   own colors. */
+.Page__header,
+.ContentBlock--cta {
+    a:not([class], .Page__headerBody a) {
+        color: var(--color-white);
+        text-decoration: underline;
+    }
+}
+
+
