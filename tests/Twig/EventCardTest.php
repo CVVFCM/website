@@ -70,38 +70,15 @@ final class EventCardTest extends KernelTestCase
         $this->assertStringContainsString($expected, $this->renderWithDates($beginDate, $endDate));
     }
 
-    public function testItRendersACalendarDownloadLinkWhenTheEventHasAUuid(): void
-    {
-        $uuid = '0198c6a2-1111-7222-8333-444455556666';
-
-        $html = $this->renderWithUuid($uuid);
-
-        $this->assertStringContainsString('EventCard__calendar', $html);
-        $this->assertStringContainsString($uuid.'.ics', $html);
-        $this->assertStringContainsString('download', $html);
-        $this->assertStringContainsString('aria-label="Ajouter au calendrier — Événement de test"', $html);
-    }
-
-    public function testItRendersNoCalendarLinkWhenTheEventHasNoUuid(): void
+    /**
+     * Issue #90: cards must never carry an add-to-calendar action — the single
+     * feed button on the events list page replaced it. Even when the smart
+     * content happens to expose a uuid, the card stays free of it.
+     */
+    public function testItNeverRendersACalendarLinkOnACard(): void
     {
         $this->assertStringNotContainsString('EventCard__calendar', $this->render('regatta'));
-    }
-
-    private function renderWithUuid(string $uuid): string
-    {
-        self::bootKernel();
-
-        /** @var Environment $twig */
-        $twig = self::getContainer()->get('twig');
-
-        return $twig->render('partials/event_card.html.twig', ['event' => [
-            'title' => 'Événement de test',
-            'url' => '/evenements/test',
-            'begin_date' => '2027-06-12T10:00:00',
-            'end_date' => '2027-06-13T18:00:00',
-            'main_media' => null,
-            'uuid' => $uuid,
-        ]]);
+        $this->assertStringNotContainsString('EventCard__calendar', $this->renderWithDates('2027-04-17T00:00:00', null));
     }
 
     private function renderWithDates(string $beginDate, ?string $endDate): string
