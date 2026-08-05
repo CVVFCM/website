@@ -75,6 +75,28 @@ final class ForgiePromptTest extends AiAgentTestCase
         );
     }
 
+    public function testKeepsEnglishOnTerseEquipmentOnlyThirdTurn(): void
+    {
+        // The exact conversation reported in #72: two English turns, then an
+        // ultra-short third message naming only a boat model. Equipment-only
+        // messages are not a language signal — the answer must stay in English.
+        $thirdTurn = 'ILCA 6 ?';
+        $answer = $this->askForgieConversation([
+            'Wanna rent a boat',
+            'Dinghy',
+            $thirdTurn,
+        ]);
+
+        $this->assertJudge(
+            $thirdTurn,
+            $answer,
+            'La réponse est intégralement rédigée en anglais : la conversation a commencé en anglais et'
+            .' « ILCA 6 ? » ne nomme que du matériel, ce qui ne change pas la langue. Les noms propres'
+            .' (« Laser Radial / ILCA 6 », noms de bateaux français) sont acceptables, mais toute la prose'
+            .' qui les entoure doit être en anglais. Une réponse en français est un échec.',
+        );
+    }
+
     public function testUnsupportedLanguageFallsBackToFrench(): void
     {
         $question = 'Wie viel kostet die Mitgliedschaft im Verein?';
