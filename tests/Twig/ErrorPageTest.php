@@ -18,6 +18,8 @@ final class ErrorPageTest extends KernelTestCase
         $this->assertStringContainsString('Retour à l\'accueil', $html);
         $this->assertStringContainsString('/evenements', $html);
         $this->assertStringContainsString('/contact', $html);
+        $this->assertStringContainsString('Il ne fallait pas louper les cours', $html);
+        $this->assertStringContainsString('ErrorPage__illustration', $html);
     }
 
     public function testItRendersAGenericMessageForOtherStatusCodes(): void
@@ -28,6 +30,8 @@ final class ErrorPageTest extends KernelTestCase
         $this->assertStringContainsString('Erreur 500', $html);
         $this->assertStringContainsString('Retour à l\'accueil', $html);
         $this->assertStringNotContainsString('Page introuvable', $html);
+        $this->assertStringNotContainsString('Il ne fallait pas louper les cours', $html);
+        $this->assertStringNotContainsString('ErrorPage__illustration', $html);
     }
 
     private function render(int $statusCode, string $statusText): string
