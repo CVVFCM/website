@@ -65,4 +65,56 @@ final class WeatherModelInferenceTest extends TestCase
 
         $this->assertNull($inference->tryPredict([1013.0, 0.5, 1.5, 90.0, 2.0, -0.1, 0.99, 0.0, 1.0]));
     }
+
+    public function testTryPredictLogsAWarningWhenAnArtifactIsMissing(): void
+    {
+        $logger = new SpyLogger();
+        $weightsPath = __DIR__.'/Fixtures/does-not-exist.json';
+        $inference = new WeatherModelInference($weightsPath, __DIR__.'/Fixtures/scaler_params.json', $logger);
+
+        $this->assertNull($inference->tryPredict([1013.0, 0.5, 1.5, 90.0, 2.0, -0.1, 0.99, 0.0, 1.0]));
+
+        $this->assertCount(1, $logger->records);
+        $record = $logger->records[0];
+        $this->assertSame('warning', $record['level']);
+        $this->assertSame($weightsPath, $record['context']['weightsPath']);
+        $this->assertSame(__DIR__.'/Fixtures/scaler_params.json', $record['context']['scalerPath']);
+        $this->assertIsString($record['context']['error']);
+        $this->assertStringContainsString('does-not-exist.json', $record['context']['error']);
+    }
+
+    public function testTryPredictReturnsNullAndLogsOnCorruptJson(): void
+    {
+        // A half-written artifact (e.g. interrupted delivery) must degrade, not abort the cron run.
+        $logger = new SpyLogger();
+        $inference = new WeatherModelInference(__DIR__.'/Fixtures/corrupt.json', __DIR__.'/Fixtures/scaler_params.json', $logger);
+
+        $this->assertNull($inference->tryPredict([1013.0, 0.5, 1.5, 90.0, 2.0, -0.1, 0.99, 0.0, 1.0]));
+        $this->assertCount(1, $logger->records);
+        $this->assertSame('warning', $logger->records[0]['level']);
+    }
+
+    public function testTryPredictReturnsNullAndLogsOnMalformedShapes(): void
+    {
+        // Valid JSON, wrong structure: the TypeError must be contained, not escape tryPredict().
+        $logger = new SpyLogger();
+        $inference = new WeatherModelInference(__DIR__.'/Fixtures/malformed_weights.json', __DIR__.'/Fixtures/scaler_params.json', $logger);
+
+        $this->assertNull($inference->tryPredict([1013.0, 0.5, 1.5, 90.0, 2.0, -0.1, 0.99, 0.0, 1.0]));
+        $this->assertCount(1, $logger->records);
+        $this->assertSame('warning', $logger->records[0]['level']);
+    }
+
+    public function testTryPredictDoesNotLogOnSuccess(): void
+    {
+        $logger = new SpyLogger();
+        $inference = new WeatherModelInference(
+            __DIR__.'/Fixtures/model_weights.json',
+            __DIR__.'/Fixtures/scaler_params.json',
+            $logger,
+        );
+
+        $this->assertInstanceOf(WeatherPrediction::class, $inference->tryPredict([1013.0, 0.5, 1.5, 90.0, 2.0, -0.1, 0.99, 0.0, 1.0]));
+        $this->assertSame([], $logger->records);
+    }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\ML;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
@@ -49,6 +51,7 @@ final class WeatherModelInference
         private readonly string $weightsPath,
         #[Autowire('%kernel.project_dir%/data/weather/ml/scaler_params.json')]
         private readonly string $scalerPath,
+        private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
@@ -82,7 +85,8 @@ final class WeatherModelInference
 
     /**
      * Same as {@see predict()} but returns null instead of throwing when the model is unavailable
-     * (artifacts not deployed yet). Callers can degrade to the raw forecast.
+     * (artifacts not deployed yet) or unusable (corrupt JSON, malformed shapes). Callers can
+     * degrade to the raw forecast; the failure is logged so it never goes unnoticed again.
      *
      * @param list<float> $features
      */
@@ -90,7 +94,14 @@ final class WeatherModelInference
     {
         try {
             return $this->predict($features);
-        } catch (\RuntimeException) {
+        } catch (\RuntimeException|\JsonException|\TypeError $e) {
+            $this->logger->warning('Weather model inference failed, degrading to the raw forecast.', [
+                'error' => $e->getMessage(),
+                'exception' => $e,
+                'weightsPath' => $this->weightsPath,
+                'scalerPath' => $this->scalerPath,
+            ]);
+
             return null;
         }
     }

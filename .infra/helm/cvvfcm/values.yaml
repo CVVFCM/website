@@ -161,10 +161,13 @@ robots:
 
 # Loupe search index (cmsig/seal) lives on local disk under /app/var/indexes. Small RWO
 # PVC so it survives pod restarts. Uploads go to S3, so no uploads PVC is needed.
+# mlSize sizes a second, RWX PVC for the ML weather-model artifacts under
+# /app/data/weather/ml (delivered by the ML workflow, read by web AND consumer).
 persistence:
   enabled: true
   storageClass: longhorn
   size: 1Gi
+  mlSize: 1Gi
 
 # Bundled PostgreSQL (Bitnami subchart). When enabled, DATABASE_URL is derived
 # automatically from postgresql.auth below and externalDatabase.url is ignored.

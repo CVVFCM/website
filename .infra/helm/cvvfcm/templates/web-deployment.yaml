@@ -61,6 +61,10 @@ spec:
             {{- if .Values.persistence.enabled }}
             - name: indexes
               mountPath: /app/var/indexes
+            # Shared (RWX) ML weather-model artifacts — the ML workflow kubectl-cp's the
+            # model JSONs here and the consumer reads them through the same PVC.
+            - name: ml-artifacts
+              mountPath: /app/data/weather/ml
             {{- end }}
             {{- if .Values.robots.disallowAll }}
             - name: robots
@@ -110,6 +114,9 @@ spec:
         - name: indexes
           persistentVolumeClaim:
             claimName: {{ include "cvvfcm.fullname" . }}-indexes
+        - name: ml-artifacts
+          persistentVolumeClaim:
+            claimName: {{ include "cvvfcm.fullname" . }}-ml
         {{- end }}
         {{- if .Values.robots.disallowAll }}
         - name: robots
