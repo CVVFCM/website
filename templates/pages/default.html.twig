@@ -108,18 +108,58 @@
     {% endblock %}
 
     {% if content.form is defined and content.form %}
-        <section class="DynamicForm SectionPadded">
-            {% if app.request.get('send') == 'true' %}
-                {# The form bundle redirects here after a successful submission. #}
-                <div class="DynamicForm__success">
-                    {{ view.form.entity.successText|default('<p>Votre message a bien été envoyé.</p>')|raw }}
-                </div>
-            {% else %}
-                {% set form = content.form %}
+        {% set club_info = sulu_snippet_load_by_area('club_info') %}
+        <section class="FormSection SectionPadded">
+            <div class="FormSection__grid{{ club_info ? ' FormSection__grid--withAside' : '' }}">
+                <div class="FormSection__card FormSection__card--form DynamicForm">
+                    {% if app.request.get('send') == 'true' %}
+                        {# The form bundle redirects here after a successful submission. #}
+                        <div class="DynamicForm__success">
+                            {{ view.form.entity.successText|default('<p>Votre message a bien été envoyé.</p>')|raw }}
+                        </div>
+                    {% else %}
+                        {% set form = content.form %}
 
-                {% form_theme form 'forms/dynamic_form_theme.html.twig' %}
-                {{ form(form) }}
-            {% endif %}
+                        {% form_theme form 'forms/dynamic_form_theme.html.twig' %}
+                        {{ form(form) }}
+                    {% endif %}
+                </div>
+
+                {% if club_info %}
+                    <aside class="FormSection__aside" aria-label="Coordonnées du club">
+                        <div class="FormSection__card FormSection__card--info">
+                            <h2 class="FormSection__cardTitle">Nos coordonnées</h2>
+                            {% if club_info.content.address is defined and club_info.content.address %}
+                                <address class="FormSection__address">{{ club_info.content.address|nl2br }}</address>
+                            {% endif %}
+                            {% if club_info.content.email is defined and club_info.content.email %}
+                                <a class="FormSection__contactLink" href="mailto:{{ club_info.content.email }}">{{ club_info.content.email }}</a>
+                            {% endif %}
+                            {% if club_info.content.phone is defined and club_info.content.phone %}
+                                <a class="FormSection__contactLink" href="tel:{{ club_info.content.phone|replace({' ': ''}) }}">{{ club_info.content.phone }}</a>
+                            {% endif %}
+                            {% if club_info.content.legal_status is defined and club_info.content.legal_status %}
+                                <p class="FormSection__legal">{{ club_info.content.legal_status }}</p>
+                            {% endif %}
+                        </div>
+
+                        {% if club_info.content.location is defined and club_info.content.location %}
+                            <div class="FormSection__card FormSection__card--map">
+                                <h2 class="FormSection__cardTitle">Nous trouver</h2>
+                                <div class="FormSection__map">
+                                    <twig:Map
+                                        latitude="{{ club_info.content.location.lat }}"
+                                        longitude="{{ club_info.content.location.long }}"
+                                        title="{{ club_info.content.location.title }}"
+                                        zoom="{{ club_info.content.location.zoom }}"
+                                        style="height: 100%; width: 100%;"
+                                    />
+                                </div>
+                            </div>
+                        {% endif %}
+                    </aside>
+                {% endif %}
+            </div>
         </section>
     {% endif %}
 {% endblock %}

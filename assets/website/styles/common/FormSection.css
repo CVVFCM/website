@@ -1,0 +1,79 @@
+/* Form band: white cards on the light blue band, form beside the club contact aside. */
+.FormSection {
+    background-color: var(--color-bg-light);
+}
+
+.FormSection__grid {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 75rem;
+    margin-inline: auto;
+}
+
+.FormSection__card {
+    background-color: var(--color-white);
+    border-radius: var(--white-card-radius);
+    box-shadow: 0.2em 1.5em 2em color-mix(in srgb, var(--shadow-color) 20%, transparent);
+    padding: 2rem 1.5rem;
+    box-sizing: border-box;
+}
+
+.FormSection__cardTitle {
+    margin: 0 0 1.25rem;
+    color: var(--red-act-text);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.FormSection__aside {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+}
+
+.FormSection__address {
+    font-style: normal;
+    color: var(--base-text-color);
+    line-height: 1.5;
+    margin: 0 0 1rem;
+}
+
+.FormSection__contactLink {
+    display: block;
+    width: fit-content;
+    font-weight: 700;
+    color: var(--blue-note-text);
+    text-decoration: none;
+    padding: 0.15rem 0;
+
+    &:hover,
+    &:focus-visible {
+        text-decoration: underline;
+    }
+}
+
+.FormSection__legal {
+    margin: 1rem 0 0;
+    font-size: 0.85rem;
+    color: var(--color-gray-500);
+}
+
+.FormSection__map {
+    height: 16rem;
+    border-radius: calc(var(--white-card-radius) / 2);
+    overflow: hidden;
+}
+
+@media (width >= 48rem) {
+    .FormSection__card {
+        padding: 2.5rem;
+    }
+}
+
+@media (width >= 65rem) {
+    .FormSection__grid--withAside {
+        grid-template-columns: minmax(0, 1fr) minmax(20rem, 24rem);
+        align-items: start;
+    }
+}

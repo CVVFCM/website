@@ -76,6 +76,18 @@ final class ClubInfoSnippetFixtures extends Fixture implements DependentFixtureI
                     'address' => '5 rue du Lac – 08500 Les Mazures',
                     'legal_status' => 'Association sportive loi 1901',
                     'siret' => '123 123 123 123456',
+                    'email' => 'contact@cvvfcm.fr',
+                    'location' => [
+                        'code' => '08500',
+                        'country' => 'FR',
+                        'lat' => 49.87332855,
+                        'long' => 4.59566473,
+                        'number' => null,
+                        'street' => null,
+                        'title' => 'CVVFCM',
+                        'town' => 'Les Mazures',
+                        'zoom' => 15,
+                    ],
                     'labels' => [
                         [
                             'type' => 'label',
