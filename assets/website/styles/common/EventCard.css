@@ -104,6 +104,35 @@
     text-transform: uppercase;
 }
 
+/* Discreet add-to-calendar action, mirroring .EventCard__icon on the other
+   corner. Raised above the full-card .EventCard__link::after overlay so it
+   stays clickable on its own. */
+.EventCard__calendar {
+    position: absolute;
+    left: .5em;
+    bottom: .5em;
+    z-index: 1;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-500);
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--color-gray-200);
+        color: var(--color-accent-text);
+    }
+
+    & svg {
+        width: 1em;
+        height: 1em;
+    }
+}
+
 .EventCard__icon {
     position: absolute;
     right: .5em;
