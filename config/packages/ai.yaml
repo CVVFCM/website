@@ -15,6 +15,10 @@ ai:
                 name: 'mistral-small-latest'
                 options:
                     temperature: 0.3
+                    # Mistral prompt caching: one stable key for all Forgie requests —
+                    # every conversation shares the system prompt + tool definitions
+                    # prefix, and same-conversation turns reuse their history prefix.
+                    prompt_cache_key: 'forgie'
             tools:
                 - 'App\AI\Tool\CurrentDateTimeTool'
                 - 'App\AI\Tool\RegattaTool'
