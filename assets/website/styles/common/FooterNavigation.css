@@ -48,9 +48,8 @@
 }
 
 .SiteFooter__logoImg {
-    width: 3rem;
+    width: auto;
     height: 3rem;
-    object-fit: contain;
     flex-shrink: 0;
 }
 
