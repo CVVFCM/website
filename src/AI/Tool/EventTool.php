@@ -6,6 +6,7 @@ namespace App\AI\Tool;
 
 use App\AI\PageContentRepository;
 use App\AI\TemplateData;
+use App\Event\EventType;
 use Symfony\AI\Agent\Toolbox\Attribute\AsTool;
 use Symfony\AI\Platform\Contract\JsonSchema\Attribute\Schema;
 
@@ -15,16 +16,9 @@ use function Symfony\Component\Clock\now;
  * Calendar overview of ALL the club's events (any type), 12-month window each way.
  * Details for régates / sorties en mer live in their dedicated tools.
  */
-#[AsTool('events', 'Vue calendrier de tous les événements du club (12 mois en arrière ou en avant) avec leur type (Événement, Régate, Sortie en mer, Stage), dates, lieu et lien. Pour les détails d\'une régate ou d\'une sortie en mer, utiliser les outils dédiés.')]
+#[AsTool('events', 'Vue calendrier de tous les événements du club (12 mois en arrière ou en avant) avec leur type (Événement, Régate, Sortie en mer, Stage, EFV), dates, lieu et lien. Pour les détails d\'une régate ou d\'une sortie en mer, utiliser les outils dédiés.')]
 final readonly class EventTool
 {
-    private const array TYPES = [
-        'default' => 'Événement',
-        'regatta' => 'Régate',
-        'sea_trip' => 'Sortie en mer',
-        'stage' => 'Stage',
-    ];
-
     public function __construct(
         private PageContentRepository $pageContentRepository,
     ) {
@@ -51,7 +45,7 @@ final readonly class EventTool
             'evenements' => array_map(
                 static fn (array $event): array => [
                     'titre' => (string) ($event['title'] ?? ''),
-                    'type' => self::TYPES[\is_string($event['event_type'] ?? null) ? (string) $event['event_type'] : 'default'] ?? self::TYPES['default'],
+                    'type' => EventType::labelFor(\is_string($event['event_type'] ?? null) ? (string) $event['event_type'] : null),
                     'debut' => (string) ($event['begin_date'] ?? ''),
                     'fin' => isset($event['end_date']) ? (string) $event['end_date'] : null,
                     'lieu' => TemplateData::location($event),

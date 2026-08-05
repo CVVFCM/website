@@ -74,6 +74,7 @@
                             <param name="regatta"><meta><title lang="fr">Régate</title></meta></param>
                             <param name="sea_trip"><meta><title lang="fr">Sortie en mer</title></meta></param>
                             <param name="stage"><meta><title lang="fr">Stage</title></meta></param>
+                            <param name="efv"><meta><title lang="fr">EFV</title></meta></param>
                         </param>
                     </params>
                 </property>
