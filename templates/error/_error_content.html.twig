@@ -1,0 +1,34 @@
+{% types {
+    status_code: 'int',
+    status_text: 'string',
+    home_path?: 'string',
+} %}
+{# Rendu par le ErrorController de Sulu : seules status_code, status_text et
+   exception sont disponibles — pas de `resource`, donc pas de fil d'Ariane.
+   home_path est optionnel pour permettre un rendu hors requête (tests). #}
+<header class="Page__header">
+    {{ include('partials/logo_topbar.html.twig') }}
+    <div class="Page__headerMain">
+        <div class="Page__headerBody">
+            <p class="ErrorPage__kicker">Erreur {{ status_code }}</p>
+            {% if status_code == 404 %}
+                <h1 class="Page__headerTitle">Page introuvable</h1>
+                <div class="Page__headerDescription">
+                    <p>La page que vous cherchez a peut-être été déplacée, renommée, ou n'a jamais existé.</p>
+                </div>
+            {% else %}
+                <h1 class="Page__headerTitle">Une erreur est survenue</h1>
+                <div class="Page__headerDescription">
+                    <p>Le site a rencontré un problème inattendu (code {{ status_code }}). Réessayez dans quelques instants.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</header>
+<section class="ErrorPage__actions SectionPadded" aria-label="Où aller ensuite">
+    <a class="CallToAction--btn" href="{{ home_path|default('/') }}">Retour à l'accueil</a>
+    <nav class="ErrorPage__links" aria-label="Pages utiles">
+        <a class="ErrorPage__link" href="/evenements">Événements</a>
+        <a class="ErrorPage__link" href="/contact">Contact</a>
+    </nav>
+</section>
