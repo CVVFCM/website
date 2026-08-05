@@ -53,13 +53,9 @@ export default class extends Controller {
     }
 
     toggleSection(event) {
-        // Category items are links (to their first page); while the mobile menu is
-        // open a tap must keep toggling the section instead of navigating.
-        if (this.element.classList.contains('MainNavigation--open')) {
-            event.preventDefault();
-        }
         const li = event.currentTarget.closest('li');
-        li.classList.toggle('MainNavigation__item--open');
+        const open = li.classList.toggle('MainNavigation__item--open');
+        event.currentTarget.setAttribute('aria-expanded', String(open));
     }
 
     closeOnEscape(event) {

@@ -1,0 +1,23 @@
+.SiteHeader {
+    position: relative;
+    z-index: 1000;
+    height: 0;
+    top: var(--site-header-offset);
+    width: 100%;
+
+    &::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: var(--overlay-dim-color);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+        z-index: -1;
+    }
+
+    &:has(.MainNavigation--open)::before {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}

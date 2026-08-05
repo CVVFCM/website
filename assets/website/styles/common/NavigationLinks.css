@@ -1,0 +1,181 @@
+.NavigationLinks__list {
+    display: inline-flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+}
+
+.NavigationLinks__link {
+    text-align: center;
+    padding: .5em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    color: inherit;
+    gap: .2em;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.NavigationLinks__media {
+    width: 1.5em;
+    height: 1.5em;
+    margin: 0;
+    background-color: var(--color-white);
+    -webkit-mask-image: var(--nav-icon-mask);
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-image: var(--nav-icon-mask);
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+}
+
+/* _________________________________________ bar variant (closed header) */
+
+/* While the menu is open, the quick links live in the panel grid. */
+.MainNavigation--open .NavigationLinks__list--bar {
+    display: none;
+}
+
+.NavigationLinks__list--bar {
+    justify-content: flex-end;
+    gap: 1rem 0.5rem;
+
+    & .NavigationLinks__media {
+        background-color: currentcolor;
+    }
+
+    /* Small screens keep only the call-to-action pill in the bar;
+       every link stays reachable in the open menu's grid. */
+    & .NavigationLinks__item {
+        display: none;
+    }
+
+    & .NavigationLinks__item--button {
+        display: block;
+
+        & .NavigationLinks__link {
+            padding: 0.5em 1.5em;
+            background-color: var(--blue-note-text);
+            color: var(--color-white);
+            border-radius: 3em;
+            font-weight: 800;
+        }
+
+        & .NavigationLinks__media {
+            font-size: .8em;
+        }
+    }
+}
+
+@media (width >= 65rem) {
+    .NavigationLinks__list--bar {
+        & .NavigationLinks__item {
+            display: block;
+        }
+
+        /* The pill and icon-only links share the first row with the header
+           tools; the circle links stack on their own rows below. */
+        & .NavigationLinks__item--button,
+        & .NavigationLinks__item--hiddenText {
+            order: -1;
+        }
+
+        /* Circle icon links stack right-aligned under the bar row. */
+        & .NavigationLinks__item--headerRight {
+            flex-basis: 100%;
+            display: flex;
+            justify-content: flex-end;
+
+            & .NavigationLinks__media {
+                -webkit-mask-image: none;
+                mask-image: none;
+                background-color: var(--red-act-text);
+                border-radius: 50%;
+                order: 2;
+                font-size: 1.5em;
+                position: relative;
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background-color: var(--color-white);
+                    -webkit-mask-image: var(--nav-icon-mask);
+                    -webkit-mask-size: 55%;
+                    -webkit-mask-repeat: no-repeat;
+                    -webkit-mask-position: center;
+                    mask-image: var(--nav-icon-mask);
+                    mask-size: 55%;
+                    mask-repeat: no-repeat;
+                    mask-position: center;
+                }
+            }
+        }
+
+        /* Icon-only links reveal their label on hover. */
+        & .NavigationLinks__item--hiddenText .NavigationLinks__label {
+            position: absolute;
+            max-width: 0;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+            transition: max-width .3s ease-in-out;
+        }
+
+        & .NavigationLinks__link:hover .NavigationLinks__label {
+            max-width: 15em;
+            clip-path: none;
+            position: static;
+        }
+    }
+
+    /* The stuck white bar keeps only its compact row. */
+    .MainNavigation--stuck .NavigationLinks__list--bar .NavigationLinks__item--headerRight {
+        display: none;
+    }
+}
+
+/* ________________________________________ grid variant (open menu) */
+
+.NavigationLinks__list--grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.0625rem;
+    background-color: var(--utility-grey);
+    border: 1px solid var(--utility-grey);
+
+    & .NavigationLinks__item {
+        background-color: var(--color-white);
+    }
+
+    & .NavigationLinks__link {
+        box-sizing: border-box;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1.5em 0.5em;
+        color: var(--blue-note-text);
+        font-weight: 700;
+    }
+
+    & .NavigationLinks__media {
+        display: block;
+        background-color: var(--red-act-text);
+        font-size: 1.4em;
+    }
+}
+
+@media (width >= 65rem) {
+    .NavigationLinks__list--grid {
+        grid-template-columns: repeat(4, minmax(9em, 1fr));
+    }
+}

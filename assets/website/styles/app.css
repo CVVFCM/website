@@ -1,5 +1,7 @@
 @import url('./variables.css');
+@import url('./common/SiteHeader.css');
 @import url('./common/MainNavigation.css');
+@import url('./common/NavigationLinks.css');
 @import url('./common/FooterNavigation.css');
 
 
@@ -7,6 +9,12 @@ body {
     margin: 0;
     padding: 0;
     font-family: var(--font-family-base), sans-serif;
+    scrollbar-gutter: stable;
+}
+
+/* Lock the page scroll behind the open navigation panel. */
+html:has(.MainNavigation--open) {
+    overflow: hidden;
     scrollbar-gutter: stable;
 }
 
@@ -19,7 +27,7 @@ body {
 .Main__container {
     max-width: 100%;
     overflow-x: hidden;
-    margin-top: -8vh;
+    margin-top: calc(-1 * var(--site-header-offset));
 }
 
 h2 {
@@ -58,6 +66,11 @@ a {
 
 .Logo__headerTopBar {
     font-size: 1rem;
+
+    /* Compensate the var(--site-header-offset) pull-up so the logo keeps
+       breathing room below the header controls (SectionPadded provides the
+       base padding, the calc adds the clipped offset back). */
+    padding-top: calc(var(--site-header-offset) + 2rem);
 }
 
 .Logo__headerLogoLink {
