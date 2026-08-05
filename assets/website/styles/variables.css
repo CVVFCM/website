@@ -22,6 +22,14 @@
 :root {
     --site-layout-row-padding: 8vw;
 
+    /* Height of the transparent band the closed header occupies over the page top.
+       Read by main_navigation_controller.js (computed `top` of .SiteHeader) as the
+       sticky-scroll threshold — keep it a viewport unit. */
+    --site-header-offset: 8vh;
+
+    /* Scrim behind the open navigation panel. */
+    --overlay-dim-color: rgb(0 0 0 / 35%);
+
     /* Typography */
     --font-family-base: 'DM Sans', sans-serif;
     --white-card-radius: 1.2rem;

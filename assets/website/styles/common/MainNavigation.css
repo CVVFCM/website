@@ -1,29 +1,3 @@
-.SiteHeader {
-    position: relative;
-    z-index: 1000;
-    height: 0;
-    top: 8vh;
-    width: 100%;
-
-    &::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background: rgb(0 0 0 / 35%);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.2s ease;
-        z-index: -1;
-    }
-
-    &:has(.MainNavigation--open)::before {
-        opacity: 1;
-        pointer-events: auto;
-    }
-}
-
-
-
 .MainNavigation {
     width: 100%;
     display: flex;
@@ -223,52 +197,6 @@
 .MainNavigation__link--ancestor {
     color: var(--red-act-text);
 }
-
-/* _________________________________ NavigationLinks__list  (action rapide) */
-
-
-
-
-.NavigationLinks__list {
-    display: inline-flex;
-    align-items: center;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    flex-wrap: wrap;
-}
-
-.NavigationLinks__link {
-    text-align: center;
-    padding: .5em;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    color: inherit;
-    gap: .2em;
-
-    &:hover {
-        text-decoration: underline;
-    }
-
-
-}
-
-.NavigationLinks__media {
-    width: 1.5em;
-    height: 1.5em;
-    margin: 0;
-    background-color: var(--color-white);
-    -webkit-mask-image: var(--nav-icon-mask);
-    -webkit-mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    mask-image: var(--nav-icon-mask);
-    mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center;
-}
-
 
 .MainNavigation__logo {
     display: none;

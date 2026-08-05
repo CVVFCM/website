@@ -1,5 +1,7 @@
 @import url('./variables.css');
+@import url('./common/SiteHeader.css');
 @import url('./common/MainNavigation.css');
+@import url('./snippets/NavigationLinks.css');
 @import url('./common/FooterNavigation.css');
 
 
@@ -19,7 +21,7 @@ body {
 .Main__container {
     max-width: 100%;
     overflow-x: hidden;
-    margin-top: -8vh;
+    margin-top: calc(-1 * var(--site-header-offset));
 }
 
 h2 {
