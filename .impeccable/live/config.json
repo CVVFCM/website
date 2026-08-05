@@ -1,0 +1,7 @@
+{
+  "files": ["templates/base.html.twig"],
+  "exclude": ["templates/bundles/**", "templates/emails/**"],
+  "insertBefore": "</body>",
+  "commentSyntax": "html",
+  "cspChecked": true
+}
