@@ -18,6 +18,7 @@ final class EventCardTest extends KernelTestCase
         yield 'regatta gets its own illustration' => ['regatta', 'images/events/regatta'];
         yield 'stage gets its own illustration' => ['stage', 'images/events/stage'];
         yield 'sea trip falls back to the generic one' => ['sea_trip', 'images/events/default'];
+        yield 'efv falls back to the generic one' => ['efv', 'images/events/default'];
         yield 'default type' => ['default', 'images/events/default'];
         yield 'missing type' => [null, 'images/events/default'];
     }
