@@ -68,13 +68,15 @@ spec:
               subPath: robots.txt
             {{- end }}
           {{- end }}
+          # /healthz replies 204 when the worker serves requests and the database
+          # answers a SELECT 1, 503 otherwise (schema-free: healthy before migrations).
           # Probes MUST send the real vhost as Host. Sulu resolves the webspace's {host}
           # URL from the first request and caches it per FrankenPHP worker; a default probe
           # (Host: <podIP>) would poison every worker so real requests for {{ .Values.host }}
           # get "no portal" 500s. Sending the real Host makes workers cache the right portal.
           startupProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
               httpHeaders:
                 - name: Host
@@ -83,7 +85,7 @@ spec:
             failureThreshold: 40
           readinessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
               httpHeaders:
                 - name: Host
@@ -92,7 +94,7 @@ spec:
             timeoutSeconds: 5
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
               httpHeaders:
                 - name: Host
