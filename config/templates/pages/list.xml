@@ -80,6 +80,7 @@
                             <param name="event_type" value="event_type" />
                             <param name="begin_date" value="begin_date" />
                             <param name="end_date" value="end_date" />
+                            <param name="uuid" value="object.resource.uuid" />
                         </param>
                     </params>
                 </property>
@@ -99,6 +100,7 @@
                             <param name="description" value="description" />
                             <param name="main_media" value="main_media" />
                             <param name="event_type" value="event_type" />
+                            <param name="uuid" value="object.resource.uuid" />
                         </param>
                     </params>
                 </property>

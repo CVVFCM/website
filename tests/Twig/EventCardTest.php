@@ -70,6 +70,40 @@ final class EventCardTest extends KernelTestCase
         $this->assertStringContainsString($expected, $this->renderWithDates($beginDate, $endDate));
     }
 
+    public function testItRendersACalendarDownloadLinkWhenTheEventHasAUuid(): void
+    {
+        $uuid = '0198c6a2-1111-7222-8333-444455556666';
+
+        $html = $this->renderWithUuid($uuid);
+
+        $this->assertStringContainsString('EventCard__calendar', $html);
+        $this->assertStringContainsString($uuid.'.ics', $html);
+        $this->assertStringContainsString('download', $html);
+        $this->assertStringContainsString('aria-label="Ajouter au calendrier — Événement de test"', $html);
+    }
+
+    public function testItRendersNoCalendarLinkWhenTheEventHasNoUuid(): void
+    {
+        $this->assertStringNotContainsString('EventCard__calendar', $this->render('regatta'));
+    }
+
+    private function renderWithUuid(string $uuid): string
+    {
+        self::bootKernel();
+
+        /** @var Environment $twig */
+        $twig = self::getContainer()->get('twig');
+
+        return $twig->render('partials/event_card.html.twig', ['event' => [
+            'title' => 'Événement de test',
+            'url' => '/evenements/test',
+            'begin_date' => '2027-06-12T10:00:00',
+            'end_date' => '2027-06-13T18:00:00',
+            'main_media' => null,
+            'uuid' => $uuid,
+        ]]);
+    }
+
     private function renderWithDates(string $beginDate, ?string $endDate): string
     {
         self::bootKernel();
