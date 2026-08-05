@@ -13,6 +13,8 @@ jobs:
         env:
             IMAGE_TAG: ml-1001
             EXTERNAL_USER_ID: 1001
+            # Silence the OCI CLI key-label nag (fires on every exec-credential token call).
+            SUPPRESS_LABEL_WARNING: "True"
         steps:
             -   name: Checkout
                 uses: actions/checkout@v6
@@ -21,17 +23,44 @@ jobs:
                 with:
                     version: latest
 
-            -   name: Set up private key
-                run: mkdir -p ~/.ssh && echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
-            -   name: Trust remote host
-                run: ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+            -   name: Install & Configure OCI CLI
+                run: |
+                    curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+                    chmod +x install.sh
+                    ./install.sh --accept-all-defaults
+                    echo "/home/runner/bin" >> "$GITHUB_PATH"
+
+                    mkdir -p ~/.oci
+                    cat <<EOF > ~/.oci/config
+                    [DEFAULT]
+                    user=${{ secrets.OCI_USER_OCID }}
+                    fingerprint=${{ secrets.OCI_FINGERPRINT }}
+                    tenancy=${{ secrets.OCI_TENANCY_OCID }}
+                    region=${{ secrets.OCI_REGION }}
+                    key_file=/home/runner/.oci/key.pem
+                    EOF
+
+                    # OCI_API_KEY is base64encode(file(private_key)) in Terraform — decode
+                    # it back to the raw PEM (writing it verbatim would store base64 text).
+                    echo "${{ secrets.OCI_API_KEY }}" | base64 -d > ~/.oci/key.pem
+
+                    chmod 600 ~/.oci/config ~/.oci/key.pem
+
+                    # Fail fast with a clear message if the key is malformed.
+                    openssl pkey -in ~/.oci/key.pem -noout
+
+            -   name: Write kubeconfig
+                run: |
+                    mkdir -p ~/.kube
+                    echo "${{ secrets.OKE_KUBECONFIG }}" > ~/.kube/config
+                    chmod 600 ~/.kube/config
 
             -   name: Fetch up-to-date CSV weather file
+                # The export reads the PREPROD database from inside a web pod.
                 run: |
                     mkdir -p ./data/weather/ml
-                    docker compose -p cvvfcm-preprod -f compose.yaml exec php bin/console app:export:weather-for-ml > ./data/weather/ml/ml.csv
-                env:
-                    DOCKER_HOST: 'ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}'
+                    kubectl -n cvvfcm-preprod exec deploy/cvvfcm-web -- php bin/console app:export:weather-for-ml > ./data/weather/ml/ml.csv
+                    wc -l ./data/weather/ml/ml.csv
 
             -   name: Docker login
                 run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
@@ -42,13 +71,69 @@ jobs:
 
             -   name: Copy to PREPROD
                 # model_weights.json + scaler_params.json are what the pure-PHP inference reads.
+                # /app/data/weather/ml is the shared RWX PVC, so copying through the web pod
+                # makes the artifacts visible to the consumer pod too.
                 run: |
-                    docker compose -p cvvfcm-preprod -f compose.yaml cp ./data/weather/ml/model_weights.json php:/app/data/weather/ml/
-                    docker compose -p cvvfcm-preprod -f compose.yaml cp ./data/weather/ml/scaler_params.json php:/app/data/weather/ml/
-                env:
-                    DOCKER_HOST: 'ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}'
+                    POD=$(kubectl -n cvvfcm-preprod get pod -l app.kubernetes.io/name=cvvfcm,app.kubernetes.io/instance=cvvfcm,app.kubernetes.io/component=web --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')
+                    kubectl -n cvvfcm-preprod cp ./data/weather/ml/model_weights.json "${POD}:/app/data/weather/ml/"
+                    kubectl -n cvvfcm-preprod cp ./data/weather/ml/scaler_params.json "${POD}:/app/data/weather/ml/"
 
             -   uses: actions/upload-artifact@v7
                 with:
                     name: weather-model-preprod
                     path: ./data/weather/ml
+
+    # Separate job on purpose: GitHub `environment:` is job-scoped, and the PROD cluster
+    # credentials (OKE_KUBECONFIG, OCI_*) are environment-scoped secrets.
+    deliver-prod:
+        name: Deliver weather model to PROD
+        runs-on: ubuntu-latest
+        needs: [ build-ml-preprod ]
+        environment: PROD
+        env:
+            # Silence the OCI CLI key-label nag (fires on every exec-credential token call).
+            SUPPRESS_LABEL_WARNING: "True"
+        steps:
+            -   name: Download the retrained model
+                uses: actions/download-artifact@v4
+                with:
+                    name: weather-model-preprod
+                    path: ./data/weather/ml
+
+            -   name: Install & Configure OCI CLI
+                run: |
+                    curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+                    chmod +x install.sh
+                    ./install.sh --accept-all-defaults
+                    echo "/home/runner/bin" >> "$GITHUB_PATH"
+
+                    mkdir -p ~/.oci
+                    cat <<EOF > ~/.oci/config
+                    [DEFAULT]
+                    user=${{ secrets.OCI_USER_OCID }}
+                    fingerprint=${{ secrets.OCI_FINGERPRINT }}
+                    tenancy=${{ secrets.OCI_TENANCY_OCID }}
+                    region=${{ secrets.OCI_REGION }}
+                    key_file=/home/runner/.oci/key.pem
+                    EOF
+
+                    # OCI_API_KEY is base64encode(file(private_key)) in Terraform — decode
+                    # it back to the raw PEM (writing it verbatim would store base64 text).
+                    echo "${{ secrets.OCI_API_KEY }}" | base64 -d > ~/.oci/key.pem
+
+                    chmod 600 ~/.oci/config ~/.oci/key.pem
+
+                    # Fail fast with a clear message if the key is malformed.
+                    openssl pkey -in ~/.oci/key.pem -noout
+
+            -   name: Write kubeconfig
+                run: |
+                    mkdir -p ~/.kube
+                    echo "${{ secrets.OKE_KUBECONFIG }}" > ~/.kube/config
+                    chmod 600 ~/.kube/config
+
+            -   name: Copy to PROD
+                run: |
+                    POD=$(kubectl -n cvvfcm get pod -l app.kubernetes.io/name=cvvfcm,app.kubernetes.io/instance=cvvfcm,app.kubernetes.io/component=web --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')
+                    kubectl -n cvvfcm cp ./data/weather/ml/model_weights.json "${POD}:/app/data/weather/ml/"
+                    kubectl -n cvvfcm cp ./data/weather/ml/scaler_params.json "${POD}:/app/data/weather/ml/"

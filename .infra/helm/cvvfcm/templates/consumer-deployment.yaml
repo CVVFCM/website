@@ -57,8 +57,21 @@ spec:
           env:
             {{- include "cvvfcm.dbEnv" . | nindent 12 }}
           {{- end }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+            # Shared (RWX) ML weather-model artifacts: the live-weather import cron runs
+            # here and needs model_weights.json / scaler_params.json for the model gaps.
+            - name: ml-artifacts
+              mountPath: /app/data/weather/ml
+          {{- end }}
           resources:
             {{- toYaml .Values.consumer.resources | nindent 12 }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: ml-artifacts
+          persistentVolumeClaim:
+            claimName: {{ include "cvvfcm.fullname" . }}-ml
+      {{- end }}
       {{- with .Values.consumer.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
