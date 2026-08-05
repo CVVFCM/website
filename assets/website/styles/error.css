@@ -1,0 +1,34 @@
+/* Error page (404 / 5xx) — reuses the default page header blocks. */
+@import url('./default.css');
+
+/* .Page__headerMain sets word-break: break-all for editor-provided titles;
+   our fixed French copy must wrap on word boundaries. */
+.ErrorPage .Page__headerMain {
+    word-break: normal;
+}
+
+.ErrorPage__kicker {
+    color: var(--color-accent-text);
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem;
+}
+
+.ErrorPage__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.ErrorPage__links {
+    display: flex;
+    gap: 2rem;
+}
+
+.ErrorPage__link {
+    text-decoration: underline;
+}

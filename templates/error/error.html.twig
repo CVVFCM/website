@@ -1,5 +1,15 @@
 {% extends 'base.html.twig' %}
 
+{% block pageclass 'ErrorPage' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('styles/error.css') }}" />
+{% endblock %}
+
 {% block content %}
-    <h1>Error {{ status_code }}: {{ status_text }}</h1>
+    {{ include('error/_error_content.html.twig', {
+        status_code: status_code,
+        status_text: status_text,
+        home_path: sulu_content_root_path(),
+    }, with_context: false) }}
 {% endblock %}
