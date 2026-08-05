@@ -6,8 +6,8 @@
 
     <div class="SiteFooter__identity">
         <a class="SiteFooter__logoLink" href="{{ sulu_content_root_path() }}" aria-label="Accueil — Club de Voile des Vieilles Forges de Charleville-Mézières">
-            <img class="SiteFooter__logoImg" src="{{ asset('images/logo_cvvfcm.svg') }}" alt="Logo CVVFCM" width="48" height="48" />
-            <span class="SiteFooter__clubName">Club de Voile<br />des Vieilles Forges<br />de Charleville-Mézières</span>
+            <img class="SiteFooter__logoImg" src="{{ asset('images/logo_cvvfcm_color.svg') }}" alt="" width="189" height="121" />
+            {{ include('partials/logo_wordmark.html.twig', {class: 'SiteFooter__clubName'}) }}
         </a>
         {% if club_info %}
             <address class="SiteFooter__address">
