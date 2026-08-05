@@ -5,4 +5,6 @@
     <meta>
         <title lang="fr">Description</title>
     </meta>
+
+    <tag name="sulu.search.field"/>
 </property>

@@ -23,6 +23,7 @@
             </params>
 
             <tag name="sulu.rlp.part"/>
+            <tag name="sulu.search.field" role="title"/>
         </property>
 
         <property name="url" type="route" mandatory="true">
@@ -40,12 +41,16 @@
             <params>
                 <param name="headline" value="true"/>
             </params>
+
+            <tag name="sulu.search.field" role="description"/>
         </property>
 
         <property name="media" type="single_media_selection" mandatory="true">
             <meta>
                 <title lang="fr">Média</title>
             </meta>
+
+            <tag name="sulu.search.field" role="image"/>
         </property>
     </properties>
 </template>

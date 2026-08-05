@@ -1,6 +1,9 @@
+# La recherche du site est celle de SuluSearchBundle (moteur cmsig/seal, index Loupe sous
+# var/indexes) : on ne redéfinit ici que le chemin, pour rester en français comme le reste du site.
 sulu_search.website_search:
-    path: /search
-    controller: App\Controller\Error404Controller
+    path: /recherche
+    controller: 'sulu_search.controller.website_search::queryAction'
+    format: html
 
 
 controllers:

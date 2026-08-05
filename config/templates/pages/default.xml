@@ -23,6 +23,7 @@
             </params>
 
             <tag name="sulu.rlp.part"/>
+            <tag name="sulu.search.field" role="title"/>
         </property>
 
         <property name="url" type="route" mandatory="true">
@@ -37,12 +38,16 @@
             <meta>
                 <title lang="fr">Média</title>
             </meta>
+
+            <tag name="sulu.search.field" role="image"/>
         </property>
 
         <property name="description" type="text_editor">
             <meta>
                 <title lang="fr">Description</title>
             </meta>
+
+            <tag name="sulu.search.field" role="description"/>
         </property>
 
         <block name="blocks" default-type="title_image_text" minOccurs="0">
@@ -58,12 +63,16 @@
                     <properties>
                         <property name="title" type="text_line" mandatory="true">
                             <meta><title lang="fr">Titre</title></meta>
+
+                            <tag name="sulu.search.field"/>
                         </property>
                         <property name="media" type="single_media_selection">
                             <meta><title lang="fr">Image</title></meta>
                         </property>
                         <property name="text" type="text_editor" mandatory="true">
                             <meta><title lang="fr">Paragraphe</title></meta>
+
+                            <tag name="sulu.search.field"/>
                         </property>
                     </properties>
                 </type>
@@ -86,6 +95,8 @@
                     <properties>
                         <property name="title" type="text_line" mandatory="true">
                             <meta><title lang="fr">Titre</title></meta>
+
+                            <tag name="sulu.search.field"/>
                         </property>
                         <property name="pages" type="smart_content" mandatory="true">
                             <meta><title lang="fr">Pages / Événements enfants</title></meta>
@@ -105,6 +116,8 @@
                         </property>
                         <property name="description" type="text_editor">
                             <meta><title lang="fr">Description</title></meta>
+
+                            <tag name="sulu.search.field"/>
                         </property>
                     </properties>
                 </type>
@@ -116,9 +129,13 @@
                     <properties>
                         <property name="title" type="text_line" mandatory="true">
                             <meta><title lang="fr">Titre</title></meta>
+
+                            <tag name="sulu.search.field"/>
                         </property>
                         <property name="description" type="text_editor" mandatory="true">
                             <meta><title lang="fr">Description</title></meta>
+
+                            <tag name="sulu.search.field"/>
                         </property>
                         <property name="cta_label" type="text_line">
                             <meta><title lang="fr">Libellé du bouton</title></meta>
