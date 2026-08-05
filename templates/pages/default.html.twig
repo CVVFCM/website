@@ -41,14 +41,14 @@
             <div class="DefaultPage__blocks">
                 {% for block in content.blocks %}
                     {% if block.type == 'title_image_text' %}
-                        <div class="ContentBlock ContentBlock--titleImageText SectionPadded">
+                        <div class="ContentBlock ContentBlock--titleImageText{{ block.media ? '' : ' ContentBlock--noImage' }} SectionPadded">
                             <h2 class="ContentBlock__title">{{ block.title }}</h2>
-                            {% if block.type == 'title_image_text' %}
+                            {% if block.media %}
+                                {{ picture.render(block.media, 'x800', block.media.title, {
+                                    class: 'ContentBlock__image',
+                                    loading: 'lazy',
+                                }) }}
                             {% endif %}
-                            {{ picture.render(block.media, 'x800', block.media.title, {
-                                class: 'ContentBlock__image',
-                                loading: 'lazy',
-                            }) }}
                             <div class="ContentBlock__text">{{ block.text|raw }}</div>
                         </div>
 

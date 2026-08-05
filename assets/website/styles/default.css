@@ -104,6 +104,22 @@
     }
 }
 
+.ContentBlock__image {
+    max-width: 100%;
+    height: auto;
+}
+
+.ContentBlock--titleImageText.ContentBlock--noImage {
+    .ContentBlock__title {
+        text-align: center;
+    }
+
+    .ContentBlock__text {
+        max-width: 36em;
+        margin: 0 auto;
+    }
+}
+
 .ContentBlock--gallery {
     display: flex;
     flex-wrap: wrap;
