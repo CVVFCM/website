@@ -1,0 +1,28 @@
+{% types {
+    begin_date: 'string',
+    end_date: '?string',
+} %}
+{# Sulu content provides DateTime objects while template data provides strings:
+   the |date / format_date filters below accept both. A datetime property saved
+   without a time falls back to midnight, so 00:00 is treated as "no time set". #}
+{% set is_multi_day = end_date is not empty and begin_date|date('Y-m-d') != end_date|date('Y-m-d') %}
+{% set begin_has_time = begin_date|date('H:i') != '00:00' %}
+{% set end_has_time = end_date is not empty and end_date|date('H:i') != '00:00' %}
+<div class="EventPage__headerDates">
+    <span class="EventPage__headerDay">
+        {% if is_multi_day %}
+            DU {{ begin_date|format_date(pattern: 'EEEE d MMMM yyyy', locale: 'fr')|upper }} AU {{ end_date|format_date(pattern: 'EEEE d MMMM yyyy', locale: 'fr')|upper }}
+        {% else %}
+            {{ begin_date|format_date(pattern: 'EEEE d MMMM yyyy', locale: 'fr')|upper }}
+        {% endif %}
+    </span>
+    {% if begin_has_time and end_has_time %}
+        <span class="EventPage__headerTime">
+            DE {{ begin_date|format_datetime(pattern: "HH'H'mm", locale: 'fr') }} À {{ end_date|format_datetime(pattern: "HH'H'mm", locale: 'fr') }}
+        </span>
+    {% elseif begin_has_time %}
+        <span class="EventPage__headerTime">
+            À {{ begin_date|format_datetime(pattern: "HH'H'mm", locale: 'fr') }}
+        </span>
+    {% endif %}
+</div>
