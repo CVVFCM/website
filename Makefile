@@ -56,7 +56,7 @@ reset-test:
 test:
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/phpunit --colors=always --testdox
 
-test-ai: ## Run the AI-judged tests (needs API keys: dev vault locally, prod vault in CI)
+test-ai: ## Run the AI-judged tests manually — not part of CI (needs API keys from the dev vault)
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/phpunit --colors=always --testdox --group ai
 
 cc: ## Clear Symfony cache (website + admin)
