@@ -97,7 +97,9 @@
                         <div class="ContentBlock ContentBlock--cta SectionPadded">
                             <h2 class="ContentBlock__title">{{ block.title }}</h2>
                             <div class="ContentBlock__description">{{ block.description|raw }}</div>
-                            <a class="ContentBlock__cta CallToAction--btn " href="{{ block.cta_url }}">{{ block.cta_label }}</a>
+                            {% if block.cta_url and block.cta_label %}
+                                <a class="ContentBlock__cta CallToAction--btn" href="{{ block.cta_url }}">{{ block.cta_label }}</a>
+                            {% endif %}
                         </div>
                     {% endif %}
                 {% endfor %}
