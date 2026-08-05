@@ -27,8 +27,17 @@
         <h3 class="EventCard__title">
             <a href="{{ event.url }}" class="EventCard__link">{{ event.title }}</a>
         </h3>
+        {% set end_date = event.end_date|default(null) %}
         <time class="EventCard__date" datetime="{{ event.begin_date|date('Y-m-d') }}">
-            {{ event.begin_date|format_date(pattern: 'd') }}–{{ event.end_date|format_date(pattern: 'd MMMM Y')|upper }}
+            {% if end_date is empty or event.begin_date|date('Y-m-d') == end_date|date('Y-m-d') %}
+                {{ event.begin_date|format_date(pattern: 'd MMMM Y', locale: 'fr')|upper }}
+            {% elseif event.begin_date|date('Y-m') == end_date|date('Y-m') %}
+                {{ event.begin_date|format_date(pattern: 'd', locale: 'fr') }}–{{ end_date|format_date(pattern: 'd MMMM Y', locale: 'fr')|upper }}
+            {% elseif event.begin_date|date('Y') == end_date|date('Y') %}
+                {{ event.begin_date|format_date(pattern: 'd MMMM', locale: 'fr')|upper }} – {{ end_date|format_date(pattern: 'd MMMM Y', locale: 'fr')|upper }}
+            {% else %}
+                {{ event.begin_date|format_date(pattern: 'd MMMM Y', locale: 'fr')|upper }} – {{ end_date|format_date(pattern: 'd MMMM Y', locale: 'fr')|upper }}
+            {% endif %}
         </time>
         <span class="EventCard__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
