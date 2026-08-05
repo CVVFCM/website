@@ -35,6 +35,18 @@
             <meta><title lang="fr">SIRET</title></meta>
         </property>
 
+        <property name="email" type="text_line">
+            <meta><title lang="fr">Email de contact</title></meta>
+        </property>
+
+        <property name="phone" type="text_line">
+            <meta><title lang="fr">Téléphone</title></meta>
+        </property>
+
+        <property name="location" type="location">
+            <meta><title lang="fr">Localisation (carte)</title></meta>
+        </property>
+
         <block name="labels" default-type="label">
             <meta><title lang="fr">Labels / Certifications</title></meta>
             <types>

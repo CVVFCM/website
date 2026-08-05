@@ -2,6 +2,7 @@
 @import url('./app.css');
 @import url('./list.css');
 @import url('./common/DynamicForm.css');
+@import url('./common/FormSection.css');
 
 
 .Page__header {
