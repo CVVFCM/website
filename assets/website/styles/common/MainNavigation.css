@@ -1,11 +1,10 @@
 .MainNavigation {
     width: 100%;
-    display: flex;
-    flex-flow: row-reverse wrap;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 1rem var(--site-layout-row-padding);
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem var(--site-layout-row-padding);
+    color: var(--color-white);
     pointer-events: none;
 }
 
@@ -13,6 +12,46 @@
 .MainNavigation button,
 .MainNavigation__container {
     pointer-events: auto;
+}
+
+/* ______________________________________________________________ bar row */
+
+.MainNavigation__bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0 0.5rem;
+}
+
+.MainNavigation__logo {
+    /* Shown once the bar has a white background: stuck or menu open. */
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    margin-right: auto;
+    text-decoration: none;
+    color: var(--base-text-color);
+
+    & img {
+        width: auto;
+        height: 2.75rem;
+    }
+}
+
+.MainNavigation--stuck .MainNavigation__logo,
+.MainNavigation--open .MainNavigation__logo {
+    display: flex;
+}
+
+.MainNavigation__wordmark {
+    display: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.MainNavigation--open .MainNavigation__wordmark {
+    display: block;
 }
 
 .MainNavigation__mainTools {
@@ -23,8 +62,6 @@
         color: inherit;
     }
 }
-
-
 
 .MainNavigation__searchToggle {
     display: inline-flex;
@@ -120,75 +157,93 @@
     }
 }
 
+/* _________________________________________________________ menu panel */
+
 .MainNavigation__container {
-    background-color: var(--color-white);
     display: flex;
-    flex: 0 0 100%;
+    flex-direction: column;
+    gap: 1.5rem;
     max-height: 0;
     overflow: hidden;
     scrollbar-gutter: stable;
+    visibility: hidden;
     transform: translateY(-1rem);
     opacity: 0;
     transition:
         max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
         transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.25s ease;
+        opacity 0.25s ease,
+        visibility 0s linear 0.4s;
 }
 
 .MainNavigation--open .MainNavigation__container {
     max-height: 300vh;
+    visibility: visible;
     transform: translateY(0);
     opacity: 1;
+    transition-delay: 0s;
 }
+
+.MainNavigation__quickActions {
+    margin-top: 1rem;
+}
+
+/* _________________________________________________________ page tree */
 
 .MainNavigation__list {
     width: 100%;
-    justify-content: space-between;
     box-sizing: border-box;
     list-style: none;
-    margin: 0;
     display: flex;
-    gap: 1rem 2rem;
+    flex-direction: column;
+    margin: 0;
     padding: 0;
-    font-size: .8rem;
-
-    & > li {
-        flex: 1 .5 12em;
-        max-width: 22em;
-        padding: 1em;
-    }
 
     & ul {
         list-style: none;
         padding: 0;
     }
+}
 
-    .MainNavigation__item--category {
-        padding: .5em 0;
+/* Depth-0 rows: link and chevron toggle side by side, sub-list below. */
+.MainNavigation__list > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 0.75rem;
+    padding: 0.6rem 0;
+
+    & > ul {
+        flex-basis: 100%;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .MainNavigation__item--category > span {
-        font-size: 1rem;
+    &.MainNavigation__item--open > ul {
+        max-height: 60vh;
     }
+}
 
-    & > .MainNavigation__item--category > span {
-        font-size: 1.6rem;
-    }
-
+.MainNavigation__list > li > .MainNavigation__link {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--blue-note-text);
 }
 
 .MainNavigation__link {
     text-decoration: none;
-    display: block;
+    display: inline-block;
+    color: inherit;
     transition: background-color 0.2s ease;
 
     &:hover,
     &:focus {
-        background-color: rgb(255 255 255 / 10%);
+        background-color: color-mix(in srgb, var(--blue-note-text) 8%, transparent);
     }
 
     &:focus-visible {
-        outline: 0.125rem solid var(--color-white);
+        outline: 0.125rem solid currentcolor;
         outline-offset: -0.125rem;
     }
 }
@@ -198,269 +253,138 @@
     color: var(--red-act-text);
 }
 
-.MainNavigation__logo {
-    display: none;
-    position: absolute;
-    align-items: center;
-    text-decoration: none;
-    left: var(--site-layout-row-padding);
-    order: -100;
-    top: .25rem;
-    transform: scale(1);
-    transform-origin: left top;
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+.MainNavigation__sectionToggle {
+    box-sizing: border-box;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--utility-grey);
+    cursor: pointer;
+    position: relative;
 
-    & img {
-        width: 3rem;
-        height: 3rem;
-        filter: brightness(0);
-        object-fit: contain;
-    }
-}
-
-.MainNavigation--stuck .MainNavigation__logo,
-.MainNavigation--open .MainNavigation__logo {
-    display: flex;
-}
-
-.MainNavigation--open .MainNavigation__logo {
-    transform: scale(1.7) translateY(10%);
-}
-
-@media (width >= 48rem) {
-    .MainNavigation--open .MainNavigation__logo {
-        transform: scale(2.2) translateY(10%);
-    }
-}
-
-@media (width >= 65em) {
-    .MainNavigation--open .MainNavigation__logo {
-        transform: scale(2.8) translateY(10%);
-    }
-}
-
-.MainNavigation--stuck {
-    position: fixed;
-    box-shadow: color-mix(in srgb, var(--shadow-color) 40%, transparent) 0 .5em 2em;
-}
-
-/* _____________________________________________________________ MENU CLOSE */
-
-
-
-.MainNavigation:not(.MainNavigation--open) {
-    align-items: flex-start;
-    color: var(--color-white);
-
-    &.MainNavigation--stuck {
-        background-color: var(--color-white);
-        color: var(--base-text-color);
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-        align-items: center;
-
-        & .NavigationLinks__item--headerRight {
-            display: none;
-        }
-    }
-
-    & .NavigationLinks__list {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 1rem 0.5rem;
-        max-width: 60%;
-    }
-
-    & .NavigationLinks__media {
-        background-color: currentcolor;
-    }
-
-
-    & .NavigationLinks__item--headerRight {
-        width: 100%;
-        text-align: right;
-        order: 10;
-        position: relative;
-        right: -7em;
-
-        & .NavigationLinks__media {
-            -webkit-mask-image: none;
-            mask-image: none;
-            background-color: var(--red-act-text);
-            border-radius: 50%;
-            order: 2;
-            font-size: 1.5em;
-            position: relative;
-
-            &::after {
-                content: '';
-                position: absolute;
-                inset: 0;
-                background-color: var(--color-white);
-                -webkit-mask-image: var(--nav-icon-mask);
-                -webkit-mask-size: 55%;
-                -webkit-mask-repeat: no-repeat;
-                -webkit-mask-position: center;
-                mask-image: var(--nav-icon-mask);
-                mask-size: 55%;
-                mask-repeat: no-repeat;
-                mask-position: center;
-            }
-        }
-    }
-
-    & .NavigationLinks__item--button {
-        & .NavigationLinks__link {
-            padding: 0.5em 1.5em;
-            background-color: var(--blue-note-text);
-            color: var(--color-white);
-            border-radius: 3em;
-            font-weight: 800;
-        }
-
-
-        & .NavigationLinks__media {
-            font-size: .8em;
-        }
-    }
-
-    & .NavigationLinks__item--hiddenText .NavigationLinks__label {
-        position: absolute;
-        max-width: 1px;
-        overflow: hidden;
-        clip-path: inset(50%);
-        white-space: nowrap;
-        transition: max-width .3s ease-in-out;
-    }
-
-    & .NavigationLinks__link:hover .NavigationLinks__label {
-        max-width: 15em;
-        clip-path: none;
-        position: static;
-    }
-
-
-    & .NavigationLinks__item--menuOnly {
-        display: none;
-    }
-
-}/* ___________________________________________________________ MENU OPEN */
-
-
-
-.MainNavigation--open {
-    background-color: var(--color-white);
-    gap: 2rem 1rem;
-    overflow-y: auto;
-    max-height: 95vh;
-    padding-bottom: 3em;
-
-    & .MainNavigation__mainTools {
-        color: var(--base-text-color);
-        width:  100%;
-        text-align: right;
-        justify-content: flex-end;
-        top: 0;
-        right: 0;
-    }
-
-    & .NavigationLinks__list {
-        justify-content: stretch;
-    }
-
-    & .NavigationLinks__item {
-        position: relative;
-        margin-right: -1px;
-        min-width: 9em;
-    }
-
-    & .NavigationLinks__link {
-        box-sizing: border-box;
-        padding: 1.5em .5em ;
-        border: 1px solid var(--utility-grey);
-        width: 100%;
-        flex-direction: column;
-        color: inherit;
-        background: none;
-    }
-
-    & .NavigationLinks__media {
-        display: block;
-        background-color: var(--red-act-text);
-    }
-
-    & .NavigationLinks__item--hiddenText .NavigationLinks__label {
-        display: revert;
-        position: static;
-        width: auto;
-        height: auto;
-        overflow: visible;
-        clip-path: none;
-        white-space: normal;
-    }
-}
-
-
-@media (width < 65em) {
-    .MainNavigation__mainTools {
-        flex: 0 0 auto;
-    }
-
-    .MainNavigation--open .NavigationLinks__list {
-        flex-wrap: wrap;
-        display: flex;
-    }
-
-    .MainNavigation--open .NavigationLinks__item {
-        flex: 0 0 calc(50% - 0.5px);
-    }
-
-    .MainNavigation__list {
-        display: flex;
-        flex: 1 1 auto;
-        min-width: 0;
-        flex-direction: column;
-        max-width: 24em;
-
-        & > li {
-            flex-basis: auto;
-            max-width: none;
-            box-sizing: border-box;
-        }
-    }
-
-    .MainNavigation__list > li > ul {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .MainNavigation__list > li.MainNavigation__item--open > ul {
-        max-height: 60vh;
-    }
-
-    .MainNavigation__list > li > span.MainNavigation__link {
-        cursor: pointer;
-        display: block;
-    }
-
-    .MainNavigation__list > li > span.MainNavigation__link::after {
+    &::before {
         content: '';
         box-sizing: border-box;
-        display: inline-block;
-        width: 0.45em;
-        height: 0.45em;
-        margin-left: 0.4em;
-        vertical-align: 0.15em;
-        border-right: 0.15em solid currentcolor;
-        border-bottom: 0.15em solid currentcolor;
-        transform: rotate(45deg);
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-right: 0.15rem solid var(--color-white);
+        border-bottom: 0.15rem solid var(--color-white);
+        transform: translateY(-0.1rem) rotate(45deg);
         transition: transform 0.25s ease;
     }
 
-    .MainNavigation__list > li.MainNavigation__item--open > span.MainNavigation__link::after {
-        transform: rotate(-135deg);
+    &:focus-visible {
+        outline: 0.125rem solid var(--blue-note-text);
+        outline-offset: 0.125rem;
     }
 }
 
+.MainNavigation__item--open > .MainNavigation__sectionToggle::before {
+    transform: translateY(0.1rem) rotate(-135deg);
+}
 
+/* Depth-1 categories read as bold sub-headings… */
+.MainNavigation__list ul .MainNavigation__item--category > .MainNavigation__link {
+    font-weight: 700;
+    color: var(--base-text-color);
+    padding: 0.35rem 0;
+}
+
+/* …and leaf pages as blue links with the arrow affordance. */
+.MainNavigation__list ul li:not(.MainNavigation__item--category) > .MainNavigation__link {
+    color: var(--blue-note-text);
+    padding: 0.2rem 0;
+
+    &::after {
+        content: '\2192';
+        color: var(--red-act-text);
+        margin-left: 0.35em;
+    }
+}
+
+/* ________________________________________________________ closed state */
+
+.MainNavigation--stuck:not(.MainNavigation--open) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-white);
+    color: var(--base-text-color);
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    box-shadow: color-mix(in srgb, var(--shadow-color) 40%, transparent) 0 .5em 2em;
+}
+
+/* _________________________________________________________ open state */
+
+.MainNavigation--open {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--color-white);
+    color: var(--base-text-color);
+    overflow-y: auto;
+    max-height: 100dvh;
+    padding-bottom: 3rem;
+
+    /* The bar quick links live in the panel grid while the menu is open. */
+    & .MainNavigation__bar .NavigationLinks__list--bar {
+        display: none;
+    }
+}
+
+/* ______________________________________________________ larger screens */
+
+@media (width >= 48rem) {
+    .MainNavigation--stuck .MainNavigation__wordmark {
+        display: block;
+    }
+}
+
+@media (width >= 65rem) {
+    /* The quick links wrap onto several rows: keep the tools on the first. */
+    .MainNavigation:not(.MainNavigation--open) .MainNavigation__bar {
+        align-items: flex-start;
+    }
+
+    .MainNavigation--open .MainNavigation__logo img {
+        height: 3.5rem;
+    }
+
+    /* Quick actions become a right-aligned row above the columns. */
+    .MainNavigation__quickActions {
+        align-self: flex-end;
+    }
+
+    /* The page tree spreads into the classic mega-menu columns,
+       always expanded: the accordion is a small-screen affordance. */
+    .MainNavigation__sectionToggle {
+        display: none;
+    }
+
+    .MainNavigation__list {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 1rem 2rem;
+
+        & > li {
+            display: block;
+            flex: 1 0.5 12em;
+            max-width: 22em;
+            padding: 1em;
+
+            & > ul {
+                max-height: none;
+                overflow: visible;
+            }
+        }
+    }
+}

@@ -21,3 +21,9 @@
         pointer-events: auto;
     }
 }
+
+/* Lock the page scroll behind the open menu panel. */
+html:has(.MainNavigation--open) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+}

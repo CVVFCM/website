@@ -2,10 +2,11 @@
     content: 'array',
     title: 'string',
     links: 'array',
+    variant: 'string|null',
 } %}
 
 {% if content.links is defined and content.links is not empty %}
-    <ul class="NavigationLinks__list" aria-label="{{ content.title }}">
+    <ul class="NavigationLinks__list{{ variant is defined and variant ? ' NavigationLinks__list--' ~ variant : '' }}" aria-label="{{ content.title }}">
         {# Map the snake_case display enum (content data) to camelCase BEM modifiers. #}
         {% set display_class_map = {header_top: 'headerTop', header_right: 'headerRight', hidden_text: 'hiddenText'} %}
         {% for link in content.links %}

@@ -3,53 +3,55 @@
 
 {% set navigation_root = sulu_page_navigation_root_tree(navigation_context_name, navigation_max_depth, {title: 'title', url: 'url', template: 'object.templateKey', uuid: 'object.resource.uuid'}) %}
 {% set navigation_links = sulu_snippet_load_by_area('navigation_links') %}
-{% set navigation_links_2 = sulu_snippet_load_by_area('navigation_links_2') %}
 
 <nav class="MainNavigation"
      aria-label="Navigation principale"
      data-controller="main-navigation"
      data-action="keydown.esc->main-navigation#closeOnEscape">
 
-    <a class="MainNavigation__logo" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM" tabindex="-1" aria-hidden="true">
-        <img src="{{ asset('images/logo_cvvfcm.svg') }}" alt="" width="32" height="32" />
-    </a>
+    <div class="MainNavigation__bar">
+        <a class="MainNavigation__logo" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
+            <img src="{{ asset('images/logo_cvvfcm_color.svg') }}" alt="" width="189" height="121" />
+            {{ include('partials/logo_wordmark.html.twig', {class: 'MainNavigation__wordmark'}) }}
+        </a>
 
-    <div class="MainNavigation__mainTools">
+        {% if navigation_links %}
+            {{ include('snippets/navigation_links.html.twig', {content: navigation_links.content, variant: 'bar'}) }}
+        {% endif %}
+
+        <div class="MainNavigation__mainTools">
             <a class="MainNavigation__searchToggle"
                href="#searcBar"
                aria-label="Rechercher">
                 <span class="MainNavigation__searchIcon" aria-hidden="true"></span>
             </a>
-            <a class="MainNavigation__toggle"
-               href="#main-navigation-menu"
-               role="button"
-               aria-expanded="false"
-               aria-controls="main-navigation-menu"
-               aria-label="Ouvrir le menu de navigation"
-               data-main-navigation-target="toggle"
-               data-action="click->main-navigation#toggle">
+            <button class="MainNavigation__toggle"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="main-navigation-menu"
+                    aria-label="Ouvrir le menu de navigation"
+                    data-main-navigation-target="toggle"
+                    data-action="main-navigation#toggle">
                 <span class="MainNavigation__burger" aria-hidden="true"></span>
-            </a>
+            </button>
+        </div>
     </div>
-
-    {% if navigation_links %}
-        {{ include('snippets/navigation_links.html.twig', {content: navigation_links.content}) }}
-    {% endif %}
 
     <div class="MainNavigation__container"
          id="main-navigation-menu"
          data-main-navigation-target="menu">
+
+        {% if navigation_links %}
+            <div class="MainNavigation__quickActions">
+                {{ include('snippets/navigation_links.html.twig', {content: navigation_links.content, variant: 'grid'}) }}
+            </div>
+        {% endif %}
+
         <ul class="MainNavigation__list">
             {% if navigation_root %}
                 {{ _self.display_navigation_nodes(navigation_root|first, 0, app.request.pathinfo) }}
             {% endif %}
         </ul>
-
-        {% if navigation_links_2 %}
-            <div class="ainNavigation__socialMenu SocialMenu">
-                {{ include('snippets/navigation_links.html.twig', {content: navigation_links_2.content}) }}
-            </div>
-        {% endif %}
     </div>
 </nav>
 
@@ -83,19 +85,26 @@
                 {% if categoryFirstPageUrl %}
                     <a class="MainNavigation__link{{ isAncestor ? ' MainNavigation__link--ancestor' : '' }}"
                        href="{{ sulu_content_path(categoryFirstPageUrl) }}"
-                       title="{{ item.title }}"
-                       {% if depth == 0 and item.children is not empty %}data-action="click->main-navigation#toggleSection"{% endif %}><span class="MainNavigation__link-text">{{ item.title }}</span></a>
+                       title="{{ item.title }}"><span class="MainNavigation__linkText">{{ item.title }}</span></a>
                 {% else %}
                     <span class="MainNavigation__link"
-                          title="{{ item.title }}"
-                          {% if depth == 0 and item.children is not empty %}data-action="click->main-navigation#toggleSection"{% endif %}><span class="MainNavigation__link-text">{{ item.title }}</span></span>
+                          title="{{ item.title }}"><span class="MainNavigation__linkText">{{ item.title }}</span></span>
                 {% endif %}
             {% else %}
-                <a class="MainNavigation__link{{ isAncestor ? ' MainNavigation__link--ancestor' : '' }}" href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}">{{ item.title }}</a>
+                <a class="MainNavigation__link{{ isAncestor ? ' MainNavigation__link--ancestor' : '' }}" href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}"><span class="MainNavigation__linkText">{{ item.title }}</span></a>
+            {% endif %}
+
+            {% if depth == 0 and item.children is not empty %}
+                <button class="MainNavigation__sectionToggle"
+                        type="button"
+                        aria-expanded="false"
+                        aria-controls="nav-section-{{ item.uuid }}"
+                        aria-label="Déplier {{ item.title }}"
+                        data-action="main-navigation#toggleSection"></button>
             {% endif %}
 
             {% if item.children is not empty %}
-                <ul>
+                <ul{% if depth == 0 %} id="nav-section-{{ item.uuid }}"{% endif %}>
                     {{ _self.display_navigation_nodes(item, depth + 1, currentPath) }}
                 </ul>
             {% endif %}
