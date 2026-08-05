@@ -59,7 +59,7 @@
                         <property name="title" type="text_line" mandatory="true">
                             <meta><title lang="fr">Titre</title></meta>
                         </property>
-                        <property name="media" type="single_media_selection" mandatory="true">
+                        <property name="media" type="single_media_selection">
                             <meta><title lang="fr">Image</title></meta>
                         </property>
                         <property name="text" type="text_editor" mandatory="true">
@@ -120,10 +120,10 @@
                         <property name="description" type="text_editor" mandatory="true">
                             <meta><title lang="fr">Description</title></meta>
                         </property>
-                        <property name="cta_label" type="text_line" mandatory="true">
+                        <property name="cta_label" type="text_line">
                             <meta><title lang="fr">Libellé du bouton</title></meta>
                         </property>
-                        <property name="cta_url" type="url" mandatory="true">
+                        <property name="cta_url" type="url">
                             <meta><title lang="fr">URL du bouton</title></meta>
                         </property>
                     </properties>
