@@ -49,6 +49,31 @@ final readonly class PageContentRepository
     }
 
     /**
+     * Published "event" pages starting today or later, oldest first.
+     *
+     * Rows carry the page uuid on top of the templateData, so the ICS feed can
+     * derive one stable UID per event.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function findUpcomingEvents(\DateTimeImmutable $from): array
+    {
+        return $this->templateData(
+            $this->createPublishedQueryBuilder()
+                ->innerJoin('dc.page', 'p')
+                ->addSelect('p.uuid')
+                ->andWhere('dc.templateKey = :templateKey')
+                ->setParameter('templateKey', 'event')
+                ->addSelect("JSON_GET_TEXT(dc.templateData, 'begin_date') AS HIDDEN begin_date")
+                // begin_date is stored as an ISO-8601 string, so a plain string
+                // comparison against "Y-m-d" keeps the whole starting day in.
+                ->andWhere("JSON_GET_TEXT(dc.templateData, 'begin_date') >= :from")
+                ->setParameter('from', $from->format('Y-m-d'))
+                ->orderBy('begin_date', 'ASC'),
+        );
+    }
+
+    /**
      * All published pages excluding the given template keys (e.g. "event").
      *
      * @param list<string> $excludedTemplateKeys
@@ -125,7 +150,8 @@ final readonly class PageContentRepository
      */
     private function templateData(\Doctrine\ORM\QueryBuilder $queryBuilder): array
     {
-        /** @var list<array{templateData: array<string, mixed>, url_slug: string|null}> $rows */
+        // "uuid" is only selected by the queries that join dc.page, hence optional.
+        /** @var list<array{templateData: array<string, mixed>, url_slug: string|null, uuid?: string}> $rows */
         $rows = $queryBuilder->getQuery()->getArrayResult();
 
         return array_map(
@@ -133,6 +159,9 @@ final readonly class PageContentRepository
                 $data = $row['templateData'];
                 if (null !== $row['url_slug']) {
                     $data['url'] = $row['url_slug'];
+                }
+                if (isset($row['uuid'])) {
+                    $data['uuid'] = $row['uuid'];
                 }
 
                 return $data;

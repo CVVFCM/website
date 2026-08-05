@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Calendar;
 
+use App\Calendar\CalendarEvent;
 use App\Calendar\IcsBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
@@ -39,13 +40,13 @@ final class IcsBuilderTest extends TestCase
 
     public function testTheDtstampIsTheFrozenClockInUtc(): void
     {
-        $ics = (new IcsBuilder(new MockClock('2026-08-05 14:30:00', 'Europe/Paris')))->build(
+        $ics = (new IcsBuilder(new MockClock('2026-08-05 14:30:00', 'Europe/Paris')))->build(new CalendarEvent(
             uuid: self::UUID,
             title: 'Test',
             beginDate: '2027-06-12T10:00:00',
             endDate: null,
             url: 'https://cvvfcm.fr/evenements/test',
-        );
+        ));
 
         // 14:30 Paris summer time is 12:30 UTC.
         $this->assertStringContainsString("DTSTAMP:20260805T123000Z\r\n", $ics);
@@ -135,6 +136,98 @@ final class IcsBuilderTest extends TestCase
         $this->assertStringContainsString('URL:https://cvvfcm.fr/evenements/regate-du-club', $unfolded);
     }
 
+    public function testAFeedHoldsOneCalendarWrappingEveryEvent(): void
+    {
+        $ics = $this->builder()->buildFeed([
+            $this->event('11111111-1111-7111-8111-111111111111', '2027-06-12T10:00:00', '2027-06-13T18:00:00'),
+            $this->event('22222222-2222-7222-8222-222222222222', '2027-07-03T00:00:00', null),
+        ]);
+
+        $this->assertSame(1, substr_count($ics, "BEGIN:VCALENDAR\r\n"));
+        $this->assertSame(1, substr_count($ics, "END:VCALENDAR\r\n"));
+        $this->assertSame(2, substr_count($ics, "BEGIN:VEVENT\r\n"));
+        $this->assertSame(2, substr_count($ics, "END:VEVENT\r\n"));
+        $this->assertStringContainsString("UID:11111111-1111-7111-8111-111111111111@cvvfcm.fr\r\n", $ics);
+        $this->assertStringContainsString("UID:22222222-2222-7222-8222-222222222222@cvvfcm.fr\r\n", $ics);
+    }
+
+    public function testAFeedEmitsTheTimezoneOnlyOnceEvenWithSeveralTimedEvents(): void
+    {
+        $ics = $this->builder()->buildFeed([
+            $this->event('11111111-1111-7111-8111-111111111111', '2027-06-12T10:00:00', '2027-06-13T18:00:00'),
+            $this->event('22222222-2222-7222-8222-222222222222', '2027-07-03T00:00:00', null),
+            $this->event('33333333-3333-7333-8333-333333333333', '2027-08-14T09:30:00', null),
+        ]);
+
+        $this->assertSame(1, substr_count($ics, "BEGIN:VTIMEZONE\r\n"));
+        $this->assertSame(1, substr_count($ics, "END:VTIMEZONE\r\n"));
+    }
+
+    public function testAFeedOfAllDayEventsCarriesNoTimezone(): void
+    {
+        $ics = $this->builder()->buildFeed([
+            $this->event('11111111-1111-7111-8111-111111111111', '2027-06-12T00:00:00', '2027-06-13T00:00:00'),
+            $this->event('22222222-2222-7222-8222-222222222222', '2027-07-03T00:00:00', null),
+        ]);
+
+        $this->assertStringNotContainsString('VTIMEZONE', $ics);
+        $this->assertSame(2, substr_count($ics, "BEGIN:VEVENT\r\n"));
+    }
+
+    public function testAFeedNamesTheCalendarRightAfterTheCalscaleWhenAskedTo(): void
+    {
+        $ics = $this->builder()->buildFeed(
+            [$this->event(self::UUID, '2027-06-12T10:00:00', null)],
+            'Événements CVVFCM, saison',
+        );
+
+        $this->assertStringContainsString("CALSCALE:GREGORIAN\r\nX-WR-CALNAME:Événements CVVFCM\\, saison\r\n", $ics);
+    }
+
+    public function testAFeedWithoutANameHasNoCalnameLine(): void
+    {
+        $ics = $this->builder()->buildFeed([$this->event(self::UUID, '2027-06-12T10:00:00', null)]);
+
+        $this->assertStringNotContainsString('X-WR-CALNAME', $ics);
+    }
+
+    public function testAnEventWithAnUnparsableDateIsSkippedInsteadOfBreakingTheFeed(): void
+    {
+        $ics = $this->builder()->buildFeed([
+            $this->event('11111111-1111-7111-8111-111111111111', 'pas une date', null),
+            $this->event('22222222-2222-7222-8222-222222222222', '2027-07-03T10:00:00', null),
+        ]);
+
+        $this->assertSame(1, substr_count($ics, "BEGIN:VEVENT\r\n"));
+        $this->assertStringNotContainsString('11111111-1111-7111-8111-111111111111', $ics);
+        $this->assertStringContainsString("UID:22222222-2222-7222-8222-222222222222@cvvfcm.fr\r\n", $ics);
+    }
+
+    public function testAnEmptyFeedIsStillAValidCalendar(): void
+    {
+        $ics = $this->builder()->buildFeed([]);
+
+        $this->assertStringStartsWith("BEGIN:VCALENDAR\r\n", $ics);
+        $this->assertStringEndsWith("END:VCALENDAR\r\n", $ics);
+        $this->assertStringNotContainsString('VEVENT', $ics);
+    }
+
+    private function event(string $uuid, string $beginDate, ?string $endDate): CalendarEvent
+    {
+        return new CalendarEvent(
+            uuid: $uuid,
+            title: 'Régate du club',
+            beginDate: $beginDate,
+            endDate: $endDate,
+            url: 'https://cvvfcm.fr/evenements/regate-du-club',
+        );
+    }
+
+    private function builder(): IcsBuilder
+    {
+        return new IcsBuilder(new MockClock('2026-08-05 12:00:00', 'UTC'));
+    }
+
     private function build(
         string $title = 'Régate du club',
         string $beginDate = '2027-06-12T10:00:00',
@@ -142,9 +235,7 @@ final class IcsBuilderTest extends TestCase
         ?string $location = 'Lac des Vieilles Forges',
         ?string $description = 'Une belle régate.',
     ): string {
-        $builder = new IcsBuilder(new MockClock('2026-08-05 12:00:00', 'UTC'));
-
-        return $builder->build(
+        return $this->builder()->build(new CalendarEvent(
             uuid: self::UUID,
             title: $title,
             beginDate: $beginDate,
@@ -152,7 +243,7 @@ final class IcsBuilderTest extends TestCase
             url: 'https://cvvfcm.fr/evenements/regate-du-club',
             location: $location,
             description: $description,
-        );
+        ));
     }
 
     private function unfold(string $ics): string
