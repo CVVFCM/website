@@ -94,6 +94,38 @@ abstract class AiAgentTestCase extends KernelTestCase
         return $content;
     }
 
+    /**
+     * Plays a multi-turn conversation with forgie: each user turn is appended to
+     * a single MessageBag along with the assistant answer it got, so every call
+     * re-sends the full history (as the real chat does). Returns the last answer.
+     *
+     * @param non-empty-list<string> $userTurns
+     */
+    protected function askForgieConversation(array $userTurns): string
+    {
+        /** @var AgentInterface $forgie */
+        $forgie = static::getContainer()->get('ai.agent.forgie');
+
+        $bag = new MessageBag();
+        $content = '';
+        foreach ($userTurns as $turn) {
+            $bag->add(Message::ofUser($turn));
+
+            // Light pacing: a tool-call turn fires several API requests back to back,
+            // and consecutive tests otherwise trip Mistral's per-second rate limit.
+            sleep(1);
+
+            $content = $this->callOrSkip(
+                static fn (): mixed => $forgie->call($bag, ['random_seed' => 42])->getContent(),
+            );
+            self::assertIsString($content);
+
+            $bag->add(Message::ofAssistant($content));
+        }
+
+        return $content;
+    }
+
     protected function assertJudge(string $question, string $answer, string $rubric): void
     {
         /** @var AgentInterface $judge */

@@ -58,6 +58,23 @@ final class ForgiePromptTest extends AiAgentTestCase
         );
     }
 
+    public function testKeepsEnglishAcrossTurns(): void
+    {
+        // A short, ambiguous second turn (proper nouns + a date) must not flip
+        // the conversation back to French once it started in English (#60).
+        $secondTurn = 'Laser Radial, for this afternoon';
+        $answer = $this->askForgieConversation([
+            'Hi, is it possible to rent a boat?',
+            $secondTurn,
+        ]);
+
+        $this->assertJudge(
+            $secondTurn,
+            $answer,
+            "La réponse est intégralement rédigée en anglais (la conversation a commencé en anglais et le visiteur n'a pas changé de langue). Une réponse en français est un échec.",
+        );
+    }
+
     public function testUnsupportedLanguageFallsBackToFrench(): void
     {
         $question = 'Wie viel kostet die Mitgliedschaft im Verein?';
