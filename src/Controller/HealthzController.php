@@ -4,25 +4,33 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * Liveness endpoint for the container HEALTHCHECK. Deliberately DB-free so a
- * fresh container is healthy before the database is provisioned, while still
- * going through the PHP worker — a poisoned worker thread fails to serve it.
+ * Health endpoint for the container HEALTHCHECK and the Kubernetes probes:
+ * 204 when the PHP worker serves requests and the database answers a
+ * "SELECT 1", 503 otherwise. Deliberately schema-free so a fresh container
+ * is healthy as soon as the database accepts connections, before any
+ * migration or fixture ran. The empty 204 body also keeps Sulu's
+ * AppendAnalyticsListener away (it only rewrites text/html responses).
  */
-final class HealthzController
+final readonly class HealthzController
 {
+    public function __construct(private Connection $connection)
+    {
+    }
+
     #[Route('/healthz', name: 'healthz', methods: ['GET'])]
     public function __invoke(): Response
     {
-        // text/plain is load-bearing: Sulu's AppendAnalyticsListener queries the
-        // we_analytics table for every text/html response, which breaks the DB-free
-        // guarantee on a container that starts before the schema exists.
-        return new Response('ok', Response::HTTP_OK, [
-            'Cache-Control' => 'no-store',
-            'Content-Type' => 'text/plain',
-        ]);
+        try {
+            $this->connection->executeQuery('SELECT 1')->fetchOne();
+        } catch (\Throwable) {
+            return new Response(null, Response::HTTP_SERVICE_UNAVAILABLE, ['Cache-Control' => 'no-store']);
+        }
+
+        return new Response(null, Response::HTTP_NO_CONTENT, ['Cache-Control' => 'no-store']);
     }
 }
