@@ -1,10 +1,17 @@
 /* Error page (404 / 5xx) — reuses the default page header blocks. */
 @import url('./default.css');
 
-/* .Page__headerMain sets word-break: break-all for editor-provided titles;
-   our fixed French copy must wrap on word boundaries. */
+/* word-break: break-all upstream is meant for editor-provided titles; our
+   fixed French copy must wrap on word boundaries. The header main is a flex
+   row (media first on default pages); here the illustration comes after the
+   white panel in the DOM but sits beside it. */
 .ErrorPage .Page__headerMain {
     word-break: normal;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    padding-bottom: 3rem;
 }
 
 .ErrorPage__kicker {
@@ -14,6 +21,43 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin: 0 0 0.5rem;
+}
+
+.ErrorPage__quip {
+    color: var(--blue-note-text);
+    font-weight: 600;
+}
+
+.ErrorPage__illustration {
+    width: min(60vw, 14rem);
+    margin-inline: 2rem;
+
+    & svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* Le voilier tangue doucement au bord du trou. Seule la rotation est animée :
+   le groupe parent (attribut transform) porte la position dans la carte. */
+@media (prefers-reduced-motion: no-preference) {
+    .ErrorPage__boat {
+        animation: error-page-boat-rock 3.2s ease-in-out infinite;
+        transform-origin: 0 0.5rem;
+    }
+
+    @keyframes error-page-boat-rock {
+        0%, 100% { transform: rotate(35deg); }
+        50% { transform: rotate(42deg); }
+    }
+}
+
+@media (width >= 65rem) {
+    .ErrorPage__illustration {
+        width: 16rem;
+        margin-inline: 4rem;
+    }
 }
 
 .ErrorPage__actions {
