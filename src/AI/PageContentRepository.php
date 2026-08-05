@@ -9,8 +9,9 @@ use Sulu\Content\Domain\Model\DimensionContentInterface;
 use Sulu\Page\Domain\Model\PageDimensionContent;
 
 /**
- * Read access to published Sulu page content (fr, live stage) for the AI tools.
- * Returns raw templateData arrays; mapping to tool payloads happens in the tools.
+ * Read access to published Sulu page content (fr, live stage) for the AI tools
+ * and the ICS export. Returns raw templateData arrays; mapping to tool payloads
+ * happens in the callers.
  */
 final readonly class PageContentRepository
 {
@@ -78,6 +79,26 @@ final readonly class PageContentRepository
             $this->createPublishedQueryBuilder()
                 ->andWhere('route.slug = :url')
                 ->setParameter('url', $url)
+                ->setMaxResults(1),
+        );
+
+        return $rows[0] ?? null;
+    }
+
+    /**
+     * A single published "event" page by its page uuid.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function findEventByUuid(string $uuid): ?array
+    {
+        $rows = $this->templateData(
+            $this->createPublishedQueryBuilder()
+                ->innerJoin('dc.page', 'p')
+                ->andWhere('p.uuid = :uuid')
+                ->andWhere('dc.templateKey = :templateKey')
+                ->setParameter('uuid', $uuid)
+                ->setParameter('templateKey', 'event')
                 ->setMaxResults(1),
         );
 
