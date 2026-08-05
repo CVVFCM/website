@@ -21,6 +21,9 @@ final class ForgieClubKnowledgeTest extends AiAgentTestCase
         $answer = $this->askForgie('Qui est le président du club ?');
 
         self::assertContains('board_members', $this->calledTools());
+        // #92: the statutes describe how the board is elected, never who sits on it —
+        // answering a "who is" question from `club_rules` is the regression to catch.
+        self::assertNotContains('club_rules', $this->calledTools());
         self::assertStringContainsString('Yohan Giarelli', $answer);
     }
 
