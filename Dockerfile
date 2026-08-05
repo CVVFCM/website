@@ -51,7 +51,6 @@ RUN sed -i -r s/"(www-data:x:)([[:digit:]]+):([[:digit:]]+):"/""\\1${EXTERNAL_US
 
 VOLUME /config
 VOLUME /data
-VOLUME /app/data/weather/ml
 VOLUME /app/public/uploads
 VOLUME /app/var/indexes
 
