@@ -38,6 +38,11 @@
 
 /* _________________________________________ bar variant (closed header) */
 
+/* While the menu is open, the quick links live in the panel grid. */
+.MainNavigation--open .NavigationLinks__list--bar {
+    display: none;
+}
+
 .NavigationLinks__list--bar {
     justify-content: flex-end;
     gap: 1rem 0.5rem;
@@ -117,7 +122,7 @@
         /* Icon-only links reveal their label on hover. */
         & .NavigationLinks__item--hiddenText .NavigationLinks__label {
             position: absolute;
-            max-width: 1px;
+            max-width: 0;
             overflow: hidden;
             clip-path: inset(50%);
             white-space: nowrap;
@@ -142,7 +147,7 @@
 .NavigationLinks__list--grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
+    gap: 0.0625rem;
     background-color: var(--utility-grey);
     border: 1px solid var(--utility-grey);
 

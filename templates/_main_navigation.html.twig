@@ -10,7 +10,7 @@
      data-action="keydown.esc->main-navigation#closeOnEscape">
 
     <div class="MainNavigation__bar">
-        <a class="MainNavigation__logo" href="{{ sulu_content_root_path() }}" aria-label="Accueil CVVFCM">
+        <a class="MainNavigation__logo" href="{{ sulu_content_root_path() }}" aria-label="Club de Voile des Vieilles Forges de Charleville-Mézières — accueil">
             <img src="{{ asset('images/logo_cvvfcm_color.svg') }}" alt="" width="189" height="121" />
             {{ include('partials/logo_wordmark.html.twig', {class: 'MainNavigation__wordmark'}) }}
         </a>
@@ -85,13 +85,12 @@
                 {% if categoryFirstPageUrl %}
                     <a class="MainNavigation__link{{ isAncestor ? ' MainNavigation__link--ancestor' : '' }}"
                        href="{{ sulu_content_path(categoryFirstPageUrl) }}"
-                       title="{{ item.title }}"><span class="MainNavigation__linkText">{{ item.title }}</span></a>
+                       title="{{ item.title }}">{{ item.title }}</a>
                 {% else %}
-                    <span class="MainNavigation__link"
-                          title="{{ item.title }}"><span class="MainNavigation__linkText">{{ item.title }}</span></span>
+                    <span class="MainNavigation__link" title="{{ item.title }}">{{ item.title }}</span>
                 {% endif %}
             {% else %}
-                <a class="MainNavigation__link{{ isAncestor ? ' MainNavigation__link--ancestor' : '' }}" href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}"><span class="MainNavigation__linkText">{{ item.title }}</span></a>
+                <a class="MainNavigation__link{{ isAncestor ? ' MainNavigation__link--ancestor' : '' }}" href="{{ sulu_content_path(item.url) }}" title="{{ item.title }}">{{ item.title }}</a>
             {% endif %}
 
             {% if depth == 0 and item.children is not empty %}
@@ -99,7 +98,7 @@
                         type="button"
                         aria-expanded="false"
                         aria-controls="nav-section-{{ item.uuid }}"
-                        aria-label="Déplier {{ item.title }}"
+                        aria-label="Sous-menu {{ item.title }}"
                         data-action="main-navigation#toggleSection"></button>
             {% endif %}
 
