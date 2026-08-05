@@ -2,7 +2,7 @@
    site-wide side pane (see forgie_launcher_controller.js). #}
 {% extends app.request.query.has('embedded') ? 'forgie/embedded_base.html.twig' : 'base.html.twig' %}
 
-{% block title %}Forgie — CVVFCM{% endblock %}
+{% set page_title = 'Forgie — CVVFCM' %}
 
 {% block importmap %}{{ importmap(['app', 'forgie']) }}{% endblock %}
 
