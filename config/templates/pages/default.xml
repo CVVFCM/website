@@ -100,7 +100,6 @@
                                     <param name="begin_date" value="begin_date"/>
                                     <param name="end_date" value="end_date"/>
                                     <param name="event_type" value="event_type"/>
-                                    <param name="uuid" value="object.resource.uuid"/>
                                 </param>
                             </params>
                         </property>

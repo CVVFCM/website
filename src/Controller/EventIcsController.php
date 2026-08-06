@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\AI\PageContentRepository;
 use App\AI\TemplateData;
+use App\Calendar\CalendarEvent;
 use App\Calendar\IcsBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,7 +52,7 @@ final readonly class EventIcsController
 
         $url = $this->string($event['url'] ?? null) ?? '/';
 
-        $ics = $this->icsBuilder->build(
+        $ics = $this->icsBuilder->build(new CalendarEvent(
             uuid: $uuid,
             title: $title,
             beginDate: $beginDate,
@@ -59,7 +60,7 @@ final readonly class EventIcsController
             url: $request->getSchemeAndHttpHost().'/'.ltrim($url, '/'),
             location: TemplateData::location($event),
             description: $this->truncate(TemplateData::plainText($event['description'] ?? null)),
-        );
+        ));
 
         return new Response($ics, Response::HTTP_OK, [
             'Content-Type' => 'text/calendar; charset=utf-8',
