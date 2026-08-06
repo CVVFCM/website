@@ -53,9 +53,17 @@
     justify-content: center;
 }
 
+/*
+ * Les .EventCard sont en position: relative et se peignent donc au-dessus des éléments statiques :
+ * sans contexte d'empilement ici, leur ombre portée recouvrait le bouton. On positionne le pied de
+ * section pour qu'il repasse devant, et on élargit la marge pour que l'ombre (environ 4rem sous la
+ * carte, 6rem au survol) se soit dissipée avant le bouton.
+ */
 .HomepageCalendar__footer {
+    position: relative;
+    z-index: 1;
     text-align: center;
-    margin-top: 2.5rem;
+    margin-top: 5rem;
 }
 
 .HomepageCalendar__button {
