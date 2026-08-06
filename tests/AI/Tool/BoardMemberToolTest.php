@@ -15,7 +15,7 @@ final class BoardMemberToolTest extends KernelTestCase
 
         self::assertArrayHasKey('membres', $result);
         $members = $result['membres'];
-        self::assertCount(3, $members);
+        self::assertCount(5, $members);
 
         foreach ($members as $member) {
             self::assertSame(['nom', 'fonction', 'email'], array_keys($member));
@@ -25,8 +25,11 @@ final class BoardMemberToolTest extends KernelTestCase
         self::assertSame('Président', $members[0]['fonction']);
         self::assertSame('yohan@cvvfcm.fr', $members[0]['email']);
 
-        $positions = array_column($members, 'fonction');
-        self::assertSame(['Président', 'Secrétaire général', 'Trésorier'], $positions);
+        $positions = array_map(static fn (array $member): ?string => $member['fonction'], $members);
+        self::assertSame(
+            ['Président', 'Vice-Présidente déléguée', 'Secrétaire général', 'Trésorier', null],
+            $positions,
+        );
     }
 
     private function tool(): BoardMemberTool

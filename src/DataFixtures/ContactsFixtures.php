@@ -36,6 +36,11 @@ final class ContactsFixtures extends Fixture implements DependentFixtureInterfac
         $president->setPosition('Président');
         $manager->persist($president);
 
+        // Label with a complement and mixed case, as typed in the back office.
+        $vicePresident = new Position();
+        $vicePresident->setPosition('Vice-Présidente déléguée');
+        $manager->persist($vicePresident);
+
         $secretary = new Position();
         $secretary->setPosition('Secrétaire général');
         $manager->persist($secretary);
@@ -49,14 +54,21 @@ final class ContactsFixtures extends Fixture implements DependentFixtureInterfac
         $forgieTag->setName('Forgie');
         $manager->persist($forgieTag);
 
+        // [firstName, lastName, email, phone, gender, position, main account link, exposed to Forgie]
         $data = [
-            ['Yohan', 'Giarelli', 'yohan@cvvfcm.fr', '+33630741240', 'M', $president],
-            ['Thomas', 'Van Den Schrieck', 'thomas@cvvfcm.fr', '+33671275659', 'M', $secretary],
-            ['Baptiste', 'Gilles-Carret', 'baptiste@cvvfcm.fr', '+33682007221', 'M', $treasurer],
+            ['Yohan', 'Giarelli', 'yohan@cvvfcm.fr', '+33630741240', 'M', $president, true, true],
+            ['Thomas', 'Van Den Schrieck', 'thomas@cvvfcm.fr', '+33671275659', 'M', $secretary, true, true],
+            ['Baptiste', 'Gilles-Carret', 'baptiste@cvvfcm.fr', '+33682007221', 'M', $treasurer, true, true],
+            // Position carried by an account link that is not flagged "main".
+            ['Claire', 'Lefèvre', 'claire@cvvfcm.fr', '+33600000004', 'F', $vicePresident, false, true],
+            // Board member without any position: listed last.
+            ['Alice', 'Moreau', 'alice@cvvfcm.fr', '+33600000005', 'F', null, false, true],
+            // Not tagged: never exposed by the board_members tool.
+            ['Paul', 'Durand', 'paul@cvvfcm.fr', '+33600000006', 'M', null, false, false],
         ];
 
         foreach ($data as $contactData) {
-            [$firstName, $lastName, $email, $phone, $gender, $position] = $contactData;
+            [$firstName, $lastName, $email, $phone, $gender, $position, $main, $exposed] = $contactData;
 
             $contact = new Contact();
             $contact->setGender($gender);
@@ -75,14 +87,19 @@ final class ContactsFixtures extends Fixture implements DependentFixtureInterfac
             $yohanPhone->setPhoneType($manager->find(PhoneType::class, 2));
             $contact->addPhone($yohanPhone);
 
-            $accountContact = new AccountContact();
-            $accountContact->setAccount($cvvfcm);
-            $accountContact->setPosition($position);
-            $accountContact->setContact($contact);
-            $accountContact->setMain(true);
+            if (null !== $position) {
+                $accountContact = new AccountContact();
+                $accountContact->setAccount($cvvfcm);
+                $accountContact->setPosition($position);
+                $accountContact->setContact($contact);
+                $accountContact->setMain($main);
 
-            $contact->addAccountContact($accountContact);
-            $contact->addTag($forgieTag);
+                $contact->addAccountContact($accountContact);
+            }
+
+            if ($exposed) {
+                $contact->addTag($forgieTag);
+            }
 
             $manager->persist($contact);
         }

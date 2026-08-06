@@ -97,6 +97,42 @@ final class ForgiePromptTest extends AiAgentTestCase
         );
     }
 
+    public function testNeverPromisesToCheckAvailabilityOrConfirmABooking(): void
+    {
+        // #91: during a rental conversation forgie announced it would check the
+        // availability and confirm the booking, then admitted it had no tool for
+        // that. There is no booking tool: the only outcome is passing the request
+        // to the club through send_contact_message.
+        //
+        // A truly hallucinated tool name is not observable through calledTools():
+        // Toolbox::execute throws ToolNotFoundException before TraceableToolbox
+        // records anything, which would fail this test outright.
+        $this->mockTool(
+            'send_contact_message',
+            (string) json_encode([
+                'status' => 'incomplet',
+                'message' => 'Demande le prénom, le nom et l\'email de la personne avant d\'envoyer.',
+            ]),
+        );
+
+        $lastTurn = 'oui';
+        $answer = $this->askForgieConversation([
+            'Je voudrais louer un catamaran',
+            'Le '.(new \DateTimeImmutable('+2 months'))->format('d/m/Y'),
+            $lastTurn,
+        ]);
+
+        $this->assertJudge(
+            $lastTurn,
+            $answer,
+            'Le chatbot ne promet ni de vérifier la disponibilité, ni de bloquer un créneau, ni de'
+            .' réserver ou de confirmer une réservation, et il n\'annonce pas qu\'il reviendra vers'
+            .' la personne. Il propose de transmettre la demande au club (qui répondra sur la'
+            .' disponibilité) ou demande les coordonnées nécessaires à cette transmission (prénom,'
+            .' nom, email). Toute promesse de vérification ou de confirmation est un échec.',
+        );
+    }
+
     public function testUnsupportedLanguageFallsBackToFrench(): void
     {
         $question = 'Wie viel kostet die Mitgliedschaft im Verein?';
