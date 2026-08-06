@@ -8,7 +8,13 @@
     {% block meta %}
         {# Ensure a <meta name="description"> is always emitted: SEO field → excerpt → site default.
            The Sulu SEO partial only renders the tag when seo.description is set, so we default it here. #}
+        {# Same story for <title>: it comes from the Sulu SEO field or from the page content, but templates
+           rendered outside the CMS (error page, search results, Forgie) have no `content` at all — they set
+           a `page_title` variable at their root instead. A variable and not a {% block title %}: a block
+           declared here would render its content as a stray text node inside the <head>, whereas a
+           root-level {% set %} in a child template is evaluated before the parent renders. #}
         {% set seoWithDefaults = (extension.seo|default([]))|merge({
+            title: extension.seo.title|default(content.title|default(page_title|default(''))),
             description: extension.seo.description|default(
                 extension.excerpt.description|default(
                     'Club de voile du lac des Vieilles Forges : école de voile, régates et location de bateaux à Charleville-Mézières.',
