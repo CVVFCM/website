@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['toggle', 'menu'];
+    static targets = ['toggle', 'menu', 'search', 'searchToggle', 'searchInput'];
 
     connect() {
         this.element.classList.add('MainNavigation--close');
@@ -15,10 +15,10 @@ export default class extends Controller {
         this._onScroll();
 
         this._onClickOutside = (event) => {
-            if (!this.element.classList.contains('MainNavigation--open')) return;
-            if (!this.element.contains(event.target) || event.target === siteHeader) {
-                this.close();
-            }
+            const outside = !this.element.contains(event.target) || event.target === siteHeader;
+            if (!outside) return;
+            if (this.element.classList.contains('MainNavigation--open')) this.close();
+            if (this.element.classList.contains('MainNavigation--searching')) this.closeSearch();
         };
         document.addEventListener('click', this._onClickOutside);
     }
@@ -52,6 +52,34 @@ export default class extends Controller {
         this.toggleTarget.focus();
     }
 
+    /**
+     * The magnifier is a plain link to the search page, so it keeps working without JS.
+     * With JS we intercept the click and reveal the inline field instead.
+     */
+    toggleSearch(event) {
+        if (!this.hasSearchTarget) return;
+        event.preventDefault();
+
+        if (this.element.classList.contains('MainNavigation--searching')) {
+            this.closeSearch();
+        } else {
+            this.openSearch();
+        }
+    }
+
+    openSearch() {
+        this.element.classList.add('MainNavigation--searching');
+        this.searchTarget.hidden = false;
+        this.searchToggleTarget.setAttribute('aria-expanded', 'true');
+        this.searchInputTarget.focus();
+    }
+
+    closeSearch() {
+        this.element.classList.remove('MainNavigation--searching');
+        this.searchTarget.hidden = true;
+        this.searchToggleTarget.setAttribute('aria-expanded', 'false');
+    }
+
     toggleSection(event) {
         const li = event.currentTarget.closest('li');
         const open = li.classList.toggle('MainNavigation__item--open');
@@ -59,7 +87,14 @@ export default class extends Controller {
     }
 
     closeOnEscape(event) {
-        if (event.key === 'Escape' && this.element.classList.contains('MainNavigation--open')) {
+        if (event.key !== 'Escape') return;
+
+        if (this.element.classList.contains('MainNavigation--searching')) {
+            this.closeSearch();
+            this.searchToggleTarget.focus();
+        }
+
+        if (this.element.classList.contains('MainNavigation--open')) {
             this.close();
         }
     }

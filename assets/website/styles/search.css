@@ -1,0 +1,226 @@
+/* Search results page. Reuses the site header blocks from the default page. */
+@import url('./default.css');
+
+.SearchPage .Page__headerMain {
+    /* Le titre et le champ sont du texte fixe, pas du contenu éditeur : on coupe aux mots. */
+    word-break: normal;
+    padding-bottom: 3rem;
+}
+
+.SearchPage .Page__headerBody {
+    max-width: 34em;
+}
+
+.SearchPage__label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--blue-note-text);
+    margin-bottom: 0.5rem;
+}
+
+.SearchPage__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.SearchPage__input {
+    box-sizing: border-box;
+    width: 100%;
+    font: inherit;
+    font-size: 1.1rem;
+    color: var(--base-text-color);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-400);
+    border-radius: 2rem;
+    padding: 0.7em 1.2em;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &::placeholder {
+        color: var(--color-gray-600);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--blue-note-text);
+        box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--blue-note-text) 35%, transparent);
+    }
+}
+
+.SearchPage__submit {
+    font: inherit;
+    font-weight: bold;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    color: var(--color-white);
+    background-color: var(--red-act-text);
+    border: none;
+    border-radius: 5em;
+    padding: 0.8em 1.8em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: var(--color-accent-hover);
+    }
+
+    &:focus-visible {
+        outline: 0.15rem solid var(--blue-note-text);
+        outline-offset: 0.15rem;
+    }
+}
+
+/* _____________________________________________________________ results */
+
+.SearchPage__results {
+    background: var(--utility-grey);
+}
+
+.SearchPage__count,
+.SearchPage__note {
+    max-width: 40em;
+    margin: 0 0 1.5rem;
+}
+
+.SearchPage__count {
+    font-weight: 600;
+    color: var(--blue-note-text);
+}
+
+.SearchPage__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.SearchPage__result {
+    background-color: var(--color-white);
+    border-radius: var(--white-card-radius);
+    overflow: hidden;
+}
+
+.SearchPage__resultLink {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: var(--base-text-color);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: var(--color-gray-100);
+        text-decoration: none;
+    }
+
+    &:focus-visible {
+        outline: 0.15rem solid var(--blue-note-text);
+        outline-offset: -0.15rem;
+    }
+}
+
+.SearchPage__resultThumb {
+    flex: none;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 0.75rem;
+    object-fit: cover;
+}
+
+.SearchPage__resultThumb--empty {
+    background-color: var(--color-gray-200);
+}
+
+.SearchPage__resultBody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.SearchPage__resultTitle {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--blue-note-text);
+}
+
+.SearchPage__resultSnippet {
+    /* Les extraits viennent du contenu des pages : on borne l'affichage plutôt que de couper la
+       chaîne, ce qui risquerait de trancher une balise <mark> en deux. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    line-height: 1.5;
+    max-width: 70ch;
+}
+
+.SearchPage__resultPath {
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+    overflow-wrap: anywhere;
+}
+
+.SearchPage mark {
+    background-color: color-mix(in srgb, var(--red-act-text) 20%, transparent);
+    color: inherit;
+    font-weight: 700;
+    border-radius: 0.2em;
+    padding: 0 0.1em;
+}
+
+/* _____________________________________________________________ shortcuts */
+
+.SearchPage__shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.SearchPage__shortcut {
+    display: inline-block;
+    background-color: var(--color-white);
+    border-radius: 5em;
+    padding: 0.6em 1.4em;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--blue-note-text);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: var(--color-gray-100);
+        text-decoration: none;
+    }
+
+    &:focus-visible {
+        outline: 0.15rem solid var(--blue-note-text);
+        outline-offset: 0.15rem;
+    }
+}
+
+@media (width >= 48rem) {
+    .SearchPage__field {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .SearchPage__submit {
+        flex: none;
+    }
+
+    .SearchPage__resultLink {
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .SearchPage__resultThumb {
+        width: 5rem;
+        height: 5rem;
+    }
+}

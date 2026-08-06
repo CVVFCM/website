@@ -20,9 +20,15 @@
         {% endif %}
 
         <div class="MainNavigation__mainTools">
+            {# Sans JS, la loupe est un lien vers la page de recherche ; avec JS, elle déploie le
+               champ ci-dessous (le contrôleur intercepte le clic et retire l'attribut hidden). #}
             <a class="MainNavigation__searchToggle"
-               href="#searcBar"
-               aria-label="Rechercher">
+               href="{{ path('sulu_search.website_search') }}"
+               aria-label="Rechercher"
+               aria-expanded="false"
+               aria-controls="main-navigation-search"
+               data-main-navigation-target="searchToggle"
+               data-action="main-navigation#toggleSearch">
                 <span class="MainNavigation__searchIcon" aria-hidden="true"></span>
             </a>
             <button class="MainNavigation__toggle"
@@ -36,6 +42,24 @@
             </button>
         </div>
     </div>
+
+    <form class="MainNavigation__search"
+          id="main-navigation-search"
+          role="search"
+          method="get"
+          action="{{ path('sulu_search.website_search') }}"
+          data-main-navigation-target="search"
+          hidden>
+        <label class="MainNavigation__searchLabel" for="main-navigation-search-input">Rechercher sur le site</label>
+        <input class="MainNavigation__searchInput"
+               type="search"
+               id="main-navigation-search-input"
+               name="q"
+               placeholder="Stage, régate, météo…"
+               autocomplete="off"
+               data-main-navigation-target="searchInput" />
+        <button class="MainNavigation__searchSubmit" type="submit">Rechercher</button>
+    </form>
 
     <div class="MainNavigation__container"
          id="main-navigation-menu"

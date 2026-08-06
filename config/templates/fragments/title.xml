@@ -5,4 +5,7 @@
     <meta>
         <title lang="fr">Titre</title>
     </meta>
+
+    <!-- Titre de bloc : indexé comme contenu (pas comme titre de page). -->
+    <tag name="sulu.search.field"/>
 </property>

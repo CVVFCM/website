@@ -1,17 +1,120 @@
 {% extends 'base.html.twig' %}
 
-{% set page_title = 'Recherche — CVVFCM' %}
+{% set page_title = query is not empty ? 'Recherche : ' ~ query ~ ' — CVVFCM' : 'Recherche — CVVFCM' %}
+
+{% block pageclass 'SearchPage' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('styles/search.css') }}" />
+{% endblock %}
+
+{% block meta %}
+    {# Une page de résultats n'a rien à faire dans un index : on force noindex avant le rendu SEO. #}
+    {% set extension = (extension|default({}))|merge({
+        seo: (extension.seo|default({}))|merge({noIndex: true}),
+    }) %}
+    {{ parent() }}
+{% endblock %}
 
 {% block content %}
-    <h2>Showing {{ hits|length }} results for "{{ query }}"</h2>
+    <header class="Page__header">
+        {{ include('partials/logo_topbar.html.twig') }}
+        <div class="Page__headerMain">
+            <div class="Page__headerBody">
+                <h1 class="Page__headerTitle">Rechercher</h1>
+                <form class="SearchPage__form" role="search" method="get" action="{{ path('sulu_search.website_search') }}">
+                    <label class="SearchPage__label" for="SearchPage-query">Votre recherche</label>
+                    <div class="SearchPage__field">
+                        <input class="SearchPage__input"
+                               type="search"
+                               id="SearchPage-query"
+                               name="q"
+                               value="{{ query }}"
+                               placeholder="Stage, régate, météo…"
+                               autocomplete="off"
+                               {% if query is empty %}autofocus{% endif %} />
+                        <button class="SearchPage__submit" type="submit">Rechercher</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </header>
 
-    <ul>
-        {% for i, hit in hits %}
-            <li>
-                <a href="{{ hit.document.url }}">
-                    {{- hit.document.title -}}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    <section class="SearchPage__results SectionPadded" aria-label="Résultats de recherche">
+        {% if query is empty %}
+            <p class="SearchPage__note">Cherchez une activité, un événement, une info pratique : les pages du site sont indexées avec leur contenu.</p>
+            {{ _self.shortcuts() }}
+        {% elseif hits is empty %}
+            <p class="SearchPage__note">Aucune page ne correspond à « {{ query }} ».</p>
+            <p class="SearchPage__note">Essayez un mot plus court ou une autre orthographe, ou passez par ces pages :</p>
+            {{ _self.shortcuts() }}
+        {% else %}
+            <p class="SearchPage__count">
+                {%- if hits|length == 20 -%}
+                    Les 20 pages les plus proches de « {{ query }} »
+                {%- else -%}
+                    {{ hits|length }} page{{ hits|length > 1 ? 's' : '' }} pour « {{ query }} »
+                {%- endif -%}
+            </p>
+            <ul class="SearchPage__list">
+                {% for hit in hits %}
+                    {% set media = hit.mediaId is defined and hit.mediaId ? sulu_resolve_media(hit.mediaId, app.request.locale) : null %}
+                    {% set snippet = _self.snippet(hit)|trim %}
+                    <li class="SearchPage__result">
+                        <a class="SearchPage__resultLink" href="{{ hit.url }}">
+                            {% if media and media.formats is defined and media.formats['sulu-400x400.webp'] is defined %}
+                                <img class="SearchPage__resultThumb"
+                                     src="{{ media.formats['sulu-400x400.webp'] }}"
+                                     alt=""
+                                     width="80"
+                                     height="80"
+                                     loading="lazy" />
+                            {% else %}
+                                <span class="SearchPage__resultThumb SearchPage__resultThumb--empty" aria-hidden="true"></span>
+                            {% endif %}
+                            <span class="SearchPage__resultBody">
+                                <span class="SearchPage__resultTitle">{{ _self.highlighted(hit._formatted.title|default(hit.title|default(''))) }}</span>
+                                {% if snippet %}
+                                    <span class="SearchPage__resultSnippet">{{ _self.highlighted(snippet) }}</span>
+                                {% endif %}
+                                <span class="SearchPage__resultPath">{{ hit.url }}</span>
+                            </span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </section>
 {% endblock %}
+
+{# Les valeurs surlignées contiennent du <mark> posé par le moteur, mais aussi du texte issu du CMS :
+   on échappe tout, puis on réautorise les seules balises <mark>. Jamais de |raw brut ici. #}
+{% macro highlighted(value) %}
+    {{- value|escape('html')|replace({'&lt;mark&gt;': '<mark>', '&lt;/mark&gt;': '</mark>'})|raw -}}
+{% endmacro %}
+
+{# `content` est une liste (un élément par champ indexé) et Loupe ne sait pas surligner un champ
+   multivalué : `_formatted.content` vaut donc null la plupart du temps, seul le titre revient
+   surligné. On prend le premier extrait surligné s'il existe, sinon le premier texte disponible.
+   La longueur est bornée par le CSS, pas par une découpe qui risquerait de couper une balise. #}
+{% macro snippet(hit) %}
+    {%- set formatted = hit._formatted.content|default(null) -%}
+    {%- set values = formatted is iterable ? formatted : (formatted ? [formatted] : []) -%}
+    {%- set marked = values|filter(value => value and '<mark>' in value) -%}
+    {#- |raw ici : la macro renvoie le texte brut, c'est `highlighted` qui échappe ensuite. -#}
+    {%- if marked is not empty -%}
+        {{- marked|first|raw -}}
+    {%- elseif values is not empty -%}
+        {{- values|first|raw -}}
+    {%- else -%}
+        {{- hit.content|default([])|first|default('')|raw -}}
+    {%- endif -%}
+{% endmacro %}
+
+{% macro shortcuts() %}
+    <nav class="SearchPage__shortcuts" aria-label="Pages utiles">
+        <a class="SearchPage__shortcut" href="/evenements">Événements</a>
+        <a class="SearchPage__shortcut" href="/contact">Contact</a>
+        <a class="SearchPage__shortcut" href="/live">Météo et webcam</a>
+    </nav>
+{% endmacro %}

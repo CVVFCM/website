@@ -30,6 +30,7 @@
                     </params>
 
                     <tag name="sulu.rlp.part"/>
+                    <tag name="sulu.search.field" role="title"/>
                 </property>
 
                 <property name="url" type="route" mandatory="true">
@@ -72,12 +73,16 @@
                                             <meta>
                                                 <title lang="fr">Titre</title>
                                             </meta>
+
+                                            <tag name="sulu.search.field"/>
                                         </property>
 
                                         <property name="description" type="text_area" mandatory="true">
                                             <meta>
                                                 <title lang="fr">Description</title>
                                             </meta>
+
+                                            <tag name="sulu.search.field"/>
                                         </property>
 
                                         <property name="image" type="single_media_selection" mandatory="true">

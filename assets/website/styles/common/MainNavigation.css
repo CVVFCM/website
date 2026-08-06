@@ -10,6 +10,7 @@
 
 .MainNavigation a,
 .MainNavigation button,
+.MainNavigation__search,
 .MainNavigation__container {
     pointer-events: auto;
 }
@@ -106,6 +107,88 @@
         &:hover::before  {
             border: 0.4em solid currentcolor;
         }
+    }
+}
+
+/* Champ de recherche déployé par la loupe : une ligne sous la barre, pour ne pas comprimer
+   le logo et le menu sur mobile. Masqué par l'attribut hidden tant que JS ne l'ouvre pas. */
+.MainNavigation__search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+
+    /* display: flex l'emporterait sinon sur le display: none du navigateur pour [hidden]. */
+    &[hidden] {
+        display: none;
+    }
+}
+
+.MainNavigation__searchLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.MainNavigation__searchInput {
+    flex: 1;
+    min-width: 0;
+    box-sizing: border-box;
+    font: inherit;
+    color: var(--base-text-color);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-radius: 2rem;
+    padding: 0.6em 1.2em;
+
+    &::placeholder {
+        color: var(--color-gray-600);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--blue-note-text);
+        box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--blue-note-text) 35%, transparent);
+    }
+}
+
+/* Sur grand écran, le champ reste à droite sous la loupe plutôt que de barrer toute la largeur. */
+@media (width >= 48rem) {
+    .MainNavigation__search {
+        justify-content: flex-end;
+    }
+
+    .MainNavigation__searchInput {
+        flex: 0 1 28rem;
+    }
+}
+
+.MainNavigation__searchSubmit {
+    flex: none;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+    color: var(--color-white);
+    background-color: var(--red-act-text);
+    border: none;
+    border-radius: 5em;
+    padding: 0.7em 1.4em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: var(--color-accent-hover);
+    }
+
+    &:focus-visible {
+        outline: 0.15rem solid var(--color-white);
+        outline-offset: 0.15rem;
     }
 }
 
