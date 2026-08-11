@@ -13,6 +13,7 @@ namespace App;
  * with this source code in the file LICENSE.
  */
 
+use App\DependencyInjection\Compiler\ResettableFormBuilderPass;
 use FOS\HttpCache\SymfonyCache\HttpCacheProvider;
 use Sulu\Bundle\HttpCacheBundle\Cache\SuluHttpCache;
 use Sulu\Component\HttpKernel\SuluKernel;
@@ -26,6 +27,14 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 class Kernel extends SuluKernel implements HttpCacheProvider
 {
     private ?HttpKernelInterface $httpCache = null;
+
+    #[\Override]
+    protected function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new ResettableFormBuilderPass());
+    }
 
     #[\Override]
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void

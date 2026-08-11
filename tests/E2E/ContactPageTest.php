@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\E2E;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Sulu\Bundle\FormBundle\Entity\Dynamic;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class ContactPageTest extends WebTestCase
@@ -70,5 +72,52 @@ final class ContactPageTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSame(1, $crawler->filter('.DynamicForm__success')->count());
         $this->assertSame(0, $crawler->filter('.DynamicForm form')->count());
+    }
+
+    /**
+     * A FrankenPHP worker serves several requests with the same booted kernel, so the GET and the
+     * POST share the container and its services — which `disableReboot()` reproduces. Red without
+     * `App\Form\ResettableFormBuilder`: the POST answers a plain 200 with no redirect, and nothing
+     * is persisted.
+     */
+    public function testSubmissionStillWorksWhenTheKernelIsNotRebooted(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        $crawler = $client->request('GET', '/contact');
+        $this->assertResponseIsSuccessful();
+
+        $email = \sprintf('testeur-%s@example.com', bin2hex(random_bytes(4)));
+
+        $form = $crawler->selectButton('Envoyer')->form();
+        $name = $form->getName();
+        $form[$name.'[salutation]'] = 'mr';
+        $form[$name.'[lastName]'] = 'Testeur';
+        $form[$name.'[email]'] = $email;
+        $form[$name.'[subject]'] = 'Adhésion';
+        $form[$name.'[message]'] = 'Bonjour, ceci est un message de test.';
+
+        $client->submit($form);
+
+        $this->assertResponseRedirects();
+        $location = (string) $client->getResponse()->headers->get('Location');
+        $this->assertStringContainsString('send=true', $location);
+
+        $this->assertSame(1, $this->countSubmissionsFor($email));
+    }
+
+    private function countSubmissionsFor(string $email): int
+    {
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+
+        return (int) $entityManager->createQueryBuilder()
+            ->select('COUNT(submission.id)')
+            ->from(Dynamic::class, 'submission')
+            ->where('submission.data LIKE :email')
+            ->setParameter('email', '%'.$email.'%')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }
