@@ -7,6 +7,8 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Sulu\Bundle\ContactBundle\Entity\Contact;
+use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
 use Sulu\Content\Application\ContentWorkflow\ContentWorkflowInterface;
 use Sulu\Content\Domain\Model\WorkflowInterface;
@@ -25,6 +27,9 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
 
     /** @var list<\Sulu\Bundle\MediaBundle\Entity\Media> */
     private array $medias = [];
+
+    /** @var list<Contact> */
+    private array $contacts = [];
 
     // ── Contenu épique ───────────────────────────────────────────────────────
 
@@ -313,6 +318,7 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
     public function __construct(
         private readonly PageRepositoryInterface $pageRepository,
         private readonly MediaRepositoryInterface $mediaRepository,
+        private readonly ContactRepositoryInterface $contactRepository,
         private readonly ContentWorkflowInterface $contentWorkflow,
         MessageBusInterface $messageBus,
     ) {
@@ -324,6 +330,10 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
     {
         $root = $this->pageRepository->findOneBy(['parentId' => null, 'webspaceKey' => 'cvvfcm']);
         $this->medias = array_values($this->mediaRepository->findAll());
+        $this->contacts = array_values(array_filter(
+            $this->contactRepository->findAll(),
+            static fn (Contact $contact): bool => (bool) $contact->getMainEmail(),
+        ));
 
         foreach (self::STRUCTURE as $categoryData) {
             $categoryUrl = '/'.$categoryData['slug'];
@@ -400,6 +410,9 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                 'description' => self::DESCRIPTIONS[array_rand(self::DESCRIPTIONS)],
                 'media' => ['id' => $this->randomMediaId()],
                 'blocks' => $this->randomBlocks($parent),
+                // Not every page carries them, so both the empty and the filled rendering
+                // of the links-and-contacts row are covered.
+                ...$this->randomLinksAndContacts(),
             ]);
         }
 
@@ -452,6 +465,24 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
         ];
     }
 
+    /**
+     * @return array{}|array{links: list<array<string, string>>, contact: list<string>}
+     */
+    private function randomLinksAndContacts(): array
+    {
+        if ([] === $this->contacts || 0 === random_int(0, 2)) {
+            return [];
+        }
+
+        return [
+            'links' => [
+                ['type' => 'link', 'title' => 'Tableau Officiel', 'url' => 'https://cvvfcm.fr'],
+                ['type' => 'link', 'title' => 'CVVFCM', 'url' => 'https://cvvfcm.fr'],
+            ],
+            'contact' => ['c'.$this->contacts[array_rand($this->contacts)]->getId()],
+        ];
+    }
+
     /** @return array{displayOption: null, ids: list<int>} */
     private function randomMediaSelection(int $min, int $max): array
     {
@@ -497,6 +528,6 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
     #[\Override]
     public function getDependencies(): array
     {
-        return [MediaFixtures::class];
+        return [MediaFixtures::class, ContactsFixtures::class];
     }
 }

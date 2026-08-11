@@ -141,4 +141,13 @@
             </div>
         </section>
     {% endif %}
+
+    {% if content.links|default(null) or content.contact|default(null) %}
+        <section class="LinksAndContacts SectionPadded" aria-label="Liens et contacts">
+            {{ include('partials/_links_and_contacts.html.twig', {
+                links: content.links|default(null),
+                contacts: content.contact|default(null),
+            }, with_context: false) }}
+        </section>
+    {% endif %}
 {% endblock %}

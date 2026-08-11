@@ -167,37 +167,10 @@
             </section>
         {% endif %}
 
-        {% if content.links %}
-        <div class="EventContentBlock">
-            <h2 class="EventContentBlock__title">Liens utiles</h2>
-            <ul class="EventContentBlock__linksList">
-                {% for link in content.links %}
-                    <li>
-                        <a class="EventContentBlock__link" href="{{ link.url }}" title="{{ link.title }}"{{ link.target_blank ? ' target="_blank"' }}>
-                            {{ link.title }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-
-        {% if content.contact %}
-        <div class="EventContentBlock">
-            <h2 class="EventContentBlock__title">Contacts</h2>
-            <ul>
-                {% for contact in content.contact %}
-                    <li>
-                        <strong>{{ contact.fullName }}</strong><br />
-                        {{ contact.positionName }}<br />
-                        {% if contact.contactDetails.emails[0] is defined %}
-                            <a href="mailto:{{ contact.contactDetails.emails[0].email }}">{{ contact.contactDetails.emails[0].email }}</a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
+        {{ include('partials/_links_and_contacts.html.twig', {
+            links: content.links|default(null),
+            contacts: content.contact|default(null),
+        }, with_context: false) }}
 
         {% if content.block_title or content.block_description or content.block_services or content.content_links or content.cta_text %}
             <section class="EventContentBlock">

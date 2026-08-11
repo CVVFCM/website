@@ -1,7 +1,7 @@
 /* Event page styles */
 @import url('./app.css');
 @import url('./common/Map.css');
-@import url('./EventContentBlock.css');
+@import url('./common/EventContentBlock.css');
 @import url('./common/MediaMosaic.css');
 
 .EventPage__header {
@@ -205,11 +205,6 @@
     flex-wrap: wrap;
     max-width: 100%;
     position: relative;
-}
-
-.EventContentBlock {
-    flex: 22rem;
-
 }
 
 .EventPage__map {
