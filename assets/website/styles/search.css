@@ -2,8 +2,6 @@
 @import url('./default.css');
 
 .SearchPage .Page__headerMain {
-    /* Le titre et le champ sont du texte fixe, pas du contenu éditeur : on coupe aux mots. */
-    word-break: normal;
     padding-bottom: 3rem;
 }
 

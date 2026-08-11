@@ -23,7 +23,15 @@
     position: relative;
     z-index: 0;
     gap: 0;
-    word-break: break-all;
+
+    /* The white panel below is a narrow max-width: 22em column, so a single very
+       long word typed in the back-office would overflow it. `anywhere` only
+       breaks words that cannot fit on a line of their own; `word-break: break-all`
+       used to break *every* line at whatever character came last, stranding one
+       letter on the next line with no hyphen (issue #105). Both properties are
+       inherited, so this still protects the h1, the description and the
+       breadcrumb — it just stops mangling words that do fit. */
+    overflow-wrap: anywhere;
     align-items: end;
 
     p, h1, h2 {
