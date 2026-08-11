@@ -427,13 +427,18 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
         }, $selected);
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * The block renders three ways — no image, one image, a carousel — so the fixtures
+     * cover all three.
+     *
+     * @return array<string, mixed>
+     */
     private function blockTitleImageText(): array
     {
         return [
             'type' => 'title_image_text',
             'title' => self::BLOCK_TITLES[array_rand(self::BLOCK_TITLES)],
-            'media' => ['id' => $this->randomMediaId()],
+            'medias' => $this->randomMediaSelection(0, 3),
             'text' => self::BLOCK_TEXTS[array_rand(self::BLOCK_TEXTS)],
         ];
     }
@@ -441,15 +446,21 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
     /** @return array<string, mixed> */
     private function blockGallery(): array
     {
-        $count = min(random_int(2, 5), count($this->medias));
-        $keys = (array) array_rand($this->medias, $count);
-
         return [
             'type' => 'gallery',
-            'medias' => [
-                'displayOption' => null,
-                'ids' => array_map(fn (int|string $k): int => $this->medias[(int) $k]->getId(), $keys),
-            ],
+            'medias' => $this->randomMediaSelection(3, 8),
+        ];
+    }
+
+    /** @return array{displayOption: null, ids: list<int>} */
+    private function randomMediaSelection(int $min, int $max): array
+    {
+        $count = min(random_int($min, $max), \count($this->medias));
+        $keys = 0 === $count ? [] : (array) array_rand($this->medias, $count);
+
+        return [
+            'displayOption' => null,
+            'ids' => array_map(fn (int|string $k): int => $this->medias[(int) $k]->getId(), $keys),
         ];
     }
 

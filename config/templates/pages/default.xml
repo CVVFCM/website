@@ -66,8 +66,9 @@
 
                             <tag name="sulu.search.field"/>
                         </property>
-                        <property name="media" type="single_media_selection">
-                            <meta><title lang="fr">Image</title></meta>
+                        <!-- Une seule image est affichée telle quelle, plusieurs deviennent un carrousel. -->
+                        <property name="medias" type="media_selection">
+                            <meta><title lang="fr">Images</title></meta>
                         </property>
                         <property name="text" type="text_editor" mandatory="true">
                             <meta><title lang="fr">Paragraphe</title></meta>

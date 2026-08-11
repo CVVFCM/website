@@ -1,0 +1,49 @@
+{#
+  "Titre + Image + Paragraphe" content block: images on one side, title and editor text on
+  the other. Renders with no image, with a single image, or with a carousel.
+
+  Params:
+    block  the Sulu block data (title, medias, text)
+#}
+{% set medias = block.medias|default([]) %}
+
+<div class="ContentBlock ContentBlock--titleImageText{{ medias is empty ? ' ContentBlock--noImage' : '' }} SectionPadded">
+    {% if medias|length > 1 %}
+        {# Several images: a carousel, one image per view. #}
+        <div class="ContentBlock__carousel splide" data-controller="carousel">
+            <div class="splide__track">
+                <ul class="splide__list">
+                    {% for media in medias %}
+                        <li class="splide__slide">
+                            {{ _self.figure(media) }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% elseif medias is not empty %}
+        {{ _self.figure(medias|first) }}
+    {% endif %}
+
+    <div class="ContentBlock__body">
+        <h2 class="ContentBlock__title">{{ block.title }}</h2>
+        <div class="ContentBlock__text">{{ block.text|raw }}</div>
+    </div>
+</div>
+
+{# A macro has its own scope: the picture macro must be imported again here. #}
+{% macro figure(media) %}
+    {% import 'partials/_picture.html.twig' as picture %}
+    {% set caption = media.description|default('') %}
+    <figure class="ContentBlock__figure">
+        {{ picture.render(media, 'x800', media.title, {
+            class: 'ContentBlock__image',
+            loading: 'lazy',
+            widths: [['640x', 640], ['1024x', 1024], ['1600x', 1600]],
+            sizes: '(min-width: 64rem) 55vw, 100vw',
+        }) }}
+        {% if caption %}
+            <figcaption class="ContentBlock__caption">{{ caption }}</figcaption>
+        {% endif %}
+    </figure>
+{% endmacro %}

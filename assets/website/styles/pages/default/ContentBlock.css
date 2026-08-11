@@ -40,9 +40,73 @@
     }
 }
 
+
+/* __________________________________________________ Title + image(s) + paragraph */
+
+.ContentBlock--titleImageText {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+}
+
+.ContentBlock__figure {
+    margin: 0;
+    min-width: 0;
+}
+
 .ContentBlock__image {
-    max-width: 100%;
+    display: block;
+    width: 100%;
     height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+}
+
+.ContentBlock__caption {
+    margin: 0.75rem 0 0;
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+}
+
+.ContentBlock__body {
+    min-width: 0;
+
+    .ContentBlock__title {
+        font-size: 2rem;
+        line-height: 1.15;
+        margin: 0 0 1rem;
+        color: var(--blue-note-text);
+    }
+}
+
+/* Editor content: a bare list of links reads as a menu, so it drops its markers and
+   gains the site's link arrow. Lists of plain text keep a marker, and links inside a
+   paragraph keep the resting underline they need to be recognizable. */
+.ContentBlock__text {
+    ul {
+        padding-left: 1.2em;
+    }
+
+    li {
+        margin-bottom: 0.35em;
+    }
+
+    li > a:only-child {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5em;
+        color: var(--blue-note-text);
+        text-decoration: none;
+
+        &::after {
+            content: url("../../../images/pictos/arrow_link.svg");
+            line-height: 0;
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }
 
 .ContentBlock--titleImageText.ContentBlock--noImage {
@@ -50,27 +114,78 @@
         text-align: center;
     }
 
-    .ContentBlock__text {
+    .ContentBlock__body {
         max-width: 36em;
         margin: 0 auto;
     }
 }
 
 
+/* __________________________________________________ Carousel (several images) */
+
+.ContentBlock__carousel {
+    min-width: 0;
+
+    /* stylelint-disable-next-line selector-class-pattern -- Splide owns this class name. */
+    .splide__arrow {
+        width: 2.75rem;
+        height: 2.75rem;
+        background: var(--blue-note-text);
+        opacity: 1;
+
+        svg {
+            width: 1rem;
+            height: 1rem;
+            fill: var(--color-white);
+        }
+
+        &:disabled {
+            opacity: 0.4;
+        }
+    }
+}
+
+
 /* __________________________________________________ rich-text (CKEditor) containers */
 
-.ContentBlock__description,
-.ContentBlock__text {
-    /* Inside centered containers, keep the list visually centered as a block
-       but left-align its items so the markers stay attached to the text. */
+/* Inside centered containers, keep the list visually centered as a block but left-align
+   its items so the markers stay attached to the text. */
+.ContentBlock--cta .ContentBlock__description,
+.ContentBlock--noImage .ContentBlock__text {
     ul, ol {
         text-align: left;
         width: fit-content;
         margin-inline: auto;
     }
+}
 
-    /* Editor links need a resting underline to be identifiable as links. */
-    a {
-        text-decoration: underline;
+/* Editor links need a resting underline to be identifiable as links. */
+.ContentBlock__description a,
+.ContentBlock__text p a {
+    text-decoration: underline;
+}
+
+
+/* __________________________________________________ Desktop */
+
+@media (width >= 64rem) {
+    .ContentBlock--titleImageText {
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+        gap: 4rem;
+    }
+
+    /* The site's diagonal motif, applied to the image only: the text column sits against
+       the straight edge, so a skew (used on the page headers) would slant that side too. */
+    .ContentBlock__image {
+        aspect-ratio: 16 / 10;
+        clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .ContentBlock__caption {
+        padding-left: 8%;
+    }
+
+    .ContentBlock--titleImageText.ContentBlock--noImage {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
