@@ -45,7 +45,7 @@ services:
             MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
     database:
-        ports: [ '${POSTGRES_PORT:-5432}:5432' ]
+        ports: [ '${DATABASE_PORT:-5432}:5432' ]
 
     s3:
         image: adobe/s3mock:latest

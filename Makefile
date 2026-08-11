@@ -1,4 +1,9 @@
-DOCKER_COMPOSE = EXTERNAL_USER_ID=$(shell id -u) docker compose
+HTTP_PORT ?= 80
+HTTPS_PORT ?= 443
+HTTP3_PORT ?= 443
+DATABASE_PORT ?= 5432
+MAILER_HTTP_PORT ?= 8025
+DOCKER_COMPOSE = EXTERNAL_USER_ID=$(shell id -u) HTTP_PORT=$(HTTP_PORT) HTTPS_PORT=$(HTTPS_PORT) HTTP3_PORT=$(HTTP3_PORT) DATABASE_PORT=$(DATABASE_PORT) docker compose
 
 .PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test test-ai cc css hadolint cs stylelint psalm psalm_strict
 
