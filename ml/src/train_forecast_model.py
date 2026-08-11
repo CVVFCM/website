@@ -60,8 +60,16 @@ def wind_scores(observed_wind, predicted_wind):
     )
 
 
-# Load and order chronologically so the split is a real forecast (past → future).
-df = pd.read_csv(CSV_DATA_PATH).dropna().sort_values('recorded_hour').reset_index(drop=True)
+# Load and order chronologically so the split is a real forecast (past → future). Only the columns
+# actually consumed may disqualify a row: the export also carries observed pressure/humidity and the
+# 3-hour pressure trend, none of which the model reads, and the trend is empty for the three hours
+# following every gap in the observations. A bare dropna() threw those rows away for nothing.
+df = (
+    pd.read_csv(CSV_DATA_PATH)
+    .dropna(subset=FEATURE_COLS + OBSERVED_WIND_COLS)
+    .sort_values('recorded_hour')
+    .reset_index(drop=True)
+)
 X = df[FEATURE_COLS].values.astype(np.float64)
 observed_wind = df[OBSERVED_WIND_COLS].values.astype(np.float64)
 forecast_wind = df[FORECAST_WIND_COLS].values.astype(np.float64)
