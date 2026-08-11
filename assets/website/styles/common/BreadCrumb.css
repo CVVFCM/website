@@ -1,0 +1,67 @@
+.BreadCrumb {
+    padding: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-flow: row wrap;
+    list-style: none;
+    font-weight: 700;
+    font-size: .8rem;
+
+    /* Page titles are real words: the trail may wrap between items (mandatory on
+       narrow screens) but a label must never be cut mid-word. Stated explicitly
+       rather than inherited, because the breadcrumb is also rendered inside
+       .EventPage__headerMain, out of reach of the .Page__headerMain rules. */
+    overflow-wrap: normal;
+    word-break: normal;
+
+    & li {
+        display: flex;
+        align-items: center;
+        opacity: 0.8;
+
+        /* The separator is a flex item of its own. A `gap` on the li only spaces
+           it from the label *before* it, and the li that follows starts flush
+           against it (flex rows drop the source whitespace between items) — so
+           the spacing belongs on the separator itself, on both sides. */
+        &::after {
+            content: '›';
+            opacity: 0.6;
+            margin-inline: 0.35em;
+        }
+
+        &:last-child::after {
+            display: none;
+        }
+    }
+
+    & a {
+        color: var(--blue-note-text);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+
+        /* Only the home item has two children (icon + its screen-reader label). */
+        gap: 0.25rem;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.BreadCrumb__homeIcon {
+    width: 1em;
+    height: 1em;
+    font-size: 1.25em;
+}
+
+/* Kept in the accessibility tree for screen readers, visually replaced by the home icon. */
+.BreadCrumb__srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
