@@ -169,9 +169,18 @@
     overflow: hidden;
 }
 
+/*
+ * The largest square that fits inside the 7rem circle measures ~4.95rem: we
+ * deliberately overshoot it so the white margins baked into most label logos
+ * are clipped away by the circle instead of shrinking the artwork itself.
+ * No mask-image here on purpose: the circle already masks via border-radius +
+ * overflow on .SiteFooter__labelLink, and the picto technique used in
+ * NavigationLinks.css flattens artwork to a single colour — it would wipe out
+ * these multi-colour partner logos.
+ */
 .SiteFooter__labelImg {
-    height: 3rem;
-    width: auto;
+    height: 6rem;
+    width: 6rem;
     object-fit: contain;
     display: block;
 }

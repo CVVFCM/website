@@ -75,22 +75,7 @@
         {% endif %}
 
         {% if club_info and club_info.content.labels is defined and club_info.content.labels is not empty %}
-            <div class="SiteFooter__labels">
-                <p class="SiteFooter__labelsTitle">Labels</p>
-                <ul class="SiteFooter__labelsList">
-                    {% for label in club_info.content.labels %}
-                        <li class="SiteFooter__labelsItem">
-                            {% if label.url is defined and label.url %}
-                                <a class="SiteFooter__labelLink" href="{{ label.url }}" target="_blank" rel="noopener noreferrer" title="{{ label.name }}">
-                                    <img class="SiteFooter__labelImg" src="{{ label.logo.thumbnails['x200'] }}" alt="{{ label.name }}" />
-                                </a>
-                            {% else %}
-                                <img class="SiteFooter__labelImg" src="{{ label.logo.thumbnails['x200'] }}" alt="{{ label.name }}" />
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {{ include('partials/_footer_labels.html.twig', {labels: club_info.content.labels}) }}
         {% endif %}
     </div>
 
