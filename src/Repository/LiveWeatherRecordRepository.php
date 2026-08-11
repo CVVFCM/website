@@ -116,6 +116,24 @@ final class LiveWeatherRecordRepository extends ServiceEntityRepository
                     FROM live_weather_record lwr
                     GROUP BY recorded_hour
                     HAVING COUNT(*) >= 6
+                ),
+                -- weather_forecast_record holds one row per fetch, so a single hour accumulates as
+                -- many rows as the forecast was refreshed for it (14 on average in PREPROD). Joining
+                -- the table directly emitted one training sample per fetch: the same observed wind
+                -- repeated, paired with a different forecast each time. That weighted the dataset by
+                -- refresh frequency instead of by elapsed time, and let the busiest weeks drown the
+                -- rest. Keep the freshest fetch of each hour — the shortest lead time, and the one
+                -- closest to what the model is handed at inference.
+                latest_forecast AS (
+                    SELECT DISTINCT ON (date)
+                        date,
+                        temperature,
+                        humidity,
+                        pressure,
+                        wind_direction,
+                        wind_speed
+                    FROM weather_forecast_record
+                    ORDER BY date, created_at DESC
                 )
                 SELECT
                     hourly_live_record.*,
@@ -125,13 +143,13 @@ final class LiveWeatherRecordRepository extends ServiceEntityRepository
                     COS(2 * PI() * (EXTRACT(DOY FROM hourly_live_record.recorded_hour) / 365.25)) AS day_cos,
                     t_minus_3.pressure AS pressure_minus_3h,
                     hourly_live_record.pressure - t_minus_3.pressure AS pressure_trend_3h,
-                    weather_forecast_record.temperature AS forecast_temperature,
-                    weather_forecast_record.humidity AS forecast_humidity,
-                    weather_forecast_record.pressure AS forecast_pressure,
-                    SIN(RADIANS(weather_forecast_record.wind_direction)) * weather_forecast_record.wind_speed AS forecast_wind_sin,
-                    COS(RADIANS(weather_forecast_record.wind_direction)) * weather_forecast_record.wind_speed AS forecast_wind_cos
+                    latest_forecast.temperature AS forecast_temperature,
+                    latest_forecast.humidity AS forecast_humidity,
+                    latest_forecast.pressure AS forecast_pressure,
+                    SIN(RADIANS(latest_forecast.wind_direction)) * latest_forecast.wind_speed AS forecast_wind_sin,
+                    COS(RADIANS(latest_forecast.wind_direction)) * latest_forecast.wind_speed AS forecast_wind_cos
                 FROM hourly_live_record
-                INNER JOIN weather_forecast_record ON hourly_live_record.recorded_hour = weather_forecast_record.date
+                INNER JOIN latest_forecast ON hourly_live_record.recorded_hour = latest_forecast.date
                 LEFT JOIN hourly_live_record t_minus_3 ON t_minus_3.recorded_hour = hourly_live_record.recorded_hour - INTERVAL '3 hours'
                 ORDER BY hourly_live_record.recorded_hour;
             SQL,
