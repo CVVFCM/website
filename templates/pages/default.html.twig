@@ -41,32 +41,11 @@
             <div class="DefaultPage__blocks">
                 {% for block in content.blocks %}
                     {% if block.type == 'title_image_text' %}
-                        <div class="ContentBlock ContentBlock--titleImageText{{ block.media ? '' : ' ContentBlock--noImage' }} SectionPadded">
-                            <h2 class="ContentBlock__title">{{ block.title }}</h2>
-                            {% if block.media %}
-                                {{ picture.render(block.media, 'x800', block.media.title, {
-                                    class: 'ContentBlock__image',
-                                    loading: 'lazy',
-                                }) }}
-                            {% endif %}
-                            <div class="ContentBlock__text">{{ block.text|raw }}</div>
-                        </div>
+                        {{ include('partials/_content_block_title_image_text.html.twig', {block: block}, with_context: false) }}
 
                     {% elseif block.type == 'gallery' %}
-                        <div class="ContentBlock ContentBlock--gallery splide SectionPadded"
-                             data-controller="gallery">
-                            <div class="splide__track">
-                                <ul class="splide__list">
-                                    {% for item in block.medias %}
-                                        <li class="splide__slide">
-                                            {{ picture.render(item, 'x800', item.title, {
-                                                class: 'ContentBlock__galleryItem',
-                                                loading: 'lazy',
-                                            }) }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                        <div class="ContentBlock ContentBlock--gallery SectionPadded">
+                            {{ include('partials/_media_mosaic.html.twig', {medias: block.medias}, with_context: false) }}
                         </div>
 
                     {% elseif block.type == 'list' %}
@@ -160,6 +139,15 @@
                     </aside>
                 {% endif %}
             </div>
+        </section>
+    {% endif %}
+
+    {% if content.links|default(null) or content.contact|default(null) %}
+        <section class="LinksAndContacts SectionPadded" aria-label="Liens et contacts">
+            {{ include('partials/_links_and_contacts.html.twig', {
+                links: content.links|default(null),
+                contacts: content.contact|default(null),
+            }, with_context: false) }}
         </section>
     {% endif %}
 {% endblock %}

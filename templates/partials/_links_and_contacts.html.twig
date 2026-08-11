@@ -1,0 +1,40 @@
+{#
+  "Liens et contacts" panels, shared by the event pages and the default pages.
+
+  Emits the two panels with no wrapper: each page places them in its own row container.
+
+  Params:
+    links     list of {title, url, target_blank}
+    contacts  list of Sulu contacts
+#}
+{% if links %}
+    <div class="EventContentBlock">
+        <h2 class="EventContentBlock__title">Liens utiles</h2>
+        <ul class="EventContentBlock__linksList">
+            {% for link in links %}
+                <li>
+                    <a class="EventContentBlock__link" href="{{ link.url }}" title="{{ link.title }}"{{ link.target_blank ? ' target="_blank"' }}>
+                        {{ link.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+{% if contacts %}
+    <div class="EventContentBlock">
+        <h2 class="EventContentBlock__title">Contacts</h2>
+        <ul>
+            {% for contact in contacts %}
+                <li>
+                    <strong>{{ contact.fullName }}</strong><br />
+                    {{ contact.positionName }}<br />
+                    {% if contact.contactDetails.emails[0] is defined %}
+                        <a href="mailto:{{ contact.contactDetails.emails[0].email }}">{{ contact.contactDetails.emails[0].email }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

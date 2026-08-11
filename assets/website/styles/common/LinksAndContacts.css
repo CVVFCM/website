@@ -1,0 +1,11 @@
+/* Row holding the "Liens utiles" and "Contacts" panels at the bottom of a default page.
+   The event page gets the same rendering from its own .EventPage__mainContent flex row. */
+
+@import url('./EventContentBlock.css');
+
+.LinksAndContacts {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 2rem;
+}

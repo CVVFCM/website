@@ -3,6 +3,8 @@
 @import url('./list.css');
 @import url('./common/DynamicForm.css');
 @import url('./common/FormSection.css');
+@import url('./pages/default/ContentBlock.css');
+@import url('./common/LinksAndContacts.css');
 
 
 .Page__header {
@@ -10,6 +12,14 @@
     color: var(--color-white);
     display: flex;
     flex-direction: column;
+
+    /* The global link blue is illegible on the gradient: render rich-text links white.
+       Self-styled links ([class], e.g. the logo) and the white .Page__headerBody panel
+       (breadcrumb, header description) keep their own colors. */
+    a:not([class], .Page__headerBody a) {
+        color: var(--color-white);
+        text-decoration: underline;
+    }
 }
 
 
@@ -61,6 +71,19 @@
         line-height: 2;
         margin-bottom: 2em;
     }
+
+    /* Inside centered containers, keep the list visually centered as a block
+       but left-align its items so the markers stay attached to the text. */
+    ul, ol {
+        text-align: left;
+        width: fit-content;
+        margin-inline: auto;
+    }
+
+    /* Editor links need a resting underline to be identifiable as links. */
+    a {
+        text-decoration: underline;
+    }
 }
 
 .Page__headerMedia {
@@ -80,98 +103,3 @@
     object-fit: cover;
     transform:  skewX(-15deg) ;
 }
-
-
-/* ______________________________________ ContentBlock  */
-
-.ContentBlock p {
-    max-width: 36em;
-}
-
-.ContentBlock__header, .ContentBlock--cta {
-    text-align: center;
-
-    h2 {
-        font-size: 2.2em;
-        margin: 0;
-        color: var(--red-act-text);
-    }
-
-    .ContentBlock__description {
-        max-width: 36em;
-        margin: 0 auto;
-    }
-}
-
-.ContentBlock--cta {
-    text-align: center;
-    background: linear-gradient(240deg, #1D68A0 0%, #06315A 100%);
-    color: var(--color-white);
-
-    p {
-        color: inherit;
-    }
-}
-
-.ContentBlock__image {
-    max-width: 100%;
-    height: auto;
-}
-
-.ContentBlock--titleImageText.ContentBlock--noImage {
-    .ContentBlock__title {
-        text-align: center;
-    }
-
-    .ContentBlock__text {
-        max-width: 36em;
-        margin: 0 auto;
-    }
-}
-
-.ContentBlock--gallery {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.ContentBlock__galleryItem {
-    flex: 0 1 auto;
-    max-height: 30vh;
-}
-
-
-/* ______________________________________ rich-text (CKEditor) containers */
-
-.ContentBlock__description,
-.ContentBlock__text,
-.Page__headerDescription {
-    /* Inside centered containers, keep the list visually centered as a block
-       but left-align its items so the markers stay attached to the text. */
-    ul, ol {
-        text-align: left;
-        width: fit-content;
-        margin-inline: auto;
-    }
-
-    /* Editor links need a resting underline to be identifiable as links. */
-    a {
-        text-decoration: underline;
-    }
-}
-
-
-/* ______________________________________ dark gradient sections */
-
-/* The global link blue is illegible on the gradient: render rich-text links
-   white. Self-styled links ([class], e.g. the CTA button or the logo) and the
-   white .Page__headerBody panel (breadcrumb, header description) keep their
-   own colors. */
-.Page__header,
-.ContentBlock--cta {
-    a:not([class], .Page__headerBody a) {
-        color: var(--color-white);
-        text-decoration: underline;
-    }
-}
-
-

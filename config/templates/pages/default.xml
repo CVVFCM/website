@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <template xmlns="http://schemas.sulu.io/template/template"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xi="http://www.w3.org/2001/XInclude"
           xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/template-1.0.xsd">
 
     <key>default</key>
@@ -66,8 +67,9 @@
 
                             <tag name="sulu.search.field"/>
                         </property>
-                        <property name="media" type="single_media_selection">
-                            <meta><title lang="fr">Image</title></meta>
+                        <!-- Une seule image est affichée telle quelle, plusieurs deviennent un carrousel. -->
+                        <property name="medias" type="media_selection">
+                            <meta><title lang="fr">Images</title></meta>
                         </property>
                         <property name="text" type="text_editor" mandatory="true">
                             <meta><title lang="fr">Paragraphe</title></meta>
@@ -161,5 +163,7 @@
                 </property>
             </properties>
         </section>
+
+        <xi:include href="../fragments/links-and-contacts.xml"/>
     </properties>
 </template>

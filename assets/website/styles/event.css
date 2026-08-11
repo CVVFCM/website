@@ -1,7 +1,8 @@
 /* Event page styles */
 @import url('./app.css');
 @import url('./common/Map.css');
-@import url('./EventContentBlock.css');
+@import url('./common/EventContentBlock.css');
+@import url('./common/MediaMosaic.css');
 
 .EventPage__header {
     background: linear-gradient(240deg, #1D68A0 0%, #06315A 100%);
@@ -206,11 +207,6 @@
     position: relative;
 }
 
-.EventContentBlock {
-    flex: 22rem;
-
-}
-
 .EventPage__map {
     width: 54rem;
     max-height: 33vh;
@@ -266,30 +262,12 @@
     gap: 0.5rem;
 }
 
+/* Layout only — the photos themselves are the shared MediaMosaic block. */
 .EventPage__mediasBloc {
     max-width: 100%;
     display: block;
     flex: 100%;
     order: 4;
-
-    & ul {
-        display: flex;
-        flex-flow: row wrap;
-        max-width: 100%;
-
-    }
-
-    & li {
-        max-width: 100%;
-        display: flex;
-    }
-
-    & img {
-        max-height: 33vh;
-        width: auto;
-        max-width: 60%;
-        object-fit: contain;
-    }
 }
 
 /* ------------------------------------  MAIN CONTENT RESPONSIVE    */

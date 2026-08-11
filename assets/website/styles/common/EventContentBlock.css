@@ -1,4 +1,6 @@
 .EventContentBlock {
+    /* Sized as a column of a wrapping row, on the event page and the default pages alike. */
+    flex: 22rem;
     list-style-type: none;
     border: 1px dashed var(--red-act-text);
     border-width: 0 0 0 1px;
@@ -73,7 +75,7 @@
 }
 
 .EventContentBlock__serviceAvailability--yes::before {
-    content: url("../images/pictos/validate.svg");
+    content: url("../../images/pictos/validate.svg");
 }
 
 .EventContentBlock__serviceAvailability--no {
@@ -81,7 +83,7 @@
 }
 
 .EventContentBlock__serviceAvailability--no::before {
-    content: url("../images/pictos/close.svg");
+    content: url("../../images/pictos/close.svg");
 }
 
 .EventContentBlock__linksSection {
@@ -115,7 +117,7 @@
 }
 
 .EventContentBlock__link::after {
-    content: url("../images/pictos/arrow_link.svg");
+    content: url("../../images/pictos/arrow_link.svg");
 }
 
 .EventContentBlock__link:hover {

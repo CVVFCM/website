@@ -6,17 +6,11 @@ export default class extends Controller {
     connect() {
         this.splide = new Splide(this.element, {
             type: 'loop',
-            perPage: 3,
+            perPage: 1,
             perMove: 1,
-            gap: '1rem',
-            breakpoints: {
-                48: {
-                    perPage: 1,
-                },
-                64: {
-                    perPage: 2,
-                },
-            },
+            pagination: false,
+            // The images are decorative content, not a task: don't move them under the reader.
+            autoplay: false,
         }).mount();
     }
 
