@@ -16,8 +16,11 @@ imagePullSecrets:
   - name: ghcr
 
 # FrankenPHP web server (serves the Symfony/Sulu app).
-# Resources: memory request==limit (Guaranteed memory QoS); cpu request only, no cpu
-# limit (avoids CFS throttling). Starting points — tune from `kubectl top`.
+# Resources: memory request==limit (Guaranteed memory QoS). The cpu limit is deliberately
+# well above the request: image formats are encoded in-process by Imagick, single-threaded
+# (MAGICK_THREAD_LIMIT=1 in the Dockerfile), so a cold thumbnail is CPU-bound and a tight
+# limit turns into CFS throttling on exactly the requests a visitor is waiting for.
+# Starting points — tune from `kubectl top`.
 web:
   replicaCount: 1
   resources:
@@ -25,7 +28,7 @@ web:
       cpu: 150m
       memory: 512Mi
     limits:
-      cpu: 500m
+      cpu: 1
       memory: 1Gi
   # FrankenPHP sizes threads/workers from the HOST core count by default (it doesn't see
   # the cgroup CPU limit) — on a big node that spawns far too many PHP workers and OOMs
@@ -160,14 +163,20 @@ robots:
   disallowAll: false
 
 # Loupe search index (cmsig/seal) lives on local disk under /app/var/indexes. Small RWO
-# PVC so it survives pod restarts. Uploads go to S3, so no uploads PVC is needed.
+# PVC so it survives pod restarts.
 # mlSize sizes a second, RWX PVC for the ML weather-model artifacts under
 # /app/data/weather/ml (delivered by the ML workflow, read by web AND consumer).
+# uploadsSize sizes a third, RWX PVC for /app/public/uploads. Media ORIGINALS live on S3,
+# but Sulu writes the GENERATED image formats to local disk (sulu_media.format_cache.path
+# defaults to <project>/public/uploads/media). Without this volume every helm upgrade and
+# every pod restart wipes the whole thumbnail cache, and `strategy: Recreate` guarantees a
+# cold window where every image on every page is re-encoded through PHP.
 persistence:
   enabled: true
   storageClass: longhorn
   size: 1Gi
   mlSize: 1Gi
+  uploadsSize: 5Gi
 
 # Bundled PostgreSQL (Bitnami subchart). When enabled, DATABASE_URL is derived
 # automatically from postgresql.auth below and externalDatabase.url is ignored.

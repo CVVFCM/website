@@ -65,6 +65,13 @@ spec:
             # model JSONs here and the consumer reads them through the same PVC.
             - name: ml-artifacts
               mountPath: /app/data/weather/ml
+            # Sulu's image format cache. The originals are on S3, but the generated
+            # formats are written here (sulu_media.format_cache.path). The Dockerfile's
+            # `VOLUME /app/public/uploads` is a Docker-only directive that Kubernetes
+            # ignores, so without this mount the cache is on the container's ephemeral
+            # layer and every deploy starts cold.
+            - name: uploads
+              mountPath: /app/public/uploads
             {{- end }}
             {{- if .Values.robots.disallowAll }}
             - name: robots
@@ -117,6 +124,9 @@ spec:
         - name: ml-artifacts
           persistentVolumeClaim:
             claimName: {{ include "cvvfcm.fullname" . }}-ml
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: {{ include "cvvfcm.fullname" . }}-uploads
         {{- end }}
         {{- if .Values.robots.disallowAll }}
         - name: robots

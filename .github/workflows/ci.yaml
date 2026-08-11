@@ -150,6 +150,38 @@ jobs:
             -   name: Lint Dockerfile
                 uses: hadolint/hadolint-action@v3.1.0
 
+            -   name: Set up Helm
+                uses: azure/setup-helm@v4
+
+            -   name: Helm Lint
+                run: helm lint .infra/helm/cvvfcm
+
+            -   name: Helm Template
+                # The image format cache is written to local disk (the S3 storage only
+                # holds the originals): losing its volume mount silently makes every
+                # deploy start from a cold cache. Assert the mount is still rendered.
+                run: |
+                    # The chart fails fast on missing required values, hence the dummy set.
+                    helm template cvvfcm .infra/helm/cvvfcm \
+                        --set 'externalDatabase.url=postgresql://ci:ci@db:5432/ci' \
+                        --set secrets.appSecret=ci \
+                        --set secrets.mailerDsn=null://null \
+                        --set secrets.symfonyDecryptionSecret=ci \
+                        --set secrets.s3Key=ci \
+                        --set secrets.s3Secret=ci \
+                        --set secrets.mistralApiKey=ci \
+                        > /tmp/cvvfcm-rendered.yaml
+
+                    for expected in \
+                        'claimName: cvvfcm-uploads' \
+                        'mountPath: /app/public/uploads'
+                    do
+                        if ! grep -qF "${expected}" /tmp/cvvfcm-rendered.yaml; then
+                            echo "::error file=.infra/helm/cvvfcm/templates/web-deployment.yaml::Missing \"${expected}\" in the rendered chart — the image format cache would not be persisted (see #107)."
+                            exit 1
+                        fi
+                    done
+
     cs:
         runs-on: ubuntu-latest
         name: Code Style

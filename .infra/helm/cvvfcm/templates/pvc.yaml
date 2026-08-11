@@ -40,4 +40,27 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.mlSize }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "cvvfcm.fullname" . }}-uploads
+  labels:
+    {{- include "cvvfcm.labels" . | nindent 4 }}
+  annotations:
+    # Keep the generated image formats across a `helm uninstall`: they are re-derivable
+    # from the S3 originals, but only one visitor request at a time and at Imagick's
+    # single-threaded pace.
+    helm.sh/resource-policy: keep
+spec:
+  # RWX: the cache is written and read by the web pod today, but the access mode is what
+  # pins replicaCount to 1 for the RWO indexes volume — don't add a second reason.
+  accessModes:
+    - ReadWriteMany
+  {{- with .Values.persistence.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.uploadsSize }}
 {{- end }}
