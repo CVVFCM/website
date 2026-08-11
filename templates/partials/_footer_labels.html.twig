@@ -1,0 +1,29 @@
+{% types {
+    labels: 'array',
+} %}
+{#
+  Footer "Labels" area. Extracted from _footer_navigation.html.twig so it can be
+  rendered without a Sulu snippet context (see tests/Twig/FooterLabelsTest.php).
+
+  Params:
+    labels  list of label blocks ({name, logo, url?}) from the club_info snippet
+#}
+<div class="SiteFooter__labels">
+    <p class="SiteFooter__labelsTitle">Labels</p>
+    <ul class="SiteFooter__labelsList">
+        {% for label in labels %}
+            <li class="SiteFooter__labelsItem">
+                {% if label.url is defined and label.url %}
+                    <a class="SiteFooter__labelLink" href="{{ label.url }}" target="_blank" rel="noopener noreferrer" title="{{ label.name }}">
+                        <img class="SiteFooter__labelImg" src="{{ label.logo.thumbnails['x200'] }}" alt="{{ label.name }}" />
+                    </a>
+                {% else %}
+                    {# Same round gabarit for a label without a link, minus the link semantics. #}
+                    <span class="SiteFooter__labelLink">
+                        <img class="SiteFooter__labelImg" src="{{ label.logo.thumbnails['x200'] }}" alt="{{ label.name }}" />
+                    </span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
