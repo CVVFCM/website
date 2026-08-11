@@ -55,6 +55,17 @@ jobs:
                     echo "${{ secrets.OKE_KUBECONFIG }}" > ~/.kube/config
                     chmod 600 ~/.kube/config
 
+            -   name: Wait for a Ready web pod
+                # The web Deployment rolls with `strategy: Recreate` (its search-index PVC is
+                # RWO and must never be double-attached), so a deploy leaves a window with zero
+                # Running pods. The weekly retrain can land in that window: wait for a pod
+                # instead of racing it.
+                run: |
+                    kubectl -n cvvfcm-preprod rollout status deploy/cvvfcm-web --timeout=5m
+                    kubectl -n cvvfcm-preprod wait --for=condition=Ready pod \
+                        -l app.kubernetes.io/name=cvvfcm,app.kubernetes.io/instance=cvvfcm,app.kubernetes.io/component=web \
+                        --timeout=5m
+
             -   name: Fetch up-to-date CSV weather file
                 # The export reads the PREPROD database from inside a web pod.
                 run: |
@@ -74,7 +85,18 @@ jobs:
                 # /app/data/weather/ml is the shared RWX PVC, so copying through the web pod
                 # makes the artifacts visible to the consumer pod too.
                 run: |
-                    POD=$(kubectl -n cvvfcm-preprod get pod -l app.kubernetes.io/name=cvvfcm,app.kubernetes.io/instance=cvvfcm,app.kubernetes.io/component=web --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')
+                    POD=$(kubectl -n cvvfcm-preprod get pod \
+                        -l app.kubernetes.io/name=cvvfcm,app.kubernetes.io/instance=cvvfcm,app.kubernetes.io/component=web \
+                        --field-selector=status.phase=Running \
+                        -o jsonpath='{.items[0].metadata.name}')
+
+                    # An empty selection makes the jsonpath above fail with an opaque
+                    # "array index out of bounds": say what is actually missing.
+                    if [ -z "$POD" ]; then
+                        echo "::error::No Running web pod in cvvfcm-preprod — cannot deliver the model."
+                        exit 1
+                    fi
+
                     kubectl -n cvvfcm-preprod cp ./data/weather/ml/model_weights.json "${POD}:/app/data/weather/ml/"
                     kubectl -n cvvfcm-preprod cp ./data/weather/ml/scaler_params.json "${POD}:/app/data/weather/ml/"
 
@@ -83,57 +105,7 @@ jobs:
                     name: weather-model-preprod
                     path: ./data/weather/ml
 
-    # Separate job on purpose: GitHub `environment:` is job-scoped, and the PROD cluster
-    # credentials (OKE_KUBECONFIG, OCI_*) are environment-scoped secrets.
-    deliver-prod:
-        name: Deliver weather model to PROD
-        runs-on: ubuntu-latest
-        needs: [ build-ml-preprod ]
-        environment: PROD
-        env:
-            # Silence the OCI CLI key-label nag (fires on every exec-credential token call).
-            SUPPRESS_LABEL_WARNING: "True"
-        steps:
-            -   name: Download the retrained model
-                uses: actions/download-artifact@v4
-                with:
-                    name: weather-model-preprod
-                    path: ./data/weather/ml
-
-            -   name: Install & Configure OCI CLI
-                run: |
-                    curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-                    chmod +x install.sh
-                    ./install.sh --accept-all-defaults
-                    echo "/home/runner/bin" >> "$GITHUB_PATH"
-
-                    mkdir -p ~/.oci
-                    cat <<EOF > ~/.oci/config
-                    [DEFAULT]
-                    user=${{ secrets.OCI_USER_OCID }}
-                    fingerprint=${{ secrets.OCI_FINGERPRINT }}
-                    tenancy=${{ secrets.OCI_TENANCY_OCID }}
-                    region=${{ secrets.OCI_REGION }}
-                    key_file=/home/runner/.oci/key.pem
-                    EOF
-
-                    # OCI_API_KEY is base64encode(file(private_key)) in Terraform — decode
-                    # it back to the raw PEM (writing it verbatim would store base64 text).
-                    echo "${{ secrets.OCI_API_KEY }}" | base64 -d > ~/.oci/key.pem
-
-                    chmod 600 ~/.oci/config ~/.oci/key.pem
-
-                    # Fail fast with a clear message if the key is malformed.
-                    openssl pkey -in ~/.oci/key.pem -noout
-
-            -   name: Write kubeconfig
-                run: |
-                    mkdir -p ~/.kube
-                    echo "${{ secrets.OKE_KUBECONFIG }}" > ~/.kube/config
-                    chmod 600 ~/.kube/config
-
-            -   name: Copy to PROD
-                run: |
-                    POD=$(kubectl -n cvvfcm get pod -l app.kubernetes.io/name=cvvfcm,app.kubernetes.io/instance=cvvfcm,app.kubernetes.io/component=web --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')
-                    kubectl -n cvvfcm cp ./data/weather/ml/model_weights.json "${POD}:/app/data/weather/ml/"
-                    kubectl -n cvvfcm cp ./data/weather/ml/scaler_params.json "${POD}:/app/data/weather/ml/"
+# There is no PROD delivery job: PROD has never been deployed (cd.yaml only rolls it out on a
+# `release` event, and no release exists yet), so the namespace is empty and any delivery there
+# fails. Re-add a `deliver-prod` job — its own `environment: PROD`, since GitHub environments
+# are job-scoped and the PROD cluster secrets are environment-scoped — once PROD is live.
