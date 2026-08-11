@@ -163,16 +163,7 @@
 
         {% if content.media %}
             <section class="EventPage__mediasBloc EventContentBlock">
-                <ul>
-                    {% for media in content.media %}
-                        <li>
-                            {{ picture.render(media, 'x800', media.title, {
-                                loading: 'lazy',
-                                title: media.description|default(media.title),
-                            }) }}
-                        </li>
-                    {% endfor %}
-                </ul>
+                {{ include('partials/_media_mosaic.html.twig', {medias: content.media}, with_context: false) }}
             </section>
         {% endif %}
 

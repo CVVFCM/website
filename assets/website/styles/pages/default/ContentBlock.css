@@ -1,0 +1,76 @@
+/* Sulu content blocks of the "default" page template (title+image+text, gallery, list, cta). */
+
+@import url('../../common/MediaMosaic.css');
+
+.ContentBlock {
+    p {
+        max-width: 36em;
+    }
+}
+
+.ContentBlock__header,
+.ContentBlock--cta {
+    text-align: center;
+
+    h2 {
+        font-size: 2.2em;
+        margin: 0;
+        color: var(--red-act-text);
+    }
+
+    .ContentBlock__description {
+        max-width: 36em;
+        margin: 0 auto;
+    }
+}
+
+.ContentBlock--cta {
+    background: linear-gradient(240deg, #1D68A0 0%, #06315A 100%);
+    color: var(--color-white);
+
+    p {
+        color: inherit;
+    }
+
+    /* The global link blue is illegible on the gradient: render rich-text links white.
+       Self-styled links (the CTA button) keep their own colors. */
+    a:not([class]) {
+        color: var(--color-white);
+        text-decoration: underline;
+    }
+}
+
+.ContentBlock__image {
+    max-width: 100%;
+    height: auto;
+}
+
+.ContentBlock--titleImageText.ContentBlock--noImage {
+    .ContentBlock__title {
+        text-align: center;
+    }
+
+    .ContentBlock__text {
+        max-width: 36em;
+        margin: 0 auto;
+    }
+}
+
+
+/* __________________________________________________ rich-text (CKEditor) containers */
+
+.ContentBlock__description,
+.ContentBlock__text {
+    /* Inside centered containers, keep the list visually centered as a block
+       but left-align its items so the markers stay attached to the text. */
+    ul, ol {
+        text-align: left;
+        width: fit-content;
+        margin-inline: auto;
+    }
+
+    /* Editor links need a resting underline to be identifiable as links. */
+    a {
+        text-decoration: underline;
+    }
+}

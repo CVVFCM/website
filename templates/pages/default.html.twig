@@ -53,20 +53,8 @@
                         </div>
 
                     {% elseif block.type == 'gallery' %}
-                        <div class="ContentBlock ContentBlock--gallery splide SectionPadded"
-                             data-controller="gallery">
-                            <div class="splide__track">
-                                <ul class="splide__list">
-                                    {% for item in block.medias %}
-                                        <li class="splide__slide">
-                                            {{ picture.render(item, 'x800', item.title, {
-                                                class: 'ContentBlock__galleryItem',
-                                                loading: 'lazy',
-                                            }) }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                        <div class="ContentBlock ContentBlock--gallery SectionPadded">
+                            {{ include('partials/_media_mosaic.html.twig', {medias: block.medias}, with_context: false) }}
                         </div>
 
                     {% elseif block.type == 'list' %}

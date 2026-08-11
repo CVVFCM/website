@@ -1,0 +1,21 @@
+{#
+  Justified photo mosaic for a list of Sulu media objects.
+
+  Params:
+    medias  iterable of Sulu media objects
+#}
+{% import 'partials/_picture.html.twig' as picture %}
+
+<ul class="MediaMosaic">
+    {% for media in medias %}
+        <li class="MediaMosaic__item">
+            {{ picture.render(media, 'x800', media.title, {
+                class: 'MediaMosaic__image',
+                loading: 'lazy',
+                title: media.description|default(media.title),
+                widths: [['640x', 640], ['1024x', 1024]],
+                sizes: '(min-width: 48rem) 33vw, 100vw',
+            }) }}
+        </li>
+    {% endfor %}
+</ul>
