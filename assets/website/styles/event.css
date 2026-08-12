@@ -263,6 +263,107 @@
 }
 
 /* Layout only — the photos themselves are the shared MediaMosaic block. */
+
+.EventPage__boatsList {
+    list-style: none;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.EventPage__boatItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.EventPage__boatHeader {
+    display: flex;
+    align-items: stretch;
+}
+
+.EventPage__boatType {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0.45rem 0.75rem;
+    background-color: var(--utility-grey);
+    color: var(--base-text-color);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.EventPage__boatPrice,
+.EventPage__boatSeats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.65rem;
+    color: var(--color-white);
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.EventPage__boatPrice {
+    background-color: var(--blue-note-text);
+}
+
+.EventPage__boatSeats {
+    background-color: var(--red-act-text);
+    font-size: 0.75rem;
+}
+
+.EventPage__boatCaptains {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.EventPage__boatCaptain {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.EventPage__boatCaptainLabel {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-gray-500);
+}
+
+.EventPage__boatCaptainName {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--blue-note-text);
+}
+
+.EventPage__boatContactLink {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--base-text-color);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.EventPage__boatContactLink--mail::before {
+    content: url("../images/pictos/mail.svg");
+}
+
+.EventPage__boatContactLink--phone::before {
+    content: url("../images/pictos/phone.svg");
+}
+
 .EventPage__mediasBloc {
     max-width: 100%;
     display: block;
