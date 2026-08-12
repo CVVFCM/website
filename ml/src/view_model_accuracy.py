@@ -77,7 +77,12 @@ def export_parity_fixture(csv_path):
     plus copies of the weights/scaler the PHP service consumes. Regenerated whenever the model is."""
     FIXTURES_DIR.mkdir(parents=True, exist_ok=True)
 
-    df = pd.read_csv(csv_path).dropna().sort_values('recorded_hour').reset_index(drop=True)
+    df = (
+        pd.read_csv(csv_path)
+        .dropna(subset=FEATURE_COLS + ['wind_sin', 'wind_cos'])
+        .sort_values('recorded_hour')
+        .reset_index(drop=True)
+    )
     n_test = int(len(df) * TEST_FRACTION)
     known = df[FEATURE_COLS].iloc[len(df) - n_test:].head(10).values.astype(np.float32)
 
@@ -88,8 +93,12 @@ def export_parity_fixture(csv_path):
     features = np.vstack([known, random_cases]).astype(np.float32)
     residual = run_onnx_inference((features - INPUT_MEAN) / INPUT_SCALE)
     # Reconstruct absolute wind: forecast (features[1]=sin, features[2]=cos) + predicted residual.
-    predicted_wind = features[:, 1:3] + residual
-    speed, direction = cartesian_to_polar_wind(predicted_wind[:, 0], predicted_wind[:, 1])
+    # Speed comes from the corrected vector, bearing from the forecast one — the split
+    # App\ML\WeatherModelInference::predict() applies, and what this fixture has to pin down.
+    forecast_wind = features[:, 1:3]
+    predicted_wind = forecast_wind + residual
+    speed, _ = cartesian_to_polar_wind(predicted_wind[:, 0], predicted_wind[:, 1])
+    _, direction = cartesian_to_polar_wind(forecast_wind[:, 0], forecast_wind[:, 1])
 
     cases = [
         {
@@ -129,11 +138,13 @@ if __name__ == "__main__":
     predicted_wind = forecast_wind + residual  # reconstruct absolute wind from the residual
 
     real_speed, real_dir = cartesian_to_polar_wind(observed_wind[:, 0], observed_wind[:, 1])
-    pred_speed, pred_dir = cartesian_to_polar_wind(predicted_wind[:, 0], predicted_wind[:, 1])
+    # Speed from the corrected vector, bearing from the forecast: the served prediction.
+    pred_speed, _ = cartesian_to_polar_wind(predicted_wind[:, 0], predicted_wind[:, 1])
+    _, pred_dir = cartesian_to_polar_wind(forecast_wind[:, 0], forecast_wind[:, 1])
 
     # NOTE: honest generalization metrics live in train_forecast_model.py (TimeSeriesSplit CV). The
-    # exported model is fit on ALL data, so scoring it here is in-sample — these plots are only a
-    # visual sanity check of the fit, not a performance claim.
+    # exported model is fit on every windy hour, so scoring it here is in-sample — these plots are
+    # only a visual sanity check of the fit, not a performance claim.
     export_parity_fixture(CSV_DATA_PATH)
 
     r2_speed = r2_score(real_speed, pred_speed)

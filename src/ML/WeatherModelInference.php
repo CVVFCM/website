@@ -74,13 +74,29 @@ final class WeatherModelInference
         // De-scale the residual, then reconstruct the absolute wind vector: forecast + residual.
         $residualSin = $output[0] * $this->targetScale[0] + $this->targetMean[0];
         $residualCos = $output[1] * $this->targetScale[1] + $this->targetMean[1];
-        $windSin = $features[self::FORECAST_WIND_SIN_INDEX] + $residualSin;
-        $windCos = $features[self::FORECAST_WIND_COS_INDEX] + $residualCos;
+        $forecastSin = $features[self::FORECAST_WIND_SIN_INDEX];
+        $forecastCos = $features[self::FORECAST_WIND_COS_INDEX];
+        $windSin = $forecastSin + $residualSin;
+        $windCos = $forecastCos + $residualCos;
 
+        // Only the magnitude of the corrected vector is kept. Cross-validated over 2350 unseen
+        // hours, the correction beats the raw forecast on speed in every wind band, but its bearing
+        // is worse than the forecast's in every band too — from 1.5° above 6 knots to 10° in a dead
+        // calm, where the angle means nothing anyway. So the speed is corrected and the bearing is
+        // the forecast's, which makes the model a strict improvement instead of a trade.
         return new WeatherPrediction(
             sqrt($windSin * $windSin + $windCos * $windCos),
-            (int) round(fmod(rad2deg(atan2($windSin, $windCos)) + 360.0, 360.0)) % 360,
+            self::bearing($forecastSin, $forecastCos),
         );
+    }
+
+    /**
+     * Bearing of a (sin·speed, cos·speed) wind vector, in degrees clockwise from north. A null
+     * vector has no bearing; atan2 answers 0° for it, which is what the raw forecast displays too.
+     */
+    private static function bearing(float $sin, float $cos): int
+    {
+        return (int) round(fmod(rad2deg(atan2($sin, $cos)) + 360.0, 360.0)) % 360;
     }
 
     /**
