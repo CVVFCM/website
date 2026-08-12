@@ -44,17 +44,6 @@
     display: flex;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .MainNavigation--open .MainNavigation__logo {
-        animation: MainNavigation-logoDrop 0.3s ease-out;
-    }
-
-    @keyframes MainNavigation-logoDrop {
-        from { transform: translateY(-100%); }
-        to { transform: translateY(0); }
-    }
-}
-
 .MainNavigation__wordmark {
     display: none;
     font-size: 0.7rem;
@@ -437,10 +426,6 @@
     /* The quick links wrap onto several rows: keep the tools on the first. */
     .MainNavigation:not(.MainNavigation--open) .MainNavigation__bar {
         align-items: flex-start;
-    }
-
-    .MainNavigation--open .MainNavigation__logo img {
-        height: 3.5rem;
     }
 
     /* Quick actions become a right-aligned row above the columns. */
