@@ -1,6 +1,9 @@
 .SiteHeader {
     position: relative;
-    z-index: 1000;
+    /* Above Leaflet's highest z-index (1000, on .leaflet-top/.leaflet-bottom)
+       so the menu isn't tied — and then lost on DOM order — by a map's
+       zoom control further down the page. */
+    z-index: 1100;
     height: 0;
     top: var(--site-header-offset);
     width: 100%;

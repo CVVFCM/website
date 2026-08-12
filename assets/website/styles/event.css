@@ -399,6 +399,10 @@
     display: block;
     grid-column: 1 / -1;
     order: 4;
+    /* Full-width block, unlike the other .EventContentBlock columns: the
+       dashed left rule and its padding read as an indent, not a divider. */
+    border: none;
+    padding-left: 0;
 }
 
 /* ------------------------------------  MAIN CONTENT RESPONSIVE    */
