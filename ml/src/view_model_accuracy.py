@@ -47,8 +47,15 @@ def circular_abs_error(pred_deg, real_deg):
 
 def load_and_prepare_data(csv_path):
     print("Loads CSV data...")
-    # Same chronological order + hold-out tail as training, so we score only unseen rows.
-    df = pd.read_csv(csv_path).dropna().sort_values('recorded_hour').reset_index(drop=True)
+    # Same chronological order, same row filter and same hold-out tail as training, so we score the
+    # very rows the model never saw. Dropping on the consumed columns only — see the note in
+    # train_forecast_model.py.
+    df = (
+        pd.read_csv(csv_path)
+        .dropna(subset=FEATURE_COLS + ['wind_sin', 'wind_cos'])
+        .sort_values('recorded_hour')
+        .reset_index(drop=True)
+    )
     n_test = int(len(df) * TEST_FRACTION)
     df = df.iloc[len(df) - n_test:]
 
