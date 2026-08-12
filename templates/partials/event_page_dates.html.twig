@@ -11,7 +11,8 @@
 <div class="EventPage__headerDates">
     <span class="EventPage__headerDay">
         {% if is_multi_day %}
-            DU {{ begin_date|format_date(pattern: 'EEEE d MMMM yyyy', locale: 'fr')|upper }} AU {{ end_date|format_date(pattern: 'EEEE d MMMM yyyy', locale: 'fr')|upper }}
+            DU {{ begin_date|format_date(pattern: 'EEEE d MMMM yyyy', locale: 'fr')|upper }}<br />
+            AU {{ end_date|format_date(pattern: 'EEEE d MMMM yyyy', locale: 'fr')|upper }}
         {% else %}
             {{ begin_date|format_date(pattern: 'EEEE d MMMM yyyy', locale: 'fr')|upper }}
         {% endif %}
