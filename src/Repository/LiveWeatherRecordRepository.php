@@ -50,6 +50,22 @@ final class LiveWeatherRecordRepository extends ServiceEntityRepository
     }
 
     /**
+     * Every hour that already holds at least one observation, as a set keyed by 'Y-m-d H:00:00'.
+     * Lets the hourly-mean importer stay idempotent without a query per row.
+     *
+     * @return array<string, true>
+     */
+    public function findHoursAlreadyRecorded(): array
+    {
+        /** @var list<array{recorded_hour: string}> $rows */
+        $rows = $this->getEntityManager()->getConnection()->fetchAllAssociative(
+            "SELECT DISTINCT TO_CHAR(DATE_TRUNC('hour', recorded_at), 'YYYY-MM-DD HH24:00:00') AS recorded_hour FROM live_weather_record",
+        );
+
+        return array_fill_keys(array_column($rows, 'recorded_hour'), true);
+    }
+
+    /**
      * The most recent observation, or null when the table is empty. Read on the homepage instead of
      * calling the live station on every render (the app:import:live-weather cron keeps it fresh).
      */
@@ -115,7 +131,11 @@ final class LiveWeatherRecordRepository extends ServiceEntityRepository
                         AVG(COS(RADIANS(lwr.wind_direction)) * lwr.wind_speed) AS wind_cos
                     FROM live_weather_record lwr
                     GROUP BY recorded_hour
-                    HAVING COUNT(*) >= 6
+                    -- Six ten-minute samples is a full hour of station output; fewer means the hour
+                    -- is partial and its average would be biased towards whichever part reported.
+                    -- Rows flagged hourly_mean are the exception: they were imported already
+                    -- averaged, so they stand alone and the count says nothing about them.
+                    HAVING COUNT(*) >= 6 OR bool_or(lwr.hourly_mean)
                 ),
                 -- weather_forecast_record holds one row per fetch, so a single hour accumulates as
                 -- many rows as the forecast was refreshed for it (14 on average in PREPROD). Joining

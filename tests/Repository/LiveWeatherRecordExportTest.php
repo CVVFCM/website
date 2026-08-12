@@ -75,6 +75,50 @@ final class LiveWeatherRecordExportTest extends KernelTestCase
     }
 
     /**
+     * A wind-only historical hour is a single row, so the six-samples rule would normally discard
+     * it. The hourly_mean flag is what lets it through, and the wind vector must survive the trip
+     * through the speed/bearing columns the table stores.
+     */
+    public function testAnHourlyMeanIsExportedOnItsOwn(): void
+    {
+        self::bootKernel();
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        /** @var LiveWeatherRecordRepository $repository */
+        $repository = static::getContainer()->get(LiveWeatherRecordRepository::class);
+
+        $hour = '2024-06-06 14:00:00';
+        // 9 kn from 240°, projected on the two axes.
+        $windSin = sin(deg2rad(240.0)) * 9.0;
+        $windCos = cos(deg2rad(240.0)) * 9.0;
+
+        $em->persist(LiveWeatherRecord::fromHourlyWindMean(new \DateTimeImmutable($hour), $windSin, $windCos));
+        $em->persist(WeatherForecastRecord::fromArray([
+            'date' => new \DateTimeImmutable($hour),
+            'humidity' => '70',
+            'pressure' => '1012',
+            'temperature' => '18',
+            'windDirection' => '230',
+            'windSpeed' => '7',
+        ]));
+        $em->flush();
+
+        $rows = [];
+        foreach ($repository->findAllWithIterator() as $row) {
+            if ($hour === $row['recorded_hour']) {
+                $rows[] = $row;
+            }
+        }
+
+        $this->assertCount(1, $rows, 'A single hourly-mean row must reach the export despite the six-samples rule.');
+        // Whole-degree rounding on the bearing column moves the vector by less than a tenth of a knot.
+        $this->assertEqualsWithDelta($windSin, (float) $rows[0]['wind_sin'], 0.02);
+        $this->assertEqualsWithDelta($windCos, (float) $rows[0]['wind_cos'], 0.02);
+        $this->assertSame('', (string) $rows[0]['humidity'], 'An hourly mean carries no humidity, and none must be invented.');
+        $this->assertSame('', (string) $rows[0]['temperature']);
+    }
+
+    /**
      * The hourly aggregate only keeps hours with at least six observations, which is what the
      * ten-minute station cadence produces.
      */
