@@ -135,7 +135,8 @@
         "reset": [
             "composer minimal-reset",
             "php bin/console app:import:live-weather-csv",
-            "php bin/console app:import:weather-forecast-csv"
+            "php bin/console app:import:weather-forecast-csv",
+            "php bin/console app:import:hourly-wind-csv"
         ],
         "reset-test": [
             "php bin/console -etest doctrine:database:create --if-not-exists",

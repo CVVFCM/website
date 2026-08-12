@@ -43,14 +43,17 @@ class LiveWeatherRecord
     #[Column(type: 'uuid')]
     public readonly Uuid $id;
 
-    #[Column(type: Types::FLOAT)]
-    public readonly float $humidity;
+    // Null on rows imported as hourly means: those historical files carry the wind and nothing else.
+    // The station itself always reports all of them, so a null here means "not measured", never
+    // "measured as zero" — {@see toLiveWeather()} and the templates keep that distinction visible.
+    #[Column(type: Types::FLOAT, nullable: true)]
+    public readonly ?float $humidity;
 
-    #[Column(type: Types::FLOAT)]
-    public readonly float $pressure;
+    #[Column(type: Types::FLOAT, nullable: true)]
+    public readonly ?float $pressure;
 
-    #[Column(type: Types::FLOAT)]
-    public readonly float $temperature;
+    #[Column(type: Types::FLOAT, nullable: true)]
+    public readonly ?float $temperature;
 
     #[Column(type: Types::INTEGER)]
     public readonly int $windDirection;
@@ -58,8 +61,14 @@ class LiveWeatherRecord
     #[Column(type: Types::FLOAT)]
     public readonly float $windSpeed;
 
-    #[Column(type: Types::FLOAT)]
-    public readonly float $windGusts;
+    #[Column(type: Types::FLOAT, nullable: true)]
+    public readonly ?float $windGusts;
+
+    // True when the row is already an hourly mean rather than one of the ten-minute samples the
+    // station writes. The ML export requires six samples to trust an hour; these rows stand alone
+    // and bypass that count, so the flag has to travel with them.
+    #[Column(type: Types::BOOLEAN, options: ['default' => false])]
+    public readonly bool $hourlyMean;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     public readonly \DateTimeImmutable $recordedAt;
@@ -84,17 +93,19 @@ class LiveWeatherRecord
 
     private function __construct(
         \DateTimeImmutable $recordedAt,
-        float $humidity,
-        float $pressure,
-        float $temperature,
+        ?float $humidity,
+        ?float $pressure,
+        ?float $temperature,
         int $windDirection,
         float $windSpeed,
-        float $windGusts,
+        ?float $windGusts,
         ?float $windSpeedGapForecast = null,
         ?float $windDirectionGapForecast = null,
         ?float $windSpeedGapModel = null,
         ?float $windDirectionGapModel = null,
+        bool $hourlyMean = false,
     ) {
+        $this->hourlyMean = $hourlyMean;
         $this->id = Uuid::v6();
         $this->recordedAt = $recordedAt;
         $this->humidity = $humidity;
@@ -144,6 +155,26 @@ class LiveWeatherRecord
             $comparison?->windDirectionGapForecast,
             $comparison?->windSpeedGapModel,
             $comparison?->windDirectionGapModel,
+        );
+    }
+
+    /**
+     * A historical hour whose wind is already averaged. Those files carry the (sin·speed, cos·speed)
+     * projection and nothing else, so every other measurement stays null. Speed and bearing are
+     * recovered from the vector — exact, up to the whole-degree rounding the column imposes, which
+     * is the resolution the station reports anyway.
+     */
+    public static function fromHourlyWindMean(\DateTimeImmutable $hour, float $windSin, float $windCos): self
+    {
+        return new self(
+            $hour,
+            null,
+            null,
+            null,
+            (int) round(fmod(rad2deg(atan2($windSin, $windCos)) + 360.0, 360.0)) % 360,
+            sqrt($windSin * $windSin + $windCos * $windCos),
+            null,
+            hourlyMean: true,
         );
     }
 
