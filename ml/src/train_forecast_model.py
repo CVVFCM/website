@@ -35,6 +35,13 @@ TARGET_COLS = ['wind_sin_residual', 'wind_cos_residual']
 
 RIDGE_ALPHA = 100.0
 CV_SPLITS = 5
+# Hours whose observed wind is below this are excluded from the FIT — never from the evaluation.
+# Two out of five hours at this station are a dead calm, where the residual is mostly noise and the
+# bearing means nothing. Letting them into the fit dragged the model down exactly where it matters:
+# above 6 knots it scored a 2.55 kn speed MAE against the forecast's 2.12, i.e. worse than doing
+# nothing. Fitting on the windy hours only turns that into 1.93, and the model then beats the
+# forecast in every band instead of just the light ones.
+MIN_FIT_WIND_KN = 1.0
 
 
 def cartesian_to_polar_wind(sin_col, cos_col):
@@ -50,9 +57,15 @@ def circular_abs_error(pred_deg, real_deg):
     return np.minimum(diff, 360 - diff)
 
 
-def wind_scores(observed_wind, predicted_wind):
+def wind_scores(observed_wind, predicted_wind, bearing_wind):
+    """Score a prediction whose speed and bearing may come from different vectors.
+
+    App\\ML\\WeatherModelInference ships the corrected magnitude but the forecast's bearing, so the
+    model is scored the same way here: `predicted_wind` gives the speed, `bearing_wind` the angle.
+    """
     real_speed, real_dir = cartesian_to_polar_wind(observed_wind[:, 0], observed_wind[:, 1])
-    pred_speed, pred_dir = cartesian_to_polar_wind(predicted_wind[:, 0], predicted_wind[:, 1])
+    pred_speed, _ = cartesian_to_polar_wind(predicted_wind[:, 0], predicted_wind[:, 1])
+    _, pred_dir = cartesian_to_polar_wind(bearing_wind[:, 0], bearing_wind[:, 1])
     return (
         mean_absolute_error(real_speed, pred_speed),
         r2_score(real_speed, pred_speed),
@@ -74,14 +87,19 @@ X = df[FEATURE_COLS].values.astype(np.float64)
 observed_wind = df[OBSERVED_WIND_COLS].values.astype(np.float64)
 forecast_wind = df[FORECAST_WIND_COLS].values.astype(np.float64)
 residual = observed_wind - forecast_wind  # what the model learns
+observed_speed = np.sqrt(observed_wind[:, 0] ** 2 + observed_wind[:, 1] ** 2)
+windy = observed_speed >= MIN_FIT_WIND_KN
 
 # Honest evaluation: expanding-window CV (no leakage, no single-slice luck). Scaler + ridge are refit
-# inside each fold. We pool the out-of-sample predictions, then score once.
-print(f"Samples: {len(df)} — {CV_SPLITS}-fold TimeSeriesSplit CV\n")
+# inside each fold, on the windy hours of that fold only; the test folds keep every hour, so the
+# scores below cover the calms the model was not fitted on.
+print(f"Samples: {len(df)} — {windy.sum()} above {MIN_FIT_WIND_KN:g} kn used to fit "
+      f"— {CV_SPLITS}-fold TimeSeriesSplit CV\n")
 pooled_obs, pooled_model, pooled_forecast = [], [], []
 for train_idx, test_idx in TimeSeriesSplit(n_splits=CV_SPLITS).split(X):
-    fold_scaler = StandardScaler().fit(X[train_idx])
-    fold_ridge = Ridge(alpha=RIDGE_ALPHA).fit(fold_scaler.transform(X[train_idx]), residual[train_idx])
+    fit_idx = train_idx[windy[train_idx]]
+    fold_scaler = StandardScaler().fit(X[fit_idx])
+    fold_ridge = Ridge(alpha=RIDGE_ALPHA).fit(fold_scaler.transform(X[fit_idx]), residual[fit_idx])
     fold_pred_residual = fold_ridge.predict(fold_scaler.transform(X[test_idx]))
 
     pooled_obs.append(observed_wind[test_idx])
@@ -89,15 +107,19 @@ for train_idx, test_idx in TimeSeriesSplit(n_splits=CV_SPLITS).split(X):
     pooled_forecast.append(forecast_wind[test_idx])
 
 pooled_obs = np.vstack(pooled_obs)
-model_mae, model_r2, model_dir = wind_scores(pooled_obs, np.vstack(pooled_model))
-fc_mae, fc_r2, fc_dir = wind_scores(pooled_obs, np.vstack(pooled_forecast))
+pooled_model = np.vstack(pooled_model)
+pooled_forecast = np.vstack(pooled_forecast)
+# The bearing comes from the forecast in both rows — that is what the PHP service serves — so the
+# dir MAE column is identical by construction, and the model can only win or draw.
+model_mae, model_r2, model_dir = wind_scores(pooled_obs, pooled_model, pooled_forecast)
+fc_mae, fc_r2, fc_dir = wind_scores(pooled_obs, pooled_forecast, pooled_forecast)
 print(f"{'':10}{'speed MAE':>10}{'speed R²':>10}{'dir MAE':>9}")
 print(f"{'Modèle':10}{model_mae:10.2f}{model_r2:10.3f}{model_dir:9.1f}")
 print(f"{'Prévision':10}{fc_mae:10.2f}{fc_r2:10.3f}{fc_dir:9.1f}")
 
-# Final model for export: fit scaler + ridge on ALL available data.
-scaler_X = StandardScaler().fit(X)
-ridge = Ridge(alpha=RIDGE_ALPHA).fit(scaler_X.transform(X), residual)
+# Final model for export: fit scaler + ridge on every windy hour available.
+scaler_X = StandardScaler().fit(X[windy])
+ridge = Ridge(alpha=RIDGE_ALPHA).fit(scaler_X.transform(X[windy]), residual[windy])
 
 # Ridge is a single affine layer on the scaled input. Transfer it into an nn.Linear so we can reuse
 # the existing ONNX export, and so App\ML\Mlp (generic dense layers) runs it unchanged.

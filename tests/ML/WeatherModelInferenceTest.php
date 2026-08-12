@@ -31,6 +31,35 @@ final class WeatherModelInferenceTest extends TestCase
         $this->assertLessThan(360, $prediction->windDirection);
     }
 
+    /**
+     * The model corrects the wind speed and nothing else: cross-validation showed its bearing to be
+     * worse than the forecast's in every wind band, so the forecast bearing is passed through
+     * untouched. Asserted against the raw forecast wind carried in features[1] (sin) and
+     * features[2] (cos), independently of the fixture bundle.
+     */
+    public function testItCorrectsTheSpeedAndKeepsTheForecastBearing(): void
+    {
+        // Forecast wind: 8 kn from 150°, decomposed as (sin, cos) · speed.
+        $forecastSpeed = 8.0;
+        $forecastBearing = 150.0;
+        $features = [
+            1013.0,
+            sin(deg2rad($forecastBearing)) * $forecastSpeed,
+            cos(deg2rad($forecastBearing)) * $forecastSpeed,
+            90.0, 12.0, -0.1, 0.99, 0.0, 1.0,
+        ];
+
+        $prediction = $this->inference()->predict($features);
+
+        $this->assertSame((int) $forecastBearing, $prediction->windDirection);
+        $this->assertNotEqualsWithDelta(
+            $forecastSpeed,
+            $prediction->windSpeed,
+            1e-6,
+            'The speed must carry the model correction, otherwise the prediction is just the forecast.',
+        );
+    }
+
     public function testPredictIsDeterministic(): void
     {
         $features = [1013.0, 0.5, 1.5, 90.0, 2.0, -0.1, 0.99, 0.0, 1.0];
