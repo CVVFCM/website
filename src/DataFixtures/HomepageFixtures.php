@@ -42,11 +42,6 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                 continue;
             }
 
-            // sulu:page:initialize names the homepage after the webspace, which leaves the banner
-            // showing the acronym. The banner headline is that title, and the layout was drawn for
-            // the full name — hence the 14em cap in homepage/Header.css that wraps it over three
-            // lines, like the logo lockup beside it.
-            $homepageDimensionContent->setTitle('Club de Voile des Vieilles-Forges de Charleville-Mézières');
             $homepageDimensionContent->addNavigationContext('main');
             $homepageDimensionContent->addAvailableLocale('fr');
             $homepageDimensionContent->setLocale('fr');
@@ -54,6 +49,11 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
             $homepageDimensionContent->setWorkflowPlace(WorkflowInterface::WORKFLOW_PLACE_PUBLISHED);
             $homepageDimensionContent->setTemplateData([
                 ...$homepageDimensionContent->getTemplateData(),
+                // sulu:page:initialize names the homepage after the webspace, which left the banner
+                // showing the acronym. That headline is this title, and the layout was drawn for the
+                // full name — hence the 14em cap in homepage/Header.css, which wraps it over three
+                // lines beside the logo lockup.
+                'title' => 'Club de Voile des Vieilles-Forges de Charleville-Mézières',
                 'content' => [
                     [
                         'type' => 'header',
