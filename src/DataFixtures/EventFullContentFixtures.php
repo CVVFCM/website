@@ -27,6 +27,8 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
  */
 final class EventFullContentFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     use HandleTrait;
 
     private MessageBusInterface $messageBus;
@@ -56,10 +58,11 @@ final class EventFullContentFixtures extends Fixture implements DependentFixture
     #[\Override]
     public function load(ObjectManager $manager): void
     {
+        $this->seedRandomness();
         $events = $this->getReference('events', Page::class);
-        $medias = $this->mediaRepository->findAll();
+        $medias = $this->orderById($this->mediaRepository->findAll());
         $contacts = array_values(array_filter(
-            $this->contactRepository->findAll(),
+            $this->orderById($this->contactRepository->findAll()),
             static fn (Contact $contact) => $contact->getMainEmail(),
         ));
         $slugger = new AsciiSlugger();

@@ -37,6 +37,16 @@ services:
                 published: ${HTTP3_PORT:-443}
                 protocol: udp
 
+    # Same bind mounts as `php` above: locally the code must come from the working tree, not from
+    # whatever was baked into the image, or the screenshots would describe a stale site.
+    php-test:
+        volumes:
+            - '.:/app:rw'
+            - './.infra/docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini:ro'
+        environment:
+            S3_ENDPOINT: http://s3:9090
+        depends_on: [ s3 ]
+
     mailer:
         image: axllent/mailpit
         ports: [ '${MAILER_HTTP_PORT:-8025}:8025' ]

@@ -7,7 +7,6 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
@@ -24,6 +23,8 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 final class RegattasFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     use HandleTrait;
 
     private MessageBusInterface $messageBus;
@@ -41,7 +42,8 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $medias = $this->mediaRepository->findAll();
+        $this->seedRandomness();
+        $medias = $this->orderById($this->mediaRepository->findAll());
         $events = $this->getReference('events', Page::class);
         $regattas = $this->handle(
             new Envelope(
@@ -93,8 +95,8 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
     {
         $regattas = $this->getReference('regattas', Page::class);
 
-        $medias = $this->mediaRepository->findAll();
-        $contacts = array_filter($this->contactRepository->findAll(), static fn (Contact $contact) => $contact->getMainEmail());
+        $medias = $this->orderById($this->mediaRepository->findAll());
+        $contacts = array_filter($this->orderById($this->contactRepository->findAll()), static fn (Contact $contact) => $contact->getMainEmail());
 
         /** @var Page $regatta */
         $regatta = $this->handle(
@@ -157,11 +159,11 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                         'displayOption' => null,
                         'ids' => array_map(
                             fn (int $media): int => $medias[$media]->getId(),
-                            (array) array_rand($medias, random_int(1, 4)),
+                            (array) array_rand($medias, mt_rand(1, 4)),
                         ),
                     ],
                     'description' => array_reduce(
-                        Factory::create()->paragraphs(random_int(2, 4)),
+                        $this->faker()->paragraphs(mt_rand(2, 4)),
                         fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
                         '',
                     ),
@@ -211,7 +213,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                         'zoom' => 17,
                     ],
                     'regatta_informations' => array_reduce(
-                        Factory::create()->paragraphs(random_int(2, 4)),
+                        $this->faker()->paragraphs(mt_rand(2, 4)),
                         fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
                         '',
                     ),

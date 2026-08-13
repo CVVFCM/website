@@ -19,6 +19,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class PageFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     use HandleTrait;
 
     private MessageBusInterface $messageBus;
@@ -35,8 +37,9 @@ final class PageFixtures extends Fixture implements DependentFixtureInterface
     #[\Override]
     public function load(ObjectManager $manager): void
     {
+        $this->seedRandomness();
         $root = $this->pageRepository->findOneBy(['parentId' => null, 'webspaceKey' => 'cvvfcm']);
-        $medias = $this->mediaRepository->findAll();
+        $medias = $this->orderById($this->mediaRepository->findAll());
 
         /** @var Page $events */
         $events = $this->handle(

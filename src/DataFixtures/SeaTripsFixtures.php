@@ -7,7 +7,6 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
@@ -23,6 +22,8 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 final class SeaTripsFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     use HandleTrait;
 
     private MessageBusInterface $messageBus;
@@ -40,9 +41,10 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
     #[\Override]
     public function load(ObjectManager $manager): void
     {
+        $this->seedRandomness();
         $events = $this->getReference('events', Page::class);
-        $medias = $this->mediaRepository->findAll();
-        $contacts = array_filter($this->contactRepository->findAll(), static fn (Contact $contact) => $contact->getMainEmail());
+        $medias = $this->orderById($this->mediaRepository->findAll());
+        $contacts = array_filter($this->orderById($this->contactRepository->findAll()), static fn (Contact $contact) => $contact->getMainEmail());
         $slugger = new AsciiSlugger();
 
         $seaTrips = [
@@ -102,11 +104,11 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                         'displayOption' => null,
                         'ids' => array_map(
                             fn (int $media): int => $medias[$media]->getId(),
-                            (array) array_rand($medias, random_int(1, 4)),
+                            (array) array_rand($medias, mt_rand(1, 4)),
                         ),
                     ],
                     'description' => array_reduce(
-                        Factory::create()->paragraphs(random_int(2, 4)),
+                        $this->faker()->paragraphs(mt_rand(2, 4)),
                         fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
                         '',
                     ),
@@ -119,15 +121,15 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                             'type' => 'boat',
                             'boat_type' => 'Habitable',
                             'captain' => [$contacts[array_rand($contacts)]->getId()],
-                            'available_seats' => (string) random_int(2, 6),
-                            'approximative_price' => random_int(10, 30).'€',
+                            'available_seats' => (string) mt_rand(2, 6),
+                            'approximative_price' => mt_rand(10, 30).'€',
                         ],
                         [
                             'type' => 'boat',
                             'boat_type' => 'Dériveur',
                             'captain' => [$contacts[array_rand($contacts)]->getId()],
-                            'available_seats' => (string) random_int(1, 3),
-                            'approximative_price' => random_int(5, 15).'€',
+                            'available_seats' => (string) mt_rand(1, 3),
+                            'approximative_price' => mt_rand(5, 15).'€',
                         ],
                     ],
                     'location' => [

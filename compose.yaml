@@ -79,6 +79,46 @@ services:
             target: backup
         depends_on: [ database ]
 
+    # Serves the test database and its fixtures for the screenshot suite. Kept apart from `php` so a
+    # visual run never disturbs the dev container, and deliberately without published ports: the
+    # only client is the playwright service, which reaches it by name on the compose network.
+    # SERVER_NAME=:80 makes Caddy serve plain HTTP — no certificate to trust from inside a container.
+    php-test:
+        image: ${IMAGE_PREFIX:-ghcr.io/cvvfcm/website/}php:${IMAGE_TAG:-latest}
+        profiles: [ screenshots ]
+        depends_on: [ database ]
+        build:
+            target: php
+            args:
+                EXTERNAL_USER_ID: ${EXTERNAL_USER_ID}
+        environment:
+            <<: *php-env
+            APP_ENV: test
+            SERVER_NAME: ':80'
+        command: [ "frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile" ]
+
+    # Pinned to the same version as @playwright/test in package.json: the library and the browser it
+    # drives must match. Running the browser from this image is what makes a baseline captured on a
+    # laptop comparable with a run in CI — same Chromium, same fonts, same rasteriser.
+    playwright:
+        image: mcr.microsoft.com/playwright:v1.62.1-noble
+        profiles: [ screenshots ]
+        depends_on: [ php-test ]
+        working_dir: /app
+        user: '${EXTERNAL_USER_ID:-1000}'
+        # Shares php-test's network namespace so the site answers on http://localhost. Sulu resolves
+        # its portal by hostname and only knows `localhost`; reaching the container by service name
+        # returns a fatal "no portal for this URL" page — with a 200 status, so it looks fine until
+        # you open the screenshot.
+        network_mode: 'service:php-test'
+        environment:
+            SCREENSHOT_BASE_URL: http://localhost
+            # The browsers ship with the image; nothing to download here or on the host.
+            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+            CI: ${CI:-}
+        volumes:
+            - '.:/app:rw'
+
     database:
         image: postgres:18
         environment:

@@ -17,6 +17,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class HomepageFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     public function __construct(
         private readonly PageRepositoryInterface $pageRepository,
         private readonly MediaRepositoryInterface $mediaRepository,
@@ -28,7 +30,8 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $medias = $this->mediaRepository->findAll();
+        $this->seedRandomness();
+        $medias = $this->orderById($this->mediaRepository->findAll());
 
         $homepage = $this->pageRepository->findOneBy(['depth' => 0, 'webspaceKey' => 'cvvfcm']);
         $events = $this->getReference('events', Page::class);
