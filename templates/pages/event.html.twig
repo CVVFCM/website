@@ -103,7 +103,44 @@
             </div>
         {% endif %}
 
-        {% if content.series or content.services or content.regatta_informations %}
+        {% if content.series or content.services or content.regatta_informations or content.boats %}
+            {% if content.boats %}
+            <div class="EventPage__boatsBloc EventContentBlock">
+                <h2 class="EventContentBlock__title">Bateaux</h2>
+                <ul class="EventPage__boatsList">
+                    {% for boat in content.boats %}
+                        <li class="EventPage__boatItem">
+                            <div class="EventPage__boatHeader">
+                                <span class="EventPage__boatType">{{ boat.boat_type }}</span>
+                                {% if boat.approximative_price %}
+                                    <span class="EventPage__boatPrice">{{ boat.approximative_price }}</span>
+                                {% endif %}
+                                {% if boat.available_seats %}
+                                    <span class="EventPage__boatSeats">{{ boat.available_seats }} place{{ boat.available_seats > 1 ? 's' }}</span>
+                                {% endif %}
+                            </div>
+                            {% if boat.captain %}
+                                <div class="EventPage__boatCaptains">
+                                    {% for captain in boat.captain %}
+                                        <div class="EventPage__boatCaptain">
+                                            <span class="EventPage__boatCaptainLabel">Chef de bord</span>
+                                            <span class="EventPage__boatCaptainName">{{ captain.fullName }}</span>
+                                            {% if captain.contactDetails.emails[0] is defined %}
+                                                <a class="EventPage__boatContactLink EventPage__boatContactLink--mail" href="mailto:{{ captain.contactDetails.emails[0].email }}">{{ captain.contactDetails.emails[0].email }}</a>
+                                            {% endif %}
+                                            {% if captain.contactDetails.phones[0] is defined %}
+                                                <a class="EventPage__boatContactLink EventPage__boatContactLink--phone" href="tel:{{ captain.contactDetails.phones[0].phone }}">{{ captain.contactDetails.phones[0].phone }}</a>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
             {% if content.series %}
             <div class="EventPage__seriesBloc EventContentBlock">
                 <h2 class="EventContentBlock__title">Supports</h2>

@@ -40,7 +40,7 @@
     display: block;
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--base-text-color);
+    color: var(--red-act-text);
     line-height: 1.1;
     text-transform: uppercase;
 }
@@ -235,7 +235,7 @@
 }
 
 .HomepageLive__previsionTitle {
-    color: var(--base-text-color);
+    color: var(--red-act-text);
     font-size: .8em;
     text-transform: uppercase;
     margin: 0;
@@ -244,6 +244,10 @@
 .HomepageLive__prevision p {
     margin: 0;
     line-height: 1;
+    /* The global `p { color }` rule outranks inheriting blue from
+       .HomepageLive__prevision, since a direct match always beats an
+       inherited value regardless of specificity. */
+    color: var(--blue-note-text);
 }
 
 .HomepageLive__previsionValue {

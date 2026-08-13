@@ -10,13 +10,20 @@ body {
     margin: 0;
     padding: 0;
     font-family: var(--font-family-base), sans-serif;
+}
+
+/* Reserved at all times, not just while the menu is open: the gutter must
+   already be there before .MainNavigation--open switches to position: fixed,
+   otherwise its width:100% resolves against a viewport that's still 15-ish
+   px wider, and the right-aligned bar items (search, toggle) jump left the
+   instant the menu opens. */
+html {
     scrollbar-gutter: stable;
 }
 
 /* Lock the page scroll behind the open navigation panel. */
 html:has(.MainNavigation--open) {
     overflow: hidden;
-    scrollbar-gutter: stable;
 }
 
 

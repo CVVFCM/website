@@ -16,7 +16,10 @@
     position: relative;
     background-color: var(--color-white);
     color: var(--base-text-color);
-    z-index: 0;
+    /* Above 0 so the circular photo — absolutely positioned and overflowing
+       past this box's own bottom edge — paints over .EventPage__mainContent
+       where the two overlap, instead of being covered by it. */
+    z-index: 1;
     display: inline-grid;
     grid-template-columns: 13vw fit-content(75%);
     grid-template-rows: 3rem auto;
@@ -40,15 +43,20 @@
 }
 
 .EventPage__headerImageWrapper {
+    /* Absolute, not relative: a relatively positioned item still reserves its
+       full, unshifted box in normal flow, which — being much taller than the
+       header text — inflated .EventPage__header below .EventPage__headerMain
+       and left a gap before the next section. Absolute removes it from flow
+       entirely while these offsets reproduce the exact same visual position
+       (natural top/left of its old grid cell, plus the same shift). */
     border-radius: 50%;
     overflow: hidden;
-    position: relative;
-    left: -17vw;
-    top: -5vw;
-    grid-column: 1 ;
-    grid-row: 2 ;
+    position: absolute;
+    left: calc(2rem - 17vw);
+    top: calc(6.5rem - 5vw);
     width: 30vw;
     height: 30vw;
+    z-index: 1;
 
     & picture {
         display: block;
@@ -91,11 +99,13 @@
     color: var(--base-text-color);
     text-decoration: none;
     border: 1px solid rgb(255 255 255 / 40%);
-    padding: 0.35rem 0.85rem;
+    /* No left padding: aligned under the title, its icon should sit flush
+       with the title's left edge rather than inset behind the pill border. */
+    padding: 0.35rem 0.85rem 0.35rem 0;
     border-radius: 2rem;
     white-space: nowrap;
     transition: background-color 0.2s ease, border-color 0.2s ease;
-    place-self: center end;
+    place-self: center start;
 
     &:hover {
         background-color: rgb(255 255 255 / 15%);
@@ -122,6 +132,7 @@
 }
 
 .EventPage__headerTitle {
+    max-width: 9em;
     font-size: 1.8em;
     font-weight: 800;
     line-height: 1.15;
@@ -130,6 +141,7 @@
 }
 
 .EventPage__headerDates {
+    min-width: 16em;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -141,10 +153,15 @@
 
 /* ------------------------------------  HEADER GRID & responsive    */
 
-.EventPage__headerDescription,
+.EventPage__headerDescription {
+    grid-column: 1/span 2 ;
+}
+
 .EventPage__headerNav,
 .EventPage__headerSaveDate {
-    grid-column: 1/span 2 ;
+    /* Starts at column 2, not 1: aligned under the circular photo's column
+       would misalign it against the title, which lives in column 2. */
+    grid-column: 2 ;
 }
 
 .EventPage__headerNav {
@@ -159,8 +176,9 @@
     }
 
     .EventPage__headerImageWrapper {
-        grid-column: 1 ;
-        grid-row: 1 ;
+        /* Row 1 here instead of row 2: natural top is just the padding, no
+           row-1 height or gap to add first. */
+        top: calc(2rem - 5vw);
     }
 
     /* Issue #109: penned into the 15em middle column, a three-level breadcrumb
@@ -189,7 +207,11 @@
 
 
     .EventPage__headerSaveDate {
+        /* No longer aligned under the title at this width — restore the
+           symmetric pill padding lost in the base rule. */
+        padding-left: 0.85rem;
         align-self: center;
+        justify-self: end;
         grid-column: 3;
         grid-row: 1;
     }
@@ -199,16 +221,24 @@
 /* ------------------------------------  MAIN CONTENT    */
 
 .EventPage__mainContent {
-    display: flex;
-    align-items: flex-start;
+    /* Grid, not flex-wrap: flex rows size each row's items independently, so a
+       row of 2 and a row of 3 end up with different column widths. Grid shares
+       track sizing across every row, keeping all blocks the same width. */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    align-items: start;
     gap: 2rem;
-    flex-wrap: wrap;
     max-width: 100%;
     position: relative;
 }
 
+.EventPage__mainContent > .EventContentBlock {
+    /* Let each block fill its grid column instead of capping at the old
+       flex-basis max-width, which would leave a gap once columns grow past it. */
+    max-width: none;
+}
+
 .EventPage__map {
-    width: 54rem;
     max-height: 33vh;
 }
 
@@ -263,11 +293,116 @@
 }
 
 /* Layout only — the photos themselves are the shared MediaMosaic block. */
+
+.EventPage__boatsList {
+    list-style: none;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.EventPage__boatItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.EventPage__boatHeader {
+    display: flex;
+    align-items: stretch;
+}
+
+.EventPage__boatType {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0.45rem 0.75rem;
+    background-color: var(--utility-grey);
+    color: var(--base-text-color);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.EventPage__boatPrice,
+.EventPage__boatSeats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.65rem;
+    color: var(--color-white);
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.EventPage__boatPrice {
+    background-color: var(--blue-note-text);
+}
+
+.EventPage__boatSeats {
+    background-color: var(--red-act-text);
+    font-size: 0.75rem;
+}
+
+.EventPage__boatCaptains {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.EventPage__boatCaptain {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.EventPage__boatCaptainLabel {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-gray-500);
+}
+
+.EventPage__boatCaptainName {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--blue-note-text);
+}
+
+.EventPage__boatContactLink {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--base-text-color);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.EventPage__boatContactLink--mail::before {
+    content: url("../images/pictos/mail.svg");
+}
+
+.EventPage__boatContactLink--phone::before {
+    content: url("../images/pictos/phone.svg");
+}
+
 .EventPage__mediasBloc {
     max-width: 100%;
     display: block;
-    flex: 100%;
+    grid-column: 1 / -1;
     order: 4;
+    /* Full-width block, unlike the other .EventContentBlock columns: the
+       dashed left rule and its padding read as an indent, not a divider. */
+    border: none;
+    padding-left: 0;
 }
 
 /* ------------------------------------  MAIN CONTENT RESPONSIVE    */
