@@ -64,22 +64,13 @@ test:
 test-ai: ## Run the AI-judged tests manually — not part of CI (needs API keys from the dev vault)
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/phpunit --colors=always --testdox --group ai
 
-# The screenshot suite renders the test database, so it needs its own server (php-test) rather than
-# the dev one. Both it and the browser run in containers, which is what makes a baseline captured
-# here comparable with a run in CI.
+# The screenshot suite drives the dev server, so `make up` must be running first. Dev serves
+# AssetMapper cacheless (config/packages/dev/asset_mapper.yaml), so a stylesheet edit is picked up
+# without clearing anything.
 screenshots-up:
-	@$(DOCKER_COMPOSE) --profile screenshots up -d php-test
-	# AssetMapper only runs cacheless in dev (config/packages/dev/asset_mapper.yaml), so the test
-	# server compiles the stylesheets once and then stops noticing edits. Both halves are needed:
-	# cache:clear drops the map on disk, and the restart drops the copy the long-lived FrankenPHP
-	# workers hold in memory. Clearing alone leaves them serving a sheet whose @import still names
-	# the previous content hash — the imported file 404s, the page renders without those rules, and
-	# the screenshots describe a site nobody is looking at.
-	@$(DOCKER_COMPOSE) --profile screenshots exec -T php-test php bin/console -etest cache:clear
-	@$(DOCKER_COMPOSE) --profile screenshots restart php-test
 	@$(DOCKER_COMPOSE) --profile screenshots run --rm --no-deps playwright npm ci --no-audit --no-fund
 
-test-screenshots: screenshots-up ## Run the visual regression suite against the test fixtures
+test-screenshots: screenshots-up ## Run the visual regression suite against the dev server
 	@$(DOCKER_COMPOSE) --profile screenshots run --rm playwright npx playwright test
 
 test-screenshots-update: screenshots-up ## Re-record the baselines after a deliberate design change

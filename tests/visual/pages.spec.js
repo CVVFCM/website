@@ -26,7 +26,13 @@ const VOLATILE = [
  *
  * The cost is honest and worth stating: these two sections are not covered by the suite at all.
  */
-const REMOVED = [".HomepageFacebook", ".HomepageInstagram"];
+const REMOVED = [
+    ".HomepageFacebook",
+    ".HomepageInstagram",
+    // The dev server injects the Symfony toolbar; it is not part of the site.
+    ".sf-toolbar",
+    "#sfWebDebugToolbar",
+];
 
 const PAGES = [
     {name: "accueil", path: "/", mask: VOLATILE},

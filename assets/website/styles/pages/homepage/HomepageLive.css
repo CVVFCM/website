@@ -244,6 +244,7 @@
 .HomepageLive__prevision p {
     margin: 0;
     line-height: 1;
+
     /* The global `p { color }` rule outranks inheriting blue from
        .HomepageLive__prevision, since a direct match always beats an
        inherited value regardless of specificity. */

@@ -16,6 +16,7 @@
     position: relative;
     background-color: var(--color-white);
     color: var(--base-text-color);
+
     /* Above 0 so the circular photo — absolutely positioned and overflowing
        past this box's own bottom edge — paints over .EventPage__mainContent
        where the two overlap, instead of being covered by it. */
@@ -87,6 +88,10 @@
     color: var(--base-text-color);
     line-height: 1.5;
     max-width: 22em;
+
+    /* Spans both header columns; merged here rather than restated further down, which stylelint
+       flags as a duplicate selector. */
+    grid-column: 1/span 2;
 }
 
 
@@ -99,6 +104,7 @@
     color: var(--base-text-color);
     text-decoration: none;
     border: 1px solid rgb(255 255 255 / 40%);
+
     /* No left padding: aligned under the title, its icon should sit flush
        with the title's left edge rather than inset behind the pill border. */
     padding: 0.35rem 0.85rem 0.35rem 0;
@@ -153,10 +159,6 @@
 
 /* ------------------------------------  HEADER GRID & responsive    */
 
-.EventPage__headerDescription {
-    grid-column: 1/span 2 ;
-}
-
 .EventPage__headerNav,
 .EventPage__headerSaveDate {
     /* Starts at column 2, not 1: aligned under the circular photo's column
@@ -210,8 +212,7 @@
         /* No longer aligned under the title at this width — restore the
            symmetric pill padding lost in the base rule. */
         padding-left: 0.85rem;
-        align-self: center;
-        justify-self: end;
+        place-self: center end;
         grid-column: 3;
         grid-row: 1;
     }
@@ -399,6 +400,7 @@
     display: block;
     grid-column: 1 / -1;
     order: 4;
+
     /* Full-width block, unlike the other .EventContentBlock columns: the
        dashed left rule and its padding read as an indent, not a divider. */
     border: none;

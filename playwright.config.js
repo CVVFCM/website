@@ -1,9 +1,9 @@
 const {defineConfig, devices} = require("@playwright/test");
 
 /**
- * Visual regression suite. Runs against the `php-test` container (test database + fixtures), from
- * inside the pinned Playwright image, so a baseline captured locally is byte-comparable with a run
- * in CI.
+ * Visual regression suite. Drives the dev server (`make up`) from inside the pinned Playwright
+ * image, so a baseline captured locally is byte-comparable with a run in CI. The dev database is
+ * built from the same fixtures, seeded to be reproducible.
  *
  * One project per viewport width. 1280x720 is the one that matters most: it is what a 1920x1080
  * screen reports at the 150% scaling most Windows laptops ship with.
@@ -20,8 +20,8 @@ module.exports = defineConfig({
     forbidOnly: !!process.env.CI,
     reporter: process.env.CI ? [["html", {open: "never"}], ["list"]] : [["list"]],
     use: {
-        baseURL: process.env.SCREENSHOT_BASE_URL || "http://php-test",
-        // The fixtures reference the site by name in a few places; keep redirects on the same host.
+        baseURL: process.env.SCREENSHOT_BASE_URL || "https://localhost",
+        // The dev certificate is a local mkcert one, unknown to the browser in the container.
         ignoreHTTPSErrors: true,
     },
     expect: {

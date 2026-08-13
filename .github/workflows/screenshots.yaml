@@ -48,22 +48,21 @@ jobs:
                 run: |
                     mkdir -p var/cache/test var/log
                     docker compose run --rm php composer install
-            # php-test serves plain HTTP on the compose network, so no certificate is needed here —
-            # unlike the `tests` job, which talks to the dev container over TLS.
-            -   name: Start the test server
+            # The suite drives the dev server over TLS, as a browser would, so the local certificate
+            # has to exist and be trusted before the container starts.
+            -   name: Install mkcert & Generate SSL certificates
                 run: |
-                    docker compose --profile screenshots up --wait database --no-build
-                    docker compose --profile screenshots up -d php-test --no-build
+                    sudo apt-get install libnss3-tools
+                    wget -O mkcert "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+                    sudo mv mkcert /usr/local/bin/mkcert
+                    sudo chmod +x /usr/local/bin/mkcert
+                    mkcert -install
+                    mkdir -p .infra/tls
+                    mkcert -key-file .infra/tls/key.pem -cert-file .infra/tls/cert.pem localhost
+            -   name: Start the site
+                run: docker compose up --wait php --no-build
             -   name: Load the fixtures
-                run: docker compose --profile screenshots exec -T php-test composer reset-test
-            # Both halves matter: cache:clear drops the asset map on disk, the restart drops the copy
-            # the FrankenPHP workers hold in memory. Without the restart the workers keep serving a
-            # stylesheet whose @import names a stale content hash, the import 404s, and the pages are
-            # photographed without those rules.
-            -   name: Refresh the asset map
-                run: |
-                    docker compose --profile screenshots exec -T php-test php bin/console -etest cache:clear
-                    docker compose --profile screenshots restart php-test
+                run: docker compose exec -T php composer reset
             -   name: Cache NPM dependencies
                 uses: actions/cache@v5
                 with:
