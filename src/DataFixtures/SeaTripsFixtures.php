@@ -41,7 +41,6 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $this->seedRandomness();
         $events = $this->getReference('events', Page::class);
         $medias = $this->orderById($this->mediaRepository->findAll());
         $contacts = array_filter($this->orderById($this->contactRepository->findAll()), static fn (Contact $contact) => $contact->getMainEmail());
@@ -99,16 +98,16 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                 $dimensionContent->setTemplateData(array_merge([
                     'url' => $url,
                     'title' => $trip['name'],
-                    'main_media' => ['id' => $medias[array_rand($medias)]->getId()],
+                    'main_media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                     'media' => [
                         'displayOption' => null,
                         'ids' => array_map(
                             fn (int $media): int => $medias[$media]->getId(),
-                            (array) array_rand($medias, mt_rand(1, 4)),
+                            $this->pickKeys($medias, $this->between(1, 4)),
                         ),
                     ],
                     'description' => array_reduce(
-                        $this->faker()->paragraphs(mt_rand(2, 4)),
+                        $this->paragraphs($this->between(2, 4)),
                         fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
                         '',
                     ),
@@ -120,16 +119,16 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                         [
                             'type' => 'boat',
                             'boat_type' => 'Habitable',
-                            'captain' => [$contacts[array_rand($contacts)]->getId()],
-                            'available_seats' => (string) mt_rand(2, 6),
-                            'approximative_price' => mt_rand(10, 30).'€',
+                            'captain' => [$contacts[$this->pickKey($contacts)]->getId()],
+                            'available_seats' => (string) $this->between(2, 6),
+                            'approximative_price' => $this->between(10, 30).'€',
                         ],
                         [
                             'type' => 'boat',
                             'boat_type' => 'Dériveur',
-                            'captain' => [$contacts[array_rand($contacts)]->getId()],
-                            'available_seats' => (string) mt_rand(1, 3),
-                            'approximative_price' => mt_rand(5, 15).'€',
+                            'captain' => [$contacts[$this->pickKey($contacts)]->getId()],
+                            'available_seats' => (string) $this->between(1, 3),
+                            'approximative_price' => $this->between(5, 15).'€',
                         ],
                     ],
                     'location' => [
@@ -143,7 +142,7 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                         'town' => 'Les Mazures',
                         'zoom' => 17,
                     ],
-                    'contact' => ['c'.$contacts[array_rand($contacts)]->getId()],
+                    'contact' => ['c'.$contacts[$this->pickKey($contacts)]->getId()],
                 ], $trip['content_block'] ?? []));
             }
 

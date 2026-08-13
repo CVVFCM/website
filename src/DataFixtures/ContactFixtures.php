@@ -22,6 +22,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class ContactFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     use HandleTrait;
 
     private MessageBusInterface $messageBus;
@@ -40,7 +42,7 @@ final class ContactFixtures extends Fixture implements DependentFixtureInterface
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $medias = $this->mediaRepository->findAll();
+        $medias = $this->orderById($this->mediaRepository->findAll());
         $root = $this->pageRepository->findOneBy(['parentId' => null, 'webspaceKey' => 'cvvfcm']);
 
         /** @var Page $contact */
@@ -69,7 +71,7 @@ final class ContactFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Contact',
                 'url' => '/contact',
                 'description' => '<p>Contactez le CVVFCM</p>',
-                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                 'form' => $this->getReference(ContactFormFixtures::CONTACT_FORM_REFERENCE, Form::class)->getId(),
             ]);
         }

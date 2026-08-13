@@ -41,7 +41,6 @@ final class LiveFixtures extends Fixture implements DependentFixtureInterface
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $this->seedRandomness();
         $medias = $this->orderById($this->mediaRepository->findAll());
         $root = $this->pageRepository->findOneBy(['parentId' => null, 'webspaceKey' => 'cvvfcm']);
 
@@ -70,7 +69,7 @@ final class LiveFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Direct',
                 'url' => '/direct',
                 'description' => '<p>Retrouvez le direct du lac</p>',
-                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                 'webcams' => [
                     ['type' => 'webcam', 'webcam_stream_url' => $this->serverName.'/stream/mouillages-2/channel/1/mse'],
                     ['type' => 'webcam', 'webcam_stream_url' => $this->serverName.'/stream/mouillages/channel/1/mse'],

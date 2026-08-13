@@ -30,7 +30,6 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $this->seedRandomness();
         $medias = $this->orderById($this->mediaRepository->findAll());
 
         $homepage = $this->pageRepository->findOneBy(['depth' => 0, 'webspaceKey' => 'cvvfcm']);
@@ -63,7 +62,7 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                                 'type' => 'cta',
                                 'title' => 'Stage de voile',
                                 'description' => "L'école de voile des Vieilles Forges, c'est le meilleur moyen pour les jeunes de découvrir et d'apprendre la voile dans les Ardennes.",
-                                'image' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'image' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                                 'url' => 'https://www.cdv-ardennes.fr/stage-de-voile',
                                 'settings' => [],
                             ],
@@ -71,7 +70,7 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                                 'type' => 'cta',
                                 'title' => 'Ecole de voile',
                                 'description' => "L'école de voile des Vieilles Forges, c'est le meilleur moyen pour les jeunes de découvrir et d'apprendre la voile dans les Ardennes.",
-                                'image' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'image' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                                 'url' => 'https://www.cdv-ardennes.fr/ecole-de-voile',
                                 'settings' => [],
                             ],
@@ -79,7 +78,7 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                                 'type' => 'cta',
                                 'title' => 'Régates',
                                 'description' => "L'école de voile des Vieilles Forges, c'est le meilleur moyen pour les jeunes de découvrir et d'apprendre la voile dans les Ardennes.",
-                                'image' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'image' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                                 'url' => 'https://www.cdv-ardennes.fr/regates',
                                 'settings' => [],
                             ],
@@ -143,37 +142,37 @@ final class HomepageFixtures extends Fixture implements DependentFixtureInterfac
                             [
                                 'type' => 'partner',
                                 'name' => 'Conseil Départemental des Ardennes',
-                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                                 'url' => 'https://www.ardennes.com',
                             ],
                             [
                                 'type' => 'partner',
                                 'name' => 'Lac des Vieilles Forges',
-                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                                 'url' => 'https://www.lacdesvieillesforges.fr',
                             ],
                             [
                                 'type' => 'partner',
                                 'name' => 'Région Grand Est',
-                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                                 'url' => 'https://www.grandest.fr',
                             ],
                             [
                                 'type' => 'partner',
                                 'name' => 'Conseil Départemental des Ardennes',
-                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                                 'url' => 'https://www.ardennes.com',
                             ],
                             [
                                 'type' => 'partner',
                                 'name' => 'Ville de Charleville-Mézières',
-                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                                 'url' => 'https://www.agglo-ardenne.fr',
                             ],
                             [
                                 'type' => 'partner',
                                 'name' => 'Lac des Vieilles Forges',
-                                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                                 'url' => 'https://www.lacdesvieillesforges.fr',
                             ],
                         ],

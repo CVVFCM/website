@@ -38,7 +38,6 @@ final class EventsFixtures extends Fixture implements DependentFixtureInterface
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $this->seedRandomness();
         $root = $this->pageRepository->findOneBy(['parentId' => null, 'webspaceKey' => 'cvvfcm']);
         $medias = $this->orderById($this->mediaRepository->findAll());
 
@@ -66,7 +65,7 @@ final class EventsFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Événements',
                 'url' => '/evenements',
                 'description' => '<p>Retrouvez tous les événements à venir du Club de Voile des Vieilles Forges de Charleville-Mézières.</p>',
-                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                 'list_type' => 'event',
             ]);
         }

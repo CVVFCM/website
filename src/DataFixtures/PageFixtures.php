@@ -37,7 +37,6 @@ final class PageFixtures extends Fixture implements DependentFixtureInterface
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $this->seedRandomness();
         $root = $this->pageRepository->findOneBy(['parentId' => null, 'webspaceKey' => 'cvvfcm']);
         $medias = $this->orderById($this->mediaRepository->findAll());
 
@@ -64,7 +63,7 @@ final class PageFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Adhérer',
                 'url' => '/adherer',
                 'article' => '<p>Adhérez au CVVFCM</p>',
-                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                 'form' => 1,
             ]);
         }

@@ -42,7 +42,6 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $this->seedRandomness();
         $medias = $this->orderById($this->mediaRepository->findAll());
         $events = $this->getReference('events', Page::class);
         $regattas = $this->handle(
@@ -68,7 +67,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                 'url' => '/evenements/regates',
                 'title' => 'Régates',
                 'description' => 'Retrouvez ici toutes les régates du CVVFCM.',
-                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                 'list_type' => 'page',
                 'page_list' => [
                     'dataSource' => $regattas->getUuid(),
@@ -121,7 +120,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                 'url' => '/evenements/regates/'.(new AsciiSlugger())->slug($name)->lower()->ascii(),
                 'title' => $name,
                 'description' => 'Retrouvez ici toutes les éditions de la régate '.$name.'.',
-                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                 'list_type' => 'page',
                 'page_list' => [
                     'dataSource' => $regatta->getUuid(),
@@ -154,16 +153,16 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                     'url' => $url,
                     'title' => $editionName,
                     'featured' => $featured && 0 === $i,
-                    'main_media' => ['id' => $medias[array_rand($medias)]->getId()],
+                    'main_media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                     'media' => [
                         'displayOption' => null,
                         'ids' => array_map(
                             fn (int $media): int => $medias[$media]->getId(),
-                            (array) array_rand($medias, mt_rand(1, 4)),
+                            $this->pickKeys($medias, $this->between(1, 4)),
                         ),
                     ],
                     'description' => array_reduce(
-                        $this->faker()->paragraphs(mt_rand(2, 4)),
+                        $this->paragraphs($this->between(2, 4)),
                         fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
                         '',
                     ),
@@ -188,7 +187,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                     'series_links' => [
                         ['type' => 'link', 'text' => 'Tableau officiel', 'url' => 'https://drive.google.com/drive/folders/1-DxB5kPmqgkFx4bJF-l-gUeJAWjOHkyq?usp=sharing'],
                     ],
-                    'contact' => ['c'.$contacts[array_rand($contacts)]->getId()],
+                    'contact' => ['c'.$contacts[$this->pickKey($contacts)]->getId()],
                     'links' => [
                         [
                             'type' => 'link',
@@ -213,7 +212,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                         'zoom' => 17,
                     ],
                     'regatta_informations' => array_reduce(
-                        $this->faker()->paragraphs(mt_rand(2, 4)),
+                        $this->paragraphs($this->between(2, 4)),
                         fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
                         '',
                     ),
