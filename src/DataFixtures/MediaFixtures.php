@@ -37,7 +37,11 @@ final class MediaFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($stubsCollectionMeta);
         $manager->flush();
 
-        $finder = Finder::create()->in(__DIR__.'/stubs')->files()->depth(0);
+        // sortByName is load-bearing, not tidiness: Finder returns filesystem order otherwise, which
+        // differs from one machine to the next. The ids stay 1..n either way, so the fixtures that
+        // pick a medium by id look reproducible while quietly pointing at a different photo — which
+        // is how the screenshot baselines passed locally and failed in CI on every page.
+        $finder = Finder::create()->in(__DIR__.'/stubs')->files()->depth(0)->sortByName();
         foreach ($finder as $fileInfo) {
             $media = $this->mediaManager->save(
                 new UploadedFile($fileInfo->getPathname(), $fileInfo->getFilename()),
@@ -59,7 +63,7 @@ final class MediaFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($partnerCollectionMeta);
         $manager->flush();
 
-        $finder = Finder::create()->in(__DIR__.'/stubs/partner')->files()->depth(0);
+        $finder = Finder::create()->in(__DIR__.'/stubs/partner')->files()->depth(0)->sortByName();
         foreach ($finder as $fileInfo) {
             $this->mediaManager->save(
                 new UploadedFile($fileInfo->getPathname(), $fileInfo->getFilename()),

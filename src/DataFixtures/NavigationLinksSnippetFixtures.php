@@ -53,7 +53,7 @@ final class NavigationLinksSnippetFixtures extends Fixture implements DependentF
         $manager->flush();
 
         $pictos = [];
-        $finder = Finder::create()->in(__DIR__.'/stubs/pictos')->files()->depth(0);
+        $finder = Finder::create()->in(__DIR__.'/stubs/pictos')->files()->depth(0)->sortByName();
         foreach ($finder as $fileInfo) {
             $media = $this->mediaManager->save(
                 new UploadedFile($fileInfo->getPathname(), $fileInfo->getFilename()),
