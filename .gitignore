@@ -56,3 +56,7 @@ build/
 
 data/weather/ml
 .claude/settings.local.json
+
+# Playwright run output — the baselines live in tests/visual/__screenshots__
+/test-results/
+/playwright-report/
