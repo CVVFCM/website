@@ -7,7 +7,6 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
@@ -23,6 +22,8 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 final class SeaTripsFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     use HandleTrait;
 
     private MessageBusInterface $messageBus;
@@ -41,8 +42,8 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
     public function load(ObjectManager $manager): void
     {
         $events = $this->getReference('events', Page::class);
-        $medias = $this->mediaRepository->findAll();
-        $contacts = array_filter($this->contactRepository->findAll(), static fn (Contact $contact) => $contact->getMainEmail());
+        $medias = $this->orderById($this->mediaRepository->findAll());
+        $contacts = array_filter($this->orderById($this->contactRepository->findAll()), static fn (Contact $contact) => $contact->getMainEmail());
         $slugger = new AsciiSlugger();
 
         $seaTrips = [
@@ -97,16 +98,16 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                 $dimensionContent->setTemplateData(array_merge([
                     'url' => $url,
                     'title' => $trip['name'],
-                    'main_media' => ['id' => $medias[array_rand($medias)]->getId()],
+                    'main_media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                     'media' => [
                         'displayOption' => null,
                         'ids' => array_map(
                             fn (int $media): int => $medias[$media]->getId(),
-                            (array) array_rand($medias, random_int(1, 4)),
+                            $this->pickKeys($medias, $this->between(1, 4)),
                         ),
                     ],
                     'description' => array_reduce(
-                        Factory::create()->paragraphs(random_int(2, 4)),
+                        $this->paragraphs($this->between(2, 4)),
                         fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
                         '',
                     ),
@@ -118,16 +119,16 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                         [
                             'type' => 'boat',
                             'boat_type' => 'Habitable',
-                            'captain' => [$contacts[array_rand($contacts)]->getId()],
-                            'available_seats' => (string) random_int(2, 6),
-                            'approximative_price' => random_int(10, 30).'€',
+                            'captain' => [$contacts[$this->pickKey($contacts)]->getId()],
+                            'available_seats' => (string) $this->between(2, 6),
+                            'approximative_price' => $this->between(10, 30).'€',
                         ],
                         [
                             'type' => 'boat',
                             'boat_type' => 'Dériveur',
-                            'captain' => [$contacts[array_rand($contacts)]->getId()],
-                            'available_seats' => (string) random_int(1, 3),
-                            'approximative_price' => random_int(5, 15).'€',
+                            'captain' => [$contacts[$this->pickKey($contacts)]->getId()],
+                            'available_seats' => (string) $this->between(1, 3),
+                            'approximative_price' => $this->between(5, 15).'€',
                         ],
                     ],
                     'location' => [
@@ -141,7 +142,7 @@ final class SeaTripsFixtures extends Fixture implements DependentFixtureInterfac
                         'town' => 'Les Mazures',
                         'zoom' => 17,
                     ],
-                    'contact' => ['c'.$contacts[array_rand($contacts)]->getId()],
+                    'contact' => ['c'.$contacts[$this->pickKey($contacts)]->getId()],
                 ], $trip['content_block'] ?? []));
             }
 

@@ -20,6 +20,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class EventsFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     use HandleTrait;
 
     private MessageBusInterface $messageBus;
@@ -37,7 +39,7 @@ final class EventsFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $root = $this->pageRepository->findOneBy(['parentId' => null, 'webspaceKey' => 'cvvfcm']);
-        $medias = $this->mediaRepository->findAll();
+        $medias = $this->orderById($this->mediaRepository->findAll());
 
         /** @var Page $events */
         $events = $this->handle(
@@ -63,7 +65,7 @@ final class EventsFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Événements',
                 'url' => '/evenements',
                 'description' => '<p>Retrouvez tous les événements à venir du Club de Voile des Vieilles Forges de Charleville-Mézières.</p>',
-                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                 'list_type' => 'event',
             ]);
         }

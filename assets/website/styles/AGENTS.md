@@ -32,5 +32,9 @@ Applies to every `.css` file under this directory. See root `AGENTS.md` for proj
 - **Keep files separate — do not concatenate.** HTTP/3 + Early Hints + Brotli make many small files
   cheap; each Twig template loads only its own page CSS.
 
-## Quality gate
-Run `make stylelint` immediately after each CSS edit (pass `fix=1` to auto-fix). Not batched.
+## Quality gates
+- `make stylelint` immediately after each CSS edit (pass `fix=1` to auto-fix). Not batched.
+- `make test-screenshots` before finishing the task. Needs `make up` and loaded fixtures. If a
+  comparison fails and the visual change is what the task asked for, re-record with
+  `make test-screenshots-update` and say so in your report; otherwise it is a regression — fix it,
+  don't re-record it.

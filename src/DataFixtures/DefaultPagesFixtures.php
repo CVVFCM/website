@@ -22,6 +22,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 final class DefaultPagesFixtures extends Fixture implements DependentFixtureInterface
 {
     use HandleTrait;
+    use SeededRandomness;
 
     private MessageBusInterface $messageBus;
 
@@ -329,8 +330,8 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
     public function load(ObjectManager $manager): void
     {
         $root = $this->pageRepository->findOneBy(['parentId' => null, 'webspaceKey' => 'cvvfcm']);
-        $this->medias = array_values($this->mediaRepository->findAll());
-        $this->contacts = array_values(array_filter(
+        $this->medias = $this->orderById($this->mediaRepository->findAll());
+        $this->contacts = $this->orderById(array_filter(
             $this->contactRepository->findAll(),
             static fn (Contact $contact): bool => (bool) $contact->getMainEmail(),
         ));
@@ -407,7 +408,7 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
             $dim->setTemplateData([
                 'title' => $title,
                 'url' => $url,
-                'description' => self::DESCRIPTIONS[array_rand(self::DESCRIPTIONS)],
+                'description' => self::DESCRIPTIONS[$this->pickKey(self::DESCRIPTIONS)],
                 'media' => ['id' => $this->randomMediaId()],
                 'blocks' => $this->randomBlocks($parent),
                 // Not every page carries them, so both the empty and the filled rendering
@@ -429,8 +430,8 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
     private function randomBlocks(Page $parent): array
     {
         $types = ['title_image_text', 'gallery', 'list', 'cta'];
-        shuffle($types);
-        $selected = array_slice($types, 0, random_int(2, 4));
+        $types = $this->shuffled($types);
+        $selected = array_slice($types, 0, $this->between(2, 4));
 
         return array_map(fn (string $type): array => match ($type) {
             'title_image_text' => $this->blockTitleImageText(),
@@ -450,9 +451,9 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
     {
         return [
             'type' => 'title_image_text',
-            'title' => self::BLOCK_TITLES[array_rand(self::BLOCK_TITLES)],
+            'title' => self::BLOCK_TITLES[$this->pickKey(self::BLOCK_TITLES)],
             'medias' => $this->randomMediaSelection(0, 3),
-            'text' => self::BLOCK_TEXTS[array_rand(self::BLOCK_TEXTS)],
+            'text' => self::BLOCK_TEXTS[$this->pickKey(self::BLOCK_TEXTS)],
         ];
     }
 
@@ -470,7 +471,7 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
      */
     private function randomLinksAndContacts(): array
     {
-        if ([] === $this->contacts || 0 === random_int(0, 2)) {
+        if ([] === $this->contacts || 0 === $this->between(0, 2)) {
             return [];
         }
 
@@ -479,15 +480,15 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                 ['type' => 'link', 'title' => 'Tableau Officiel', 'url' => 'https://cvvfcm.fr'],
                 ['type' => 'link', 'title' => 'CVVFCM', 'url' => 'https://cvvfcm.fr'],
             ],
-            'contact' => ['c'.$this->contacts[array_rand($this->contacts)]->getId()],
+            'contact' => ['c'.$this->contacts[$this->pickKey($this->contacts)]->getId()],
         ];
     }
 
     /** @return array{displayOption: null, ids: list<int>} */
     private function randomMediaSelection(int $min, int $max): array
     {
-        $count = min(random_int($min, $max), \count($this->medias));
-        $keys = 0 === $count ? [] : (array) array_rand($this->medias, $count);
+        $count = min($this->between($min, $max), \count($this->medias));
+        $keys = 0 === $count ? [] : $this->pickKeys($this->medias, $count);
 
         return [
             'displayOption' => null,
@@ -500,7 +501,7 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
     {
         return [
             'type' => 'list',
-            'title' => self::LIST_TITLES[array_rand(self::LIST_TITLES)],
+            'title' => self::LIST_TITLES[$this->pickKey(self::LIST_TITLES)],
             'pages' => [
                 'dataSource' => $parent->getId(),
                 'includeSubFolders' => true,
@@ -510,19 +511,19 @@ final class DefaultPagesFixtures extends Fixture implements DependentFixtureInte
                 'categories' => [],
                 'categoryOperator' => 'and',
             ],
-            'description' => self::LIST_DESCRIPTIONS[array_rand(self::LIST_DESCRIPTIONS)],
+            'description' => self::LIST_DESCRIPTIONS[$this->pickKey(self::LIST_DESCRIPTIONS)],
         ];
     }
 
     /** @return array<string, mixed> */
     private function blockCta(): array
     {
-        return array_merge(['type' => 'cta'], self::CTAS[array_rand(self::CTAS)]);
+        return array_merge(['type' => 'cta'], self::CTAS[$this->pickKey(self::CTAS)]);
     }
 
     private function randomMediaId(): int
     {
-        return $this->medias[array_rand($this->medias)]->getId();
+        return $this->medias[$this->pickKey($this->medias)]->getId();
     }
 
     #[\Override]

@@ -7,7 +7,6 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepositoryInterface;
 use Sulu\Bundle\MediaBundle\Entity\MediaRepositoryInterface;
@@ -24,6 +23,8 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 final class RegattasFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     use HandleTrait;
 
     private MessageBusInterface $messageBus;
@@ -41,7 +42,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
     #[\Override]
     public function load(ObjectManager $manager): void
     {
-        $medias = $this->mediaRepository->findAll();
+        $medias = $this->orderById($this->mediaRepository->findAll());
         $events = $this->getReference('events', Page::class);
         $regattas = $this->handle(
             new Envelope(
@@ -66,7 +67,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                 'url' => '/evenements/regates',
                 'title' => 'Régates',
                 'description' => 'Retrouvez ici toutes les régates du CVVFCM.',
-                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                 'list_type' => 'page',
                 'page_list' => [
                     'dataSource' => $regattas->getUuid(),
@@ -93,8 +94,8 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
     {
         $regattas = $this->getReference('regattas', Page::class);
 
-        $medias = $this->mediaRepository->findAll();
-        $contacts = array_filter($this->contactRepository->findAll(), static fn (Contact $contact) => $contact->getMainEmail());
+        $medias = $this->orderById($this->mediaRepository->findAll());
+        $contacts = array_filter($this->orderById($this->contactRepository->findAll()), static fn (Contact $contact) => $contact->getMainEmail());
 
         /** @var Page $regatta */
         $regatta = $this->handle(
@@ -119,7 +120,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                 'url' => '/evenements/regates/'.(new AsciiSlugger())->slug($name)->lower()->ascii(),
                 'title' => $name,
                 'description' => 'Retrouvez ici toutes les éditions de la régate '.$name.'.',
-                'media' => ['id' => $medias[array_rand($medias)]->getId()],
+                'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                 'list_type' => 'page',
                 'page_list' => [
                     'dataSource' => $regatta->getUuid(),
@@ -152,16 +153,16 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                     'url' => $url,
                     'title' => $editionName,
                     'featured' => $featured && 0 === $i,
-                    'main_media' => ['id' => $medias[array_rand($medias)]->getId()],
+                    'main_media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
                     'media' => [
                         'displayOption' => null,
                         'ids' => array_map(
                             fn (int $media): int => $medias[$media]->getId(),
-                            (array) array_rand($medias, random_int(1, 4)),
+                            $this->pickKeys($medias, $this->between(1, 4)),
                         ),
                     ],
                     'description' => array_reduce(
-                        Factory::create()->paragraphs(random_int(2, 4)),
+                        $this->paragraphs($this->between(2, 4)),
                         fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
                         '',
                     ),
@@ -186,7 +187,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                     'series_links' => [
                         ['type' => 'link', 'text' => 'Tableau officiel', 'url' => 'https://drive.google.com/drive/folders/1-DxB5kPmqgkFx4bJF-l-gUeJAWjOHkyq?usp=sharing'],
                     ],
-                    'contact' => ['c'.$contacts[array_rand($contacts)]->getId()],
+                    'contact' => ['c'.$contacts[$this->pickKey($contacts)]->getId()],
                     'links' => [
                         [
                             'type' => 'link',
@@ -211,7 +212,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                         'zoom' => 17,
                     ],
                     'regatta_informations' => array_reduce(
-                        Factory::create()->paragraphs(random_int(2, 4)),
+                        $this->paragraphs($this->between(2, 4)),
                         fn (string $memo, string $paragraph): string => "$memo\n\n<p>{$paragraph}</p>",
                         '',
                     ),

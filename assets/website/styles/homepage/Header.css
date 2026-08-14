@@ -4,6 +4,21 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
+}
+
+/* space-between alone hands the title block and the cards whatever height is left over, which on a
+   720px-tall viewport — a 1080p screen at the 150% scaling most Windows laptops ship with — is
+   three pixels. The banner collapsed into a cramped strip. A minimum gap keeps the two apart
+   whatever the screen height, and lets the banner grow past 100vh instead of squeezing.
+
+   Deliberately not applied below this width: the narrow layout stacks the cards and has no free
+   space either, so the gap would push its banner 64px taller — a change to a screen size that was
+   not reported as broken. Worth revisiting on its own merits. */
+@media (width >= 64rem) {
+    .Header {
+        gap: 4rem;
+    }
 }
 
 

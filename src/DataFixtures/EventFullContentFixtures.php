@@ -27,6 +27,8 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
  */
 final class EventFullContentFixtures extends Fixture implements DependentFixtureInterface
 {
+    use SeededRandomness;
+
     use HandleTrait;
 
     private MessageBusInterface $messageBus;
@@ -57,9 +59,9 @@ final class EventFullContentFixtures extends Fixture implements DependentFixture
     public function load(ObjectManager $manager): void
     {
         $events = $this->getReference('events', Page::class);
-        $medias = $this->mediaRepository->findAll();
+        $medias = $this->orderById($this->mediaRepository->findAll());
         $contacts = array_values(array_filter(
-            $this->contactRepository->findAll(),
+            $this->orderById($this->contactRepository->findAll()),
             static fn (Contact $contact) => $contact->getMainEmail(),
         ));
         $slugger = new AsciiSlugger();
@@ -87,7 +89,7 @@ final class EventFullContentFixtures extends Fixture implements DependentFixture
     ): void {
         $url = '/evenements/'.$slugger->slug($title)->lower()->ascii();
         $begin = new \DateTimeImmutable('next saturday 10:00');
-        $contactId = $contacts[array_rand($contacts)]->getId();
+        $contactId = $contacts[$this->pickKey($contacts)]->getId();
 
         /** @var Page $page */
         $page = $this->handle(
@@ -110,12 +112,12 @@ final class EventFullContentFixtures extends Fixture implements DependentFixture
             'title' => $title,
             'featured' => false,
             'event_type' => $eventType,
-            'main_media' => $withMainMedia ? ['id' => $medias[array_rand($medias)]->getId()] : null,
+            'main_media' => $withMainMedia ? ['id' => $medias[$this->pickKey($medias)]->getId()] : null,
             'media' => [
                 'displayOption' => null,
                 'ids' => array_map(
                     fn (int $index): int => $medias[$index]->getId(),
-                    (array) array_rand($medias, min(4, \count($medias))),
+                    $this->pickKeys($medias, min(4, \count($medias))),
                 ),
             ],
             'description' => '<p>Rejoignez le club pour cet événement convivial ouvert à tous les niveaux, encadré par nos moniteurs diplômés d\'État, dans une ambiance chaleureuse et conviviale.</p>',
@@ -178,10 +180,10 @@ final class EventFullContentFixtures extends Fixture implements DependentFixture
 
         if ('sea_trip' === $eventType) {
             $data['boats'] = [
-                ['type' => 'boat', 'boat_type' => 'Habitable', 'captain' => [$contacts[array_rand($contacts)]->getId()], 'available_seats' => '6', 'approximative_price' => '25€'],
-                ['type' => 'boat', 'boat_type' => 'Dériveur', 'captain' => [$contacts[array_rand($contacts)]->getId()], 'available_seats' => '2', 'approximative_price' => '10€'],
-                ['type' => 'boat', 'boat_type' => 'Catamaran', 'captain' => [$contacts[array_rand($contacts)]->getId()], 'available_seats' => '4', 'approximative_price' => '18€'],
-                ['type' => 'boat', 'boat_type' => 'Optimist', 'captain' => [$contacts[array_rand($contacts)]->getId()], 'available_seats' => '1', 'approximative_price' => '5€'],
+                ['type' => 'boat', 'boat_type' => 'Habitable', 'captain' => [$contacts[$this->pickKey($contacts)]->getId()], 'available_seats' => '6', 'approximative_price' => '25€'],
+                ['type' => 'boat', 'boat_type' => 'Dériveur', 'captain' => [$contacts[$this->pickKey($contacts)]->getId()], 'available_seats' => '2', 'approximative_price' => '10€'],
+                ['type' => 'boat', 'boat_type' => 'Catamaran', 'captain' => [$contacts[$this->pickKey($contacts)]->getId()], 'available_seats' => '4', 'approximative_price' => '18€'],
+                ['type' => 'boat', 'boat_type' => 'Optimist', 'captain' => [$contacts[$this->pickKey($contacts)]->getId()], 'available_seats' => '1', 'approximative_price' => '5€'],
             ];
         }
 

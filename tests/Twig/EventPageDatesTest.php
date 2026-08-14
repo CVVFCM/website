@@ -51,7 +51,10 @@ final class EventPageDatesTest extends KernelTestCase
     {
         $html = $this->render('2027-06-05T00:00:00', '2027-06-06T00:00:00');
 
-        $this->assertStringContainsString('DU SAMEDI 5 JUIN 2027 AU DIMANCHE 6 JUIN 2027', $html);
+        // Asserted in two halves: the template breaks the line between them, and pinning the
+        // markup in between made this fail the moment a <br /> was introduced.
+        $this->assertStringContainsString('DU SAMEDI 5 JUIN 2027', $html);
+        $this->assertStringContainsString('AU DIMANCHE 6 JUIN 2027', $html);
         $this->assertStringNotContainsString('00H00', $html);
         $this->assertStringNotContainsString('EventPage__headerTime', $html);
     }

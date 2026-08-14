@@ -9,6 +9,8 @@ Applies to PHP under this directory. See root `AGENTS.md` for project-wide rules
 - Constructor injection everywhere — no service locators, no `$container->get()`.
 - Attributes for routes and Doctrine mapping — never YAML/XML mapping.
 - Follow Symfony best practices and SOLID; keep controllers thin (logic in services).
+- Few comments. One earns its place by stating a constraint the code cannot — a trap, a non-obvious
+  *why*. Never narrate the bug you just fixed; that belongs in the commit message.
 
 ## Doctrine entities — `readonly` caveat
 **Do not mark an entity a `readonly class`.** opcache preload (production) compiles Doctrine's
@@ -31,7 +33,17 @@ codebase with separate cache dirs. Use `bin/websiteconsole` / `bin/adminconsole`
 commands, and `make cc` (clears both). Preload requires whichever per-context caches exist
 (`config/preload.php`).
 
-## Quality gates (after EVERY edit — not batched)
+## Quality gates
+After **each** edit, not batched:
 - `make cs` — code style (php-cs-fixer `@Symfony` + twig-cs-fixer).
 - `make psalm` — static analysis (Psalm, **not** PHPStan). Treat a red Psalm like a failing test.
-- `make test` — PHPUnit suite must pass before a task is done.
+
+Before finishing the task:
+- `make test` — the PHPUnit suite.
+- `make test-ai` — **only** if `config/prompts/forgie.md` was edited (paid API, LLM-judged, not in CI).
+
+## Fixtures must stay reproducible
+The visual baselines compare pixels, so a fixture that deals a different hand on each machine breaks
+them. Draw through `SeededRandomness`, never `mt_rand`/`array_rand`/`shuffle` — the global generator
+is shared with every library in the process, so anything they draw shifts your sequence. Enumerate
+files with `->sortByName()`: without it the ids stay stable while the file behind each one does not.

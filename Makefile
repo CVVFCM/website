@@ -64,6 +64,18 @@ test:
 test-ai: ## Run the AI-judged tests manually — not part of CI (needs API keys from the dev vault)
 	@$(DOCKER_COMPOSE) exec php ./vendor/bin/phpunit --colors=always --testdox --group ai
 
+# The screenshot suite drives the dev server, so `make up` must be running first. Dev serves
+# AssetMapper cacheless (config/packages/dev/asset_mapper.yaml), so a stylesheet edit is picked up
+# without clearing anything.
+screenshots-up:
+	@$(DOCKER_COMPOSE) --profile screenshots run --rm --no-deps playwright npm ci --no-audit --no-fund
+
+test-screenshots: screenshots-up ## Run the visual regression suite against the dev server
+	@$(DOCKER_COMPOSE) --profile screenshots run --rm playwright npx playwright test
+
+test-screenshots-update: screenshots-up ## Re-record the baselines after a deliberate design change
+	@$(DOCKER_COMPOSE) --profile screenshots run --rm playwright npx playwright test --update-snapshots
+
 cc: ## Clear Symfony cache (website + admin)
 	@$(DOCKER_COMPOSE) exec php bin/websiteconsole cache:clear
 	@$(DOCKER_COMPOSE) exec php bin/adminconsole cache:clear
