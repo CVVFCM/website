@@ -7,6 +7,44 @@ they attach automatically when you edit files under that directory:
 - `templates/AGENTS.md` — Twig / HTML
 - `assets/website/styles/AGENTS.md` — CSS
 
+## Rules (never skip)
+
+### Quality gates
+Every gate must be green before a task is done. A red gate means the task is not finished.
+
+- `make cs` and `make psalm` after **each** PHP edit — immediately, never batched at the end.
+- `make stylelint` after **each** CSS edit — same rule.
+- `make test` — the PHPUnit suite.
+- `make test-screenshots` — **only if** the task touched `templates/**` or
+  `assets/website/styles/**`. Needs `make up` and loaded fixtures. When a comparison fails: if the
+  visual change is what the task asked for, re-record with `make test-screenshots-update` and say so
+  in your report; otherwise it is a regression — fix it, don't re-record it.
+- `make test-ai` — **only** when `config/prompts/forgie.md` was edited. These call a paid API and are
+  judged by an LLM; they are not part of CI and never run "just in case".
+
+Run the linters and fix what they report. Reporting a lint failure instead of fixing it is not done.
+
+### Git
+Never commit or push unless explicitly asked. Prepare, verify, report — then wait.
+
+### Remote environments
+Never connect to preprod or production, except to read logs, or to run an operation the user
+explicitly asked for — and then only that operation. Never point local tooling at a remote database.
+
+### Decisions
+Make no design or technical-design choices. Whenever the task leaves something open — layout,
+naming, schema shape, library, trade-off — ask. Announcing a decision afterwards is not asking.
+
+### Task size
+Before starting anything that spans several files, changes the schema, touches infrastructure, or
+redesigns a surface: stop and ask the user to switch to plan mode and to a highly capable model
+(Opus). Don't start a large task from a one-line prompt.
+
+### Comments
+Few. A comment earns its place by stating a constraint the code cannot: a trap, a non-obvious *why*.
+Never narrate the bug you just fixed — that belongs in the commit message. No blocks longer than a
+couple of lines.
+
 ## Project Context
 
 CVVFCM V4 — a French sailing club website. Stack: **FrankenPHP 1.11**, **PHP 8.5**, **Symfony 7.4**, **Sulu CMS 3.0**, **PostgreSQL 18**. Everything runs in Docker Compose. No build step for frontend CSS/JS (Symfony AssetMapper, HTTP/3).
@@ -16,23 +54,31 @@ CVVFCM V4 — a French sailing club website. Stack: **FrankenPHP 1.11**, **PHP 8
 All commands must be run **inside the Docker container** or via `make` (which wraps `docker compose exec php`).
 
 ```bash
-make run          # First-time setup + start containers
-make up           # Start containers (subsequent runs)
-make down         # Stop containers
-make cli          # Open bash shell in PHP container
-make logs         # Tail PHP container logs (make logs c=php)
-make ps           # List running containers
-make cc           # Clear Symfony cache (both website + admin kernels)
-make cs           # Fix code style (php-cs-fixer + twig-cs-fixer)
-make psalm        # Run static analysis
-make psalm_strict # Run static analysis with info-level issues
-make test         # Run PHPUnit test suite
-make stylelint    # Lint website CSS (pass fix=1 to auto-fix)
-make reset        # Wipe DB, re-create schema, load fixtures + import weather data
-make reset-test   # Same as reset but for test environment
+make run                     # First-time setup + start containers
+make up                      # Start containers (subsequent runs)
+make down                    # Stop containers
+make cli                     # Open bash shell in PHP container
+make logs                    # Tail PHP container logs (make logs c=php)
+make ps                      # List running containers
+make cc                      # Clear Symfony cache (both website + admin kernels)
+make cs                      # Fix code style (php-cs-fixer + twig-cs-fixer)
+make stylelint               # Lint website CSS (pass fix=1 to auto-fix)
+make psalm                   # Run static analysis
+make psalm_strict            # Run static analysis with info-level issues
+make hadolint                # Lint the Dockerfiles
+make ml_cs                   # Fix code style in the Python ML code (ruff)
+make test                    # Run PHPUnit test suite
+make test-ai                 # Forgie judge tests — paid API, only when the prompt changed
+make test-screenshots        # Visual regression suite
+make test-screenshots-update # Re-record the visual baselines
+make reset                   # Wipe DB, re-create schema, load fixtures + import weather data
+make reset-test              # Same as reset but for test environment
 ```
 
 **Single test:** `docker compose exec php ./vendor/bin/phpunit --filter TestName`
+
+**Screenshots** drive the dev server at `https://localhost`, so `make up` must be running and the
+fixtures loaded (`make reset`). Baselines live in `tests/visual/__screenshots__/`.
 
 **Sulu consoles** (use instead of `bin/console` for Sulu contexts):
 - `bin/websiteconsole` — website kernel
@@ -94,16 +140,6 @@ Width formats are declared in `config/image-formats.xml`.
 - `cmsig/seal` — search engine abstraction (Loupe adapter)
 - `symfony/ux-map` + `symfony/ux-leaflet-map` — interactive maps
 
-## Rules (Never Skip)
-
-### Git
-- **Never commit or push unless explicitly asked.** Prepare changes, verify them, report — then wait for the user to request the commit.
-
-### Quality gates (after EVERY update)
-- `make cs` and `make psalm` **must pass after each edit** — run them immediately, not batched at the end of a task. Treat a red psalm like a failing test.
-- `make stylelint` **must pass after each CSS edit** — same rule: run immediately, not batched.
-- `make test` **must pass before finishing any task** — the PHPUnit suite is the final gate; a red test means the task is not done.
-
 ### Area-specific rules (nested `AGENTS.md`)
 The detailed PHP, Twig, and CSS conventions live next to the code so they attach only when relevant:
 - **PHP / Symfony / Doctrine** → `src/AGENTS.md` (strict types, typing, constructor injection,
@@ -128,44 +164,19 @@ One rule bears repeating everywhere: creating `src/Twig/Components/Foo.php` **re
 - **Iterate, then report blockers.** Loop at most ~3 times on a stuck problem; after that, explain
   what's not working and ask for guidance instead of thrashing.
 - **Minimal, surgical changes.** Modify only what the task needs; extract rather than duplicate.
+- **Read the output of what you run.** A command whose result you piped to `/dev/null` has not been
+  verified, and "the tests pass" is a claim you own.
 
 ## Symfony Superpowers (plugin)
 
 The `superpowers-symfony` plugin is enabled. For Symfony / Doctrine / Twig / Messenger / testing work,
-**prefer these agents & skills over free-handing**. Entry point: the `symfony:using-symfony-superpowers`
-skill. When a task matches one below, invoke it — but always honour this repo's conventions (see below
-and the Rules section).
+prefer its agents and skills over free-handing. Entry point: the `symfony:using-symfony-superpowers`
+skill, which lists everything available — no need to mirror that catalogue here.
 
-### Stack caveats (pick the matching variant)
-- **Tests = PHPUnit** (`make test`), not Pest → use the PHPUnit variants (`symfony:tdd-with-phpunit`, `/symfony-tdd-phpunit`, `symfony-tdd-coach` in PHPUnit mode).
-- **Static analysis = Psalm** (`make psalm`), **not PHPStan**. Keep style via `make cs` (php-cs-fixer `@Symfony`). Do **not** substitute PHPStan when a skill mentions it.
+Honour this repo's stack over whatever a generic skill assumes:
+- **Tests = PHPUnit** (`make test`), not Pest → use the PHPUnit variants (`symfony:tdd-with-phpunit`, `symfony-tdd-coach` in PHPUnit mode).
+- **Static analysis = Psalm** (`make psalm`), **not PHPStan**. Style via `make cs` (php-cs-fixer `@Symfony`). Do **not** substitute PHPStan when a skill mentions it.
 - **CMS = Sulu, no API Platform** → the `api-platform-*` agents/skills are **N/A** unless API Platform is added.
-- Fixtures already use Doctrine fixtures (`make reset`); Foundry is optional.
-- Async: `symfony/scheduler` + `symfony/messenger` (sync transport) — `symfony:symfony-scheduler` / `symfony:symfony-messenger` apply.
-- Planning already handled by the built-in `/plan` flow; the plugin's `writing-plans`/`executing-plans` are complementary, not a replacement.
-
-### Agents (delegate via the Agent tool)
-| Agent | Use when |
-|---|---|
-| `symfony-engineer` | General Symfony impl (controllers, services, DI, VOs/DTOs, forms, Twig components) when no specialised agent fits |
-| `doctrine-architect` | Entity schema, relationships, migration planning **before** implementing |
-| `doctrine-performance-optimizer` | Read-only N+1 / fetch-mode / index / cache audit after adding entities/queries or a slow page |
-| `symfony-reviewer` | Proactive quality/architecture review after code changes |
-| `symfony-security-auditor` | After changes to security, voters, forms, controllers (read-only audit) |
-| `symfony-tdd-coach` | Writing tests / adding coverage — PHPUnit mode |
-| `api-platform-builder` | Only if API Platform is introduced (currently N/A) |
-
-### Skills (invoke via the Skill tool, `symfony:<name>`)
-- **Testing**: `tdd-with-phpunit`, `functional-tests`, `test-doubles-mocking`, `doctrine-fixtures-foundry` (Foundry optional).
-- **Doctrine**: `doctrine-migrations`, `doctrine-relations`, `doctrine-transactions`, `doctrine-batch-processing`, `doctrine-events`, `doctrine-fetch-modes`.
-- **Async / caching**: `symfony-messenger`, `messenger-retry-failures`, `symfony-scheduler`, `symfony-cache`, `rate-limiting`.
-- **Architecture**: `value-objects-and-dtos`, `interfaces-and-autowiring`, `ports-and-adapters`, `cqrs-and-handlers`, `strategy-pattern`, `controller-cleanup`, `config-env-parameters`.
-- **Frontend**: `twig-components` (this repo leans on Twig UX components).
-- **Security**: `symfony-voters` (+ the `symfony-security-auditor` agent).
-- **Quality**: `quality-checks` — but run this repo's `make cs` + `make psalm` (not PHPStan).
-- **Workflow / meta**: `using-symfony-superpowers`, `daily-workflow`, `effective-context`.
-- **API Platform** (`api-platform-*`): skip unless API Platform is added.
-
-### Slash commands
-Thin wrappers over the skills above, e.g. `/symfony-check` → `symfony:quality-checks`,
-`/symfony-tdd-phpunit`, `/symfony-migrations`, `/symfony-voters`, `/symfony-messenger`, `/symfony-fixtures`.
+- Fixtures are Doctrine fixtures (`make reset`); Foundry is optional.
+- Async: `symfony/scheduler` + `symfony/messenger` (sync transport).
+- Planning is handled by the built-in `/plan` flow; the plugin's `writing-plans` / `executing-plans` are complementary, not a replacement.

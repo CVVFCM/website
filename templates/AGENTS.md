@@ -40,4 +40,10 @@ Use the responsive macro instead of a raw `<img>` for Sulu media:
 - **Includes / macros** (`templates/partials/`) for static fragments without logic.
 - Never duplicate HTML — extract.
 
+## Quality gate
+`make test-screenshots` before finishing the task. Needs `make up` and loaded fixtures. If a
+comparison fails and the visual change is what the task asked for, re-record with
+`make test-screenshots-update` and say so in your report; otherwise it is a regression — fix it,
+don't re-record it.
+
 After changing a page's structure, verify at `https://localhost` (see root `AGENTS.md` → How to Work).
