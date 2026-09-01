@@ -30,6 +30,15 @@ async function measureLoad(browser, path) {
     });
     const page = await context.newPage();
 
+    // encodedDataLength is what actually crossed the wire: zstd-compressed bodies, HPACK-compressed
+    // headers. request.sizes() reports raw header text instead, which over-counts badly under HTTP/2.
+    let bytes = 0;
+    const session = await context.newCDPSession(page);
+    await session.send("Network.enable");
+    session.on("Network.loadingFinished", (event) => {
+        bytes += event.encodedDataLength;
+    });
+
     try {
         const before = await counters();
         const startedAt = Date.now();
@@ -46,14 +55,14 @@ async function measureLoad(browser, path) {
         const body = await page.locator("body").innerText();
         expect(body, `${path} renders a PHP error`).not.toMatch(/Fatal error|Uncaught|Exception/);
 
-        return {durationMs, targets: delta(before, after)};
+        return {durationMs, bytes, targets: delta(before, after)};
     } finally {
         await context.close();
     }
 }
 
 for (const target of config.PAGES) {
-    test(`${target.name} backend energy`, async ({browser}, testInfo) => {
+    test(`${target.name} energy`, async ({browser}, testInfo) => {
         testInfo.setTimeout((config.SAMPLES + config.WARMUP) * 30_000 + config.IDLE_MS + 30_000);
 
         // Background rate first, while nothing is being asked of the site. Reported, not subtracted:
@@ -78,6 +87,9 @@ for (const target of config.PAGES) {
             const counted = samples.reduce((sum, sample) => sum + sample.targets[name], 0);
             expect(counted, `${name} counted no instructions — probe is stale, restart energy-probe`).toBeGreaterThan(0);
         }
+
+        const transferred = samples.reduce((sum, sample) => sum + sample.bytes, 0);
+        expect(transferred, `${target.path} transferred no bytes — CDP is not reporting`).toBeGreaterThan(0);
 
         // Raw only. The reporter owns medians and the energy conversion, so the JSON artifact keeps
         // what was measured separate from what was derived from it.

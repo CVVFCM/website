@@ -47,12 +47,41 @@ services:
             - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
         environment:
             PROBE_ADDR: '127.0.0.1:9777'
-            TARGETS: 'php=cvvfcm-php,database=cvvfcm-database'
+            TARGETS: 'php=cvvfcm-php,database=cvvfcm-database,browser=cvvfcm-browser'
+
+    # Chromium alone, in its own cgroup. Running it inside the playwright container would bill the
+    # frontend for the test runner, the CDP protocol handling and the reporter as well.
+    browser:
+        image: mcr.microsoft.com/playwright:v1.62.1-noble
+        cgroup_parent: cvvfcm-browser.slice
+        depends_on: [ php ]
+        network_mode: 'service:php'
+        working_dir: /app
+        user: '${EXTERNAL_USER_ID:-1000}'
+        environment:
+            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        volumes:
+            - '.:/app:rw'
+        # The image ships browsers but no playwright package, so this needs node_modules from the
+        # bind mount — `make energy-up` runs npm ci before starting the stack.
+        command:
+            - npx
+            - playwright
+            - launch-server
+            - --browser
+            - chromium
+            - --config
+            - tests/energy/launch-server.json
+        healthcheck:
+            # /dev/tcp is a bash builtin; the image's /bin/sh is dash and has no such thing.
+            test: [ "CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/9779" ]
+            start_period: 30s
 
     playwright:
         profiles: [ energy ]
         environment:
             ENERGY_PROBE_URL: http://localhost:9777
+            ENERGY_BROWSER_WS: ws://127.0.0.1:9779/energy
 
     s3:
         image: adobe/s3mock:latest

@@ -84,10 +84,10 @@ test-screenshots-update: screenshots-up ## Re-record the baselines after a delib
 # Always builds first — without the `.:/app` bind mount the container runs the code baked into the
 # image, and a stale image produces numbers that look exactly like fresh ones.
 energy-up: build
-	@$(ENERGY_COMPOSE) up -d --build --wait
 	@$(ENERGY_COMPOSE) --profile energy run --rm --no-deps playwright npm ci --no-audit --no-fund
+	@$(ENERGY_COMPOSE) up -d --build --wait
 
-test-energy: energy-up ## Measure backend energy per page (instructions retired) on a prod-like stack
+test-energy: energy-up ## Measure per-page CO2 (backend, browser, network) on a prod-like stack
 	@$(ENERGY_COMPOSE) --profile energy run --rm playwright npx playwright test -c playwright.energy.config.js
 
 cc: ## Clear Symfony cache (website + admin)

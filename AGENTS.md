@@ -71,7 +71,7 @@ make test                    # Run PHPUnit test suite
 make test-ai                 # Forgie judge tests — paid API, only when the prompt changed
 make test-screenshots        # Visual regression suite
 make test-screenshots-update # Re-record the visual baselines
-make test-energy             # Backend energy per page (CPU instructions retired)
+make test-energy             # Per-page CO2: backend, browser and network
 make reset                   # Wipe DB, re-create schema, load fixtures + import weather data
 make reset-test              # Same as reset but for test environment
 ```
@@ -81,13 +81,19 @@ make reset-test              # Same as reset but for test environment
 **Screenshots** drive the dev server at `https://localhost`, so `make up` must be running and the
 fixtures loaded (`make reset`). Baselines live in `tests/visual/__screenshots__/`.
 
-**Energy** (`make test-energy`) prices a page load in retired CPU instructions rather than seconds,
-because instruction count is the only figure comparable between an x86 dev box and the ARM
-production host. It loads `compose.energy.yaml` *instead of* `compose.override.yaml`, which is what
-makes the stack prod-like: no `.:/app` bind mount, no `hot_reload`, no `watch`, `APP_ENV=prod`, so
-the container runs the code baked into the image — hence the target always builds first. Counts come
-from the `energy-probe` sidecar (`.infra/docker/energy-probe/`), which reads the php and database
-cgroups via `perf_event_open(2)` and needs `CAP_SYS_ADMIN` to do it. Reports land in `var/energy/`.
+**Energy** (`make test-energy`) reports mg CO2e per page view across three layers — backend
+(php + database), browser, and network. Compute is priced in retired CPU instructions rather than
+seconds, because instruction count is the only figure comparable between an x86 dev box and the ARM
+production host; network uses ADEME's per-GB carbon factor. All constants live in
+`tests/energy/energy.config.js` and are reprinted next to every number they produced.
+
+It loads `compose.energy.yaml` *instead of* `compose.override.yaml`, which is what makes the stack
+prod-like: no `.:/app` bind mount, no `hot_reload`, no `watch`, `APP_ENV=prod`, so the container runs
+the code baked into the image — hence the target always builds first. Instruction counts come from
+the `energy-probe` sidecar (`.infra/docker/energy-probe/`), which reads the php, database and browser
+cgroups via `perf_event_open(2)` and needs `CAP_SYS_ADMIN` to do it. Chromium runs in its own
+`browser` service so the frontend figure is not billed for the test runner. Reports land in
+`var/energy/`.
 
 The target **leaves the stack in prod mode**; run `make up` to get back to dev.
 
