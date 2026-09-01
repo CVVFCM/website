@@ -108,7 +108,7 @@ services:
             POSTGRES_USER: ${POSTGRES_USER:-cvvfcm}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cvvfcm}
         volumes:
-            - database_data:/var/lib/mysql
+            - database_data:/var/lib/postgresql
 
 
 volumes:

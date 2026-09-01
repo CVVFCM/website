@@ -4,8 +4,12 @@ HTTP3_PORT ?= 443
 DATABASE_PORT ?= 5432
 MAILER_HTTP_PORT ?= 8025
 DOCKER_COMPOSE = EXTERNAL_USER_ID=$(shell id -u) HTTP_PORT=$(HTTP_PORT) HTTPS_PORT=$(HTTPS_PORT) HTTP3_PORT=$(HTTP3_PORT) DATABASE_PORT=$(DATABASE_PORT) docker compose
+# The energy suite needs a prod-like stack, so it loads compose.energy.yaml *instead of*
+# compose.override.yaml — the dev override is what supplies the `.:/app` bind mount, hot_reload,
+# watch and APP_ENV=dev, and measuring those would price the profiler rather than the site.
+ENERGY_COMPOSE = EXTERNAL_USER_ID=$(shell id -u) HTTP_PORT=$(HTTP_PORT) HTTPS_PORT=$(HTTPS_PORT) HTTP3_PORT=$(HTTP3_PORT) DATABASE_PORT=$(DATABASE_PORT) docker compose -f compose.yaml -f compose.energy.yaml
 
-.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test test-ai cc css hadolint cs stylelint psalm psalm_strict
+.PHONY: run clean_admin_assets clean ps build up down cli first_run logs reset reset-test test test-ai cc css hadolint cs stylelint psalm psalm_strict test-energy energy-up
 
 run: .configured up
 
@@ -76,6 +80,16 @@ test-screenshots: screenshots-up ## Run the visual regression suite against the 
 test-screenshots-update: screenshots-up ## Re-record the baselines after a deliberate design change
 	@$(DOCKER_COMPOSE) --profile screenshots run --rm playwright npx playwright test --update-snapshots
 
+# Measures the prod-like stack, and leaves it running: `make up` puts you back in dev mode.
+# Always builds first — without the `.:/app` bind mount the container runs the code baked into the
+# image, and a stale image produces numbers that look exactly like fresh ones.
+energy-up: build
+	@$(ENERGY_COMPOSE) up -d --build --wait
+	@$(ENERGY_COMPOSE) --profile energy run --rm --no-deps playwright npm ci --no-audit --no-fund
+
+test-energy: energy-up ## Measure backend energy per page (instructions retired) on a prod-like stack
+	@$(ENERGY_COMPOSE) --profile energy run --rm playwright npx playwright test -c playwright.energy.config.js
+
 cc: ## Clear Symfony cache (website + admin)
 	@$(DOCKER_COMPOSE) exec php bin/websiteconsole cache:clear
 	@$(DOCKER_COMPOSE) exec php bin/adminconsole cache:clear
@@ -89,6 +103,7 @@ hadolint: ## Lint Dockerfile
 	@docker pull hadolint/hadolint
 	@docker run --rm -i hadolint/hadolint hadolint - < Dockerfile
 	@docker run --rm -i hadolint/hadolint hadolint - < ml/Dockerfile
+	@docker run --rm -i hadolint/hadolint hadolint - < .infra/docker/energy-probe/Dockerfile
 
 cs: ## Fix code style
 	@$(DOCKER_COMPOSE) exec -T php ./vendor/bin/php-cs-fixer fix
