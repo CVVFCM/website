@@ -65,7 +65,7 @@ export default class extends Controller {
 
     connect() {
         const url = new URL(this.hubUrlValue);
-        url.searchParams.append('topic', `/forgie/conversations/${this.conversationId}`);
+        url.searchParams.append('match', `/forgie/conversations/${this.conversationId}`);
 
         this.eventSource = new EventSource(url);
         this.eventSource.onmessage = (event) => this.onUpdate(JSON.parse(event.data));

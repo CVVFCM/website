@@ -1,8 +1,18 @@
+parameters:
+    # MERCURE_JWT_ISSUER is set by the Caddyfile and only exists under FrankenPHP; CLI and the
+    # consumer read SERVER_NAME straight from the environment. Both resolve to the same string.
+    mercure.jwt_issuer_cli: '%env(SERVER_NAME)%'
+
 mercure:
     hubs:
         default:
+            protocol_version: '1.0'
             url: '%env(default::MERCURE_URL)%'
             public_url: '%env(default::MERCURE_PUBLIC_URL)%'
             jwt:
                 secret: '%env(MERCURE_JWT_SECRET)%'
                 publish: '*'
+                claims:
+                    iss: '%env(default:mercure.jwt_issuer_cli:MERCURE_JWT_ISSUER)%'
+                    sub: default
+                    client_id: default

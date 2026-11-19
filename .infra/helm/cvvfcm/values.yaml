@@ -232,7 +232,7 @@ secrets:
   s3Secret: ""
   rtspHttpPassword: "!ChangeMe!"
   # Signs the Mercure hub JWTs (publisher & subscriber) AND is read by the hub itself
-  # (SITE_EXTRA_CONFIG references it via {env.MERCURE_JWT_SECRET}).
+  # (the Caddyfile references it via {env.MERCURE_JWT_SECRET}).
   mercureJwtSecret: "!ChangeThisMercureHubJWTSecretKey!"
   # Mistral API key for the Forgie agent.
   mistralApiKey: ""

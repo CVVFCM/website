@@ -34,6 +34,10 @@ php:80, localhost:80, {$SERVER_NAME:localhost} {
 
 	@frontController path index.php
 	php @frontController {
+		# A request overwrites $_SERVER['SERVER_NAME'] with its host, so PHP cannot read the env
+		# value under that name. The app signs Mercure JWTs with this copy (see mercure.yaml).
+		env MERCURE_JWT_ISSUER {$SERVER_NAME:localhost}
+
 		{$FRANKENPHP_SITE_CONFIG}
 
 		worker {
@@ -65,6 +69,20 @@ php:80, localhost:80, {$SERVER_NAME:localhost} {
 
 	file_server {
 		hide *.php
+	}
+
+	# The hub compares the issuer with the token's `iss` byte for byte.
+	mercure {
+		name default
+		issuer {$SERVER_NAME:localhost} {
+			publisher {
+				jwt {env.MERCURE_JWT_SECRET}
+			}
+			subscriber {
+				jwt {env.MERCURE_JWT_SECRET}
+			}
+		}
+		{$MERCURE_EXTRA_DIRECTIVES}
 	}
 
 	{$SITE_EXTRA_CONFIG}

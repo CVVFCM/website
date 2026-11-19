@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1
 
-ARG FRANKENPHP_VERSION=1.12
+ARG FRANKENPHP_VERSION=1.13
 ARG PHP_VERSION=8.5
 ARG NODE_VERSION=24
 ARG DEBIAN_VERSION=trixie
@@ -8,7 +8,7 @@ ARG DEBIAN_VERSION=trixie
 FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-${DEBIAN_VERSION} AS base
 
 LABEL org.opencontainers.image.source=https://github.com/CVVFCM/website
-LABEL org.opencontainers.image.licenses=GPL-3.0-or-later
+LABEL org.opencontainers.image.licenses =GPL-3.0-or-later
 LABEL org.opencontainers.image.authors="Yohan Giarelli <yohan@cvvfcm.fr>"
 LABEL org.opencontainers.image.description="This is the website for the CVVFCM sailing club"
 

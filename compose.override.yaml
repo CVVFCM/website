@@ -12,12 +12,7 @@ services:
                 https:// {
                     tls /app/.infra/tls/cert.pem /app/.infra/tls/key.pem
                 }
-            SITE_EXTRA_CONFIG: |
-                mercure {
-                    publisher_jwt {env.MERCURE_JWT_SECRET}
-                    subscriber_jwt {env.MERCURE_JWT_SECRET}
-                    anonymous
-                }
+            MERCURE_EXTRA_DIRECTIVES: anonymous
             FRANKENPHP_SITE_CONFIG: hot_reload assets/**/*.css assets/**/*.js src/**/*.php templates/**/*.html.twig
             FRANKENPHP_WORKER_CONFIG: watch
             APP_ENV: ${APP_ENV:-dev}

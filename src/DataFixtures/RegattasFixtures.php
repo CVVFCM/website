@@ -97,6 +97,8 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
         $medias = $this->orderById($this->mediaRepository->findAll());
         $contacts = array_filter($this->orderById($this->contactRepository->findAll()), static fn (Contact $contact) => $contact->getMainEmail());
 
+        $regattaUrl = '/evenements/regates/'.(new AsciiSlugger())->slug($name)->lower()->ascii();
+
         /** @var Page $regatta */
         $regatta = $this->handle(
             new Envelope(
@@ -105,7 +107,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
                     $regattas->getId(),
                     [
                         'title' => $name,
-                        'url' => '/evenements/regates/'.(new AsciiSlugger())->slug($name)->lower()->ascii(),
+                        'url' => $regattaUrl,
                         'template' => 'list',
                         'locale' => 'fr',
                         'stage' => DimensionContentInterface::STAGE_LIVE,
@@ -117,7 +119,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
         foreach ($regatta->getDimensionContents() as $regattaDimensionContent) {
             $regattaDimensionContent->setWorkflowPlace(WorkflowInterface::WORKFLOW_PLACE_PUBLISHED);
             $regattaDimensionContent->setTemplateData([
-                'url' => '/evenements/regates/'.(new AsciiSlugger())->slug($name)->lower()->ascii(),
+                'url' => $regattaUrl,
                 'title' => $name,
                 'description' => 'Retrouvez ici toutes les éditions de la régate '.$name.'.',
                 'media' => ['id' => $medias[$this->pickKey($medias)]->getId()],
@@ -135,7 +137,7 @@ final class RegattasFixtures extends Fixture implements DependentFixtureInterfac
 
         for ($i = 0; $i < 3; ++$i) {
             $editionName = $name.' '.$begin->format('Y');
-            $url = $regatta->getDimensionContents()->last()->getRoute()->getSlug().'/'.(new AsciiSlugger())->slug($editionName)->lower()->ascii();
+            $url = $regattaUrl.'/'.(new AsciiSlugger())->slug($editionName)->lower()->ascii();
 
             /** @var Page $edition */
             $editionData = [
