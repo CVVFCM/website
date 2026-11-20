@@ -58,8 +58,8 @@ consumer:
   tolerations: []
   affinity: {}
 
-# One-shot Doctrine migration Job, run as a Helm release hook (post-install,post-upgrade)
-# from the same php image. Applies migrations/ once the release's resources are up.
+# One-shot Doctrine migration Job, run as a Helm release hook (post-install,pre-upgrade)
+# from the same php image. Applies migrations/ before the new web/consumer pods roll.
 migrate:
   enabled: true
   # migrate is idempotent, so retrying is safe; keep it low to fail fast on real errors.
