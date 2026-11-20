@@ -19,6 +19,8 @@ use function Symfony\Component\Clock\now;
  * in-house ML model, for today and tomorrow at the key moments (matin/midi/après-midi).
  *
  * Trigger is phrase-gated in the prompt: only used when the visitor says « météo maison ».
+ *
+ * @api
  */
 #[AsTool('home_weather', 'La « météo maison » : la prévision de vent du club, corrigée par notre modèle maison, pour aujourd\'hui et demain (matin, midi, après-midi), vent en nœuds. À n\'utiliser QUE si le visiteur emploie l\'expression « météo maison ».')]
 final readonly class HomeWeatherForecastTool

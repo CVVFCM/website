@@ -28,6 +28,8 @@ use function Symfony\Component\Clock\now;
  *     liens: list<array{titre: string, url: string}>,
  *     contacts: list<string>,
  * }
+ *
+ * @api
  */
 #[AsTool('upcoming_regattas', 'Liste les régates à venir du club dans les 12 prochains mois, de la plus proche à la plus lointaine (titre, dates, lieu, séries et grades, tarif d\'inscription, services sur place, liens, contacts, informations).', method: 'upcoming')]
 #[AsTool('past_regattas', 'Liste les régates passées du club dans les 12 derniers mois, de la plus récente à la plus ancienne (titre, dates, lieu, séries et grades, services sur place, liens, contacts, informations).', method: 'past')]

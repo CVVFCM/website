@@ -7,6 +7,9 @@ namespace App\AI\Tool;
 use App\AI\BoardMemberRepository;
 use Symfony\AI\Agent\Toolbox\Attribute\AsTool;
 
+/**
+ * @api
+ */
 #[AsTool('board_members', 'Les membres du bureau / comité de direction du club, avec leur fonction et leur email de contact.')]
 final readonly class BoardMemberTool
 {

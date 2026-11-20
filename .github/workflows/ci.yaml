@@ -96,22 +96,29 @@ jobs:
 
     psalm:
         runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            security-events: write
-            actions: write
         name: Static Analysis
         steps:
             -   name: Checkout
                 uses: actions/checkout@v6
 
-            -   name: Psalm
-                uses: docker://ghcr.io/psalm/psalm-github-actions
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
                 with:
-                    show_info: true
-                    php_version: '8.5'
-                    composer_require_dev: true
-                    composer_ignore_platform_reqs: true
+                    php-version: '8.5'
+
+            -   name: Cache Composer dependencies
+                uses: actions/cache@v5
+                with:
+                    path: vendor
+                    key: composer-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
+
+            -   name: Install dependencies
+                uses: ramsey/composer-install@v3
+
+            # The locked Psalm, as `make psalm` runs it: an unpinned image drifts from the lock.
+            -   name: Psalm
+                run: ./vendor/bin/psalm --no-diff --output-format=github
 
     lint:
         runs-on: ubuntu-latest

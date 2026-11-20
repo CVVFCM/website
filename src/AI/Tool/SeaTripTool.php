@@ -16,6 +16,8 @@ use function Symfony\Component\Clock\now;
  * The club's "sorties en mer" (sea trips): published Sulu event pages with
  * event_type=sea_trip. 24-month window each way — sea trips are rare and often
  * planned far ahead (fixtures/data sit 13+ months out).
+ *
+ * @api
  */
 #[AsTool('sea_trips', 'Liste les sorties en mer du club (24 mois en arrière ou en avant) : titre, dates, lieu, description, bateaux (type, chef de bord, places, prix approximatif par personne), liens et contacts.')]
 final readonly class SeaTripTool

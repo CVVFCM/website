@@ -20,6 +20,8 @@ use Symfony\Component\Scheduler\Attribute\AsCronTask;
  * Single recurring weather ingestion: fetches the live observation on every run, refreshes the forecast
  * only when it is stale, then compares the observation against the nearest forecast and the ML
  * correction of it (via {@see LiveWeatherComparator}, which runs the prediction model each time).
+ *
+ * @api
  */
 #[AsCommand('app:import:live-weather', 'Import live weather, refresh forecast when stale, run prediction')]
 #[AsCronTask('*/10 * * * *', 'Europe/Paris')]

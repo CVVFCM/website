@@ -9,6 +9,9 @@ use App\AI\TemplateData;
 use Symfony\AI\Agent\Toolbox\Attribute\AsTool;
 use Symfony\AI\Platform\Contract\JsonSchema\Attribute\Schema;
 
+/**
+ * @api
+ */
 #[AsTool('club_rules', 'Le texte complet d\'un document officiel du club : statuts de l\'association, règlement intérieur, ou règlement de navigation du lac (arrêté préfectoral : zones interdites, activités autorisées, règles de route…).')]
 final readonly class LegalDocumentTool
 {
