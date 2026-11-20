@@ -80,7 +80,10 @@ jobs:
             -   name: Export digests
                 run: |
                     mkdir -p "${{ runner.temp }}/digests"
-                    echo "$BAKE_METADATA" | jq -r 'to_entries[] | "\(.key) \(.value."containerimage.digest")"' \
+                    # Bake adds non-target keys (e.g. "buildx.build.warnings", an array) next to the
+                    # targets; without pipefail a jq error here still uploads a partial artifact.
+                    set -o pipefail
+                    echo "$BAKE_METADATA" | jq -r 'to_entries[] | select(.value | type == "object" and has("containerimage.digest")) | "\(.key) \(.value."containerimage.digest")"' \
                         | while read -r target digest; do
                             echo "$digest" > "${{ runner.temp }}/digests/${target}-${{ matrix.arch }}"
                         done
