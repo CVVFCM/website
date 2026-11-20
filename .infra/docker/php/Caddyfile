@@ -74,6 +74,9 @@ php:80, localhost:80, {$SERVER_NAME:localhost} {
 	# The hub compares the issuer with the token's `iss` byte for byte.
 	mercure {
 		name default
+		# Tokens carry the public hub URL as `aud`. Behind a TLS-terminating gateway the hub would
+		# otherwise derive it from the plain-HTTP request it receives and reject them.
+		resource_identifier {$MERCURE_PUBLIC_URL:https://localhost/.well-known/mercure}
 		issuer {$SERVER_NAME:localhost} {
 			publisher {
 				jwt {env.MERCURE_JWT_SECRET}
