@@ -74,16 +74,9 @@ jobs:
                     echo "${{ secrets.OKE_KUBECONFIG }}" > ~/.kube/config
                     chmod 600 ~/.kube/config
 
-            -   name: Update chart dependencies
-                run: helm dependency update .infra/helm/cvvfcm
-
-            -   name: Ensure namespace, DB credentials & registry pull secret
+            -   name: Ensure namespace & registry pull secret
                 run: |
                     kubectl create namespace "${{ inputs.namespace }}" --dry-run=client -o yaml | kubectl apply -f -
-                    kubectl -n "${{ inputs.namespace }}" create secret generic cvvfcm-pg-auth \
-                      --from-literal=password="${{ secrets.DATABASE_PASSWORD }}" \
-                      --from-literal=postgres-password="${{ secrets.DATABASE_PASSWORD }}" \
-                      --dry-run=client -o yaml | kubectl apply -f -
                     kubectl -n "${{ inputs.namespace }}" create secret docker-registry ghcr \
                       --docker-server=ghcr.io \
                       --docker-username="${{ github.actor }}" \
@@ -108,8 +101,6 @@ jobs:
                       --namespace "${{ inputs.namespace }}" --create-namespace \
                       --set image.tag="${{ github.sha }}" \
                       --set host="${{ vars.APP_HOST || inputs.host }}" \
-                      --set postgresql.enabled=true \
-                      --set postgresql.auth.existingSecret=cvvfcm-pg-auth \
                       --set secrets.appSecret="${{ secrets.APP_SECRET }}" \
                       --set secrets.mailerDsn="${{ secrets.MAILER_DSN }}" \
                       --set secrets.symfonyDecryptionSecret="${{ secrets.SYMFONY_DECRYPTION_SECRET }}" \
@@ -122,4 +113,4 @@ jobs:
                       --set secrets.backupResticPassword="${{ secrets.BACKUP_RESTIC_PASSWORD }}" \
                       --set app.s3Bucket="${{ inputs.s3-bucket }}" \
                       "${EXTRA[@]}" \
-                      --wait --rollback-on-failure --timeout 5m
+                      --wait --rollback-on-failure --timeout 10m

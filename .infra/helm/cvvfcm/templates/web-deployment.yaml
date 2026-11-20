@@ -52,10 +52,8 @@ spec:
                 name: {{ include "cvvfcm.fullname" . }}-config
             - secretRef:
                 name: {{ include "cvvfcm.fullname" . }}-secret
-          {{- if .Values.postgresql.enabled }}
           env:
             {{- include "cvvfcm.dbEnv" . | nindent 12 }}
-          {{- end }}
           {{- if or .Values.persistence.enabled .Values.robots.disallowAll }}
           volumeMounts:
             {{- if .Values.persistence.enabled }}

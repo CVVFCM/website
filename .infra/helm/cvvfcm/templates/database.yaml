@@ -1,0 +1,22 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "cvvfcm.database.name" . }}
+  labels:
+    {{- include "cvvfcm.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+  annotations:
+    # Deleting the Cluster deletes its volumes: keep it through `helm uninstall` and rollbacks.
+    helm.sh/resource-policy: keep
+spec:
+  instances: {{ .Values.database.instances }}
+  imageName: {{ .Values.database.imageName | quote }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.database.name | quote }}
+      owner: {{ .Values.database.owner | quote }}
+  storage:
+    storageClass: {{ .Values.database.storage.storageClass | quote }}
+    size: {{ .Values.database.storage.size | quote }}
+  resources:
+    {{- toYaml .Values.database.resources | nindent 4 }}

@@ -163,7 +163,6 @@ jobs:
                 run: |
                     # The chart fails fast on missing required values, hence the dummy set.
                     helm template cvvfcm .infra/helm/cvvfcm \
-                        --set 'externalDatabase.url=postgresql://ci:ci@db:5432/ci' \
                         --set secrets.appSecret=ci \
                         --set secrets.mailerDsn=null://null \
                         --set secrets.symfonyDecryptionSecret=ci \

@@ -71,41 +71,38 @@ app.kubernetes.io/component: rtsp-to-web
 {{- end }}
 
 {{/*
-Container env for the bundled DB: pull the Bitnami-generated password from its Secret
-and compose DATABASE_URL with k8s $(VAR) expansion. PGPASSWORD must precede DATABASE_URL
-so the runtime substitution resolves. Empty unless postgresql.enabled.
+Name of the CloudNativePG cluster. The operator derives from it the "-rw" Service and the
+"-app" Secret (keys: uri, host, port, dbname, username, password).
+*/}}
+{{- define "cvvfcm.database.name" -}}
+{{ include "cvvfcm.fullname" . }}-db
+{{- end }}
+
+{{/*
+Container env for the managed DB: DATABASE_URL is the operator-generated URI plus the query
+params Doctrine needs, composed with k8s $(VAR) expansion. DATABASE_URI must precede
+DATABASE_URL so the runtime substitution resolves.
 */}}
 {{- define "cvvfcm.dbEnv" -}}
-{{- if .Values.postgresql.enabled }}
-- name: PGPASSWORD
+- name: DATABASE_URI
   valueFrom:
     secretKeyRef:
-      name: {{ .Values.postgresql.auth.existingSecret | default (printf "%s-postgresql" .Release.Name) }}
-      key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey | default "password" }}
+      name: {{ include "cvvfcm.database.name" . }}-app
+      key: uri
 - name: DATABASE_URL
-  value: {{ printf "postgresql://%s:$(PGPASSWORD)@%s-postgresql:5432/%s?serverVersion=%s&charset=utf8" .Values.postgresql.auth.username .Release.Name .Values.postgresql.auth.database .Values.externalDatabase.serverVersion | quote }}
-{{- end }}
+  value: {{ printf "$(DATABASE_URI)?serverVersion=%s&charset=utf8" .Values.database.serverVersion | quote }}
 {{- end }}
 
 {{/*
 Discrete libpq env for the backup CronJob's pg_dump: the Doctrine DATABASE_URL carries
 serverVersion/charset query params that libpq rejects, so pg_dump reads PG* vars instead.
-Bundled DB only (both deployed envs use it); external DB would supply these explicitly.
 */}}
 {{- define "cvvfcm.backupPgEnv" -}}
-{{- if .Values.postgresql.enabled }}
-- name: PGHOST
-  value: {{ printf "%s-postgresql" .Release.Name | quote }}
-- name: PGPORT
-  value: "5432"
-- name: PGUSER
-  value: {{ .Values.postgresql.auth.username | quote }}
-- name: PGDATABASE
-  value: {{ .Values.postgresql.auth.database | quote }}
-- name: PGPASSWORD
+{{- range $env, $key := dict "PGHOST" "host" "PGPORT" "port" "PGUSER" "username" "PGDATABASE" "dbname" "PGPASSWORD" "password" }}
+- name: {{ $env }}
   valueFrom:
     secretKeyRef:
-      name: {{ .Values.postgresql.auth.existingSecret | default (printf "%s-postgresql" .Release.Name) }}
-      key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey | default "password" }}
+      name: {{ include "cvvfcm.database.name" $ }}-app
+      key: {{ $key }}
 {{- end }}
 {{- end }}

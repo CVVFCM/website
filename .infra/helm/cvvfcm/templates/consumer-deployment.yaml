@@ -53,10 +53,8 @@ spec:
                 name: {{ include "cvvfcm.fullname" . }}-config
             - secretRef:
                 name: {{ include "cvvfcm.fullname" . }}-secret
-          {{- if .Values.postgresql.enabled }}
           env:
             {{- include "cvvfcm.dbEnv" . | nindent 12 }}
-          {{- end }}
           {{- if .Values.persistence.enabled }}
           volumeMounts:
             # Shared (RWX) ML weather-model artifacts: the live-weather import cron runs

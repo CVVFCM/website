@@ -58,8 +58,8 @@ consumer:
   tolerations: []
   affinity: {}
 
-# One-shot Doctrine migration Job, run as a Helm release hook (post-install,pre-upgrade)
-# from the same php image. Applies migrations/ before the new web/consumer pods roll.
+# One-shot Doctrine migration Job, run as a Helm release hook (post-install,post-upgrade)
+# from the same php image. Applies migrations/ once the release's resources are up.
 migrate:
   enabled: true
   # migrate is idempotent, so retrying is safe; keep it low to fail fast on real errors.
@@ -178,50 +178,25 @@ persistence:
   mlSize: 1Gi
   uploadsSize: 5Gi
 
-# Bundled PostgreSQL (Bitnami subchart). When enabled, DATABASE_URL is derived
-# automatically from postgresql.auth below and externalDatabase.url is ignored.
-postgresql:
-  enabled: false
-  auth:
-    username: cvvfcm
-    database: cvvfcm
-    # Name of a pre-existing Secret holding the DB credentials (keys: "password",
-    # "postgres-password"). Owned outside the helm release so it survives uninstall
-    # and never regenerates — both the subchart and the app read it. Created by CD.
-    # If empty, the subchart auto-generates a password (not stable across uninstalls).
-    existingSecret: ""
-    secretKeys:
-      userPasswordKey: password
-      adminPasswordKey: postgres-password
-    password: ""
-  primary:
-    persistence:
-      enabled: true
-      storageClass: longhorn
-      size: 8Gi
-    resources:
-      requests:
-        cpu: 250m
-        memory: 256Mi
-      limits:
-        cpu: 500m
-        memory: 2Gi
-  # Bitnami relocated its free images to docker.io/bitnamilegacy in Aug 2025. The
-  # pinned chart (~18.7) still references valid images; if pulls fail, switch to the
-  # legacy repo and allow it:
-  #   image:
-  #     repository: bitnamilegacy/postgresql
-  #   global:
-  #     security:
-  #       allowInsecureImages: true
-
-# External PostgreSQL — used only when postgresql.enabled is false.
-externalDatabase:
-  # Full Doctrine DSN, e.g.
-  #   postgresql://cvvfcm:secret@db.internal:5432/cvvfcm?serverVersion=18&charset=utf8
-  url: ""
-  # serverVersion advertised in the DATABASE_URL derived for the bundled DB.
+# PostgreSQL cluster managed by the CloudNativePG operator (templates/database.yaml).
+# DATABASE_URL is derived from the operator-generated "<fullname>-db-app" Secret.
+database:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:18
+  # serverVersion advertised to Doctrine in DATABASE_URL; keep in line with imageName.
   serverVersion: "18"
+  name: cvvfcm
+  owner: cvvfcm
+  storage:
+    storageClass: longhorn-cnpg
+    size: 2Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 2Gi
 
 # Secret values. Supply via --set, a values.local.yaml, or a sealed-secret.
 secrets:
