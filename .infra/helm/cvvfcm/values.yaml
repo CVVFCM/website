@@ -188,7 +188,7 @@ database:
   name: cvvfcm
   owner: cvvfcm
   storage:
-    storageClass: longhorn
+    storageClass: longhorn-cnpg
     size: 2Gi
   resources:
     requests:
