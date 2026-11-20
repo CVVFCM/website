@@ -25,6 +25,8 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  *
  * Conversation memory: the Chat loads the history stored for this conversationId
  * and persists the new user + assistant messages once the stream completes.
+ *
+ * @api
  */
 #[AsMessageHandler]
 final readonly class AskForgieHandler

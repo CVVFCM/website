@@ -23,6 +23,8 @@ use Symfony\Component\Notifier\Recipient\Recipient;
  * conversation verbatim. The verbatim is read from the live conversation bag
  * (ForgieConversationContext) so it includes the current turn, which is not yet
  * persisted when the tool runs.
+ *
+ * @api
  */
 #[AsTool('send_contact_message', 'Envoie un message aux responsables du club (email + espace de discussion des admins) pour une réservation (stage, location), une demande d\'information particulière, ou toute demande nécessitant un suivi humain. IMPÉRATIF : n\'appeler cet outil QUE lorsque la personne a réellement fourni son prénom, son nom et son email ; ne JAMAIS inventer ni mettre de valeurs génériques (« Inconnu », « exemple.com »…). S\'il manque une de ces informations, ne pas appeler l\'outil : la demander d\'abord. Le téléphone est optionnel. Résumer la demande dans "summary".')]
 final readonly class SendContactMessageTool

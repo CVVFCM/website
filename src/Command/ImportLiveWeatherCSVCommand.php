@@ -14,6 +14,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Finder\Finder;
 
+/**
+ * @api
+ */
 #[AsCommand('app:import:live-weather-csv', 'Import live weather data from a CSV file')]
 final readonly class ImportLiveWeatherCSVCommand
 {
@@ -104,7 +107,7 @@ final readonly class ImportLiveWeatherCSVCommand
                         continue;
                     }
 
-                    $data[$property] = $row[$mapping[$property]]
+                    $data[$property] = (string) $row[$mapping[$property]]
                         |> (fn (string $s): string => str_replace(',', '.', $s))
                         |> (fn (string $s): string => str_replace("\u{A0}", '', $s));
                 }
