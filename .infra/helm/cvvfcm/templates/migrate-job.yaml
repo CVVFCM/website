@@ -8,10 +8,10 @@ metadata:
     app.kubernetes.io/component: migrate
   annotations:
     # One-shot schema migration, driven by Helm as a release hook:
-    #   post-install → the bundled Postgres subchart is already up on a fresh install;
-    #   pre-upgrade  → migrations apply before the new web/consumer pods roll.
+    # "post" on both phases because the database is a resource of this very release: a
+    # pre-upgrade hook would run before Helm creates it.
     # Negative weight so it runs before any other hook of the same phase.
-    helm.sh/hook: post-install,pre-upgrade
+    helm.sh/hook: post-install,post-upgrade
     helm.sh/hook-weight: "-5"
     helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
 spec:
@@ -54,7 +54,7 @@ spec:
                 name: {{ include "cvvfcm.fullname" . }}-config
             - secretRef:
                 name: {{ include "cvvfcm.fullname" . }}-secret
-          {{- if .Values.postgresql.enabled }}
+          {{- if .Values.database.enabled }}
           env:
             {{- include "cvvfcm.dbEnv" . | nindent 12 }}
           {{- end }}

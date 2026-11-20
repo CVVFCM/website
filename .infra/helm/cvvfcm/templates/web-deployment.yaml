@@ -52,7 +52,7 @@ spec:
                 name: {{ include "cvvfcm.fullname" . }}-config
             - secretRef:
                 name: {{ include "cvvfcm.fullname" . }}-secret
-          {{- if .Values.postgresql.enabled }}
+          {{- if .Values.database.enabled }}
           env:
             {{- include "cvvfcm.dbEnv" . | nindent 12 }}
           {{- end }}

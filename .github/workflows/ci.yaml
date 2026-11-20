@@ -182,6 +182,23 @@ jobs:
                         fi
                     done
 
+                    # Managed database: the app must read its DSN from the operator's Secret.
+                    helm template cvvfcm .infra/helm/cvvfcm \
+                        --set database.enabled=true \
+                        --set secrets.appSecret=ci \
+                        --set secrets.symfonyDecryptionSecret=ci \
+                        > /tmp/cvvfcm-rendered-db.yaml
+
+                    for expected in \
+                        'kind: Cluster' \
+                        'name: cvvfcm-db-app'
+                    do
+                        if ! grep -qF "${expected}" /tmp/cvvfcm-rendered-db.yaml; then
+                            echo "::error file=.infra/helm/cvvfcm/templates/database.yaml::Missing \"${expected}\" in the chart rendered with database.enabled=true."
+                            exit 1
+                        fi
+                    done
+
     cs:
         runs-on: ubuntu-latest
         name: Code Style
