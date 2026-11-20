@@ -3,6 +3,10 @@ const {test, expect} = require("@playwright/test");
 // Masked: content changes, geometry does not.
 const MASKED = [".HomepageLive"];
 
+// The countdown counts from today and some fixture events are dated from today: both read
+// differently every day.
+const EVENT_CARD_DATES = [".EventCard__countdown", ".EventCard__date"];
+
 // Removed before the shot: these change height on their own — the feeds are fetched over the
 // network and cached for an hour, the toolbar belongs to the dev server. Masking keeps a region's
 // height, which is not enough when the height is what moves.
@@ -10,9 +14,9 @@ const REMOVED = [".HomepageFacebook", ".HomepageInstagram", ".sf-toolbar", "#sfW
 
 // Paths come from the fixtures. `SELECT slug FROM ro_routes` lists them if a fixture is reworked.
 const PAGES = [
-    {name: "home", path: "/", mask: MASKED},
-    {name: "calendar", path: "/evenements", mask: []},
-    {name: "event", path: "/evenements/regates/coupe-bernard-bozier/coupe-bernard-bozier-2027", mask: []},
+    {name: "home", path: "/", mask: [...MASKED, ...EVENT_CARD_DATES]},
+    {name: "calendar", path: "/evenements", mask: EVENT_CARD_DATES},
+    {name: "event", path: "/evenements/regates/coupe-bernard-bozier/coupe-bernard-bozier-2027", mask: [".EventPage__headerCountdown"]},
     {name: "default-page", path: "/ecole-de-voile/laser/initiation", mask: []},
     {name: "contact", path: "/contact", mask: []},
 ];
