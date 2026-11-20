@@ -101,7 +101,6 @@ jobs:
                       --namespace "${{ inputs.namespace }}" --create-namespace \
                       --set image.tag="${{ github.sha }}" \
                       --set host="${{ vars.APP_HOST || inputs.host }}" \
-                      --set database.enabled=true \
                       --set secrets.appSecret="${{ secrets.APP_SECRET }}" \
                       --set secrets.mailerDsn="${{ secrets.MAILER_DSN }}" \
                       --set secrets.symfonyDecryptionSecret="${{ secrets.SYMFONY_DECRYPTION_SECRET }}" \

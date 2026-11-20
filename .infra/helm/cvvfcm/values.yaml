@@ -178,18 +178,18 @@ persistence:
   mlSize: 1Gi
   uploadsSize: 5Gi
 
-# PostgreSQL cluster managed by the CloudNativePG operator (templates/database.yaml). When
-# enabled, DATABASE_URL is derived from the operator-generated "<fullname>-db-app" Secret and
-# externalDatabase.url is ignored.
+# PostgreSQL cluster managed by the CloudNativePG operator (templates/database.yaml).
+# DATABASE_URL is derived from the operator-generated "<fullname>-db-app" Secret.
 database:
-  enabled: false
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18
+  # serverVersion advertised to Doctrine in DATABASE_URL; keep in line with imageName.
+  serverVersion: "18"
   name: cvvfcm
   owner: cvvfcm
   storage:
     storageClass: longhorn
-    size: 8Gi
+    size: 2Gi
   resources:
     requests:
       cpu: 250m
@@ -197,14 +197,6 @@ database:
     limits:
       cpu: 500m
       memory: 2Gi
-
-# External PostgreSQL — used only when database.enabled is false.
-externalDatabase:
-  # Full Doctrine DSN, e.g.
-  #   postgresql://cvvfcm:secret@db.internal:5432/cvvfcm?serverVersion=18&charset=utf8
-  url: ""
-  # serverVersion advertised in the DATABASE_URL derived for the managed cluster.
-  serverVersion: "18"
 
 # Secret values. Supply via --set, a values.local.yaml, or a sealed-secret.
 secrets:

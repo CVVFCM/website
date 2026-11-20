@@ -54,10 +54,8 @@ spec:
                 name: {{ include "cvvfcm.fullname" . }}-config
             - secretRef:
                 name: {{ include "cvvfcm.fullname" . }}-secret
-          {{- if .Values.database.enabled }}
           env:
             {{- include "cvvfcm.dbEnv" . | nindent 12 }}
-          {{- end }}
           resources:
             {{- toYaml .Values.migrate.resources | nindent 12 }}
       {{- with .Values.migrate.nodeSelector }}

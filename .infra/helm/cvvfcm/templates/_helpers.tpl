@@ -81,33 +81,28 @@ Name of the CloudNativePG cluster. The operator derives from it the "-rw" Servic
 {{/*
 Container env for the managed DB: DATABASE_URL is the operator-generated URI plus the query
 params Doctrine needs, composed with k8s $(VAR) expansion. DATABASE_URI must precede
-DATABASE_URL so the runtime substitution resolves. Empty unless database.enabled.
+DATABASE_URL so the runtime substitution resolves.
 */}}
 {{- define "cvvfcm.dbEnv" -}}
-{{- if .Values.database.enabled }}
 - name: DATABASE_URI
   valueFrom:
     secretKeyRef:
       name: {{ include "cvvfcm.database.name" . }}-app
       key: uri
 - name: DATABASE_URL
-  value: {{ printf "$(DATABASE_URI)?serverVersion=%s&charset=utf8" .Values.externalDatabase.serverVersion | quote }}
-{{- end }}
+  value: {{ printf "$(DATABASE_URI)?serverVersion=%s&charset=utf8" .Values.database.serverVersion | quote }}
 {{- end }}
 
 {{/*
 Discrete libpq env for the backup CronJob's pg_dump: the Doctrine DATABASE_URL carries
 serverVersion/charset query params that libpq rejects, so pg_dump reads PG* vars instead.
-Managed DB only (both deployed envs use it); external DB would supply these explicitly.
 */}}
 {{- define "cvvfcm.backupPgEnv" -}}
-{{- if .Values.database.enabled }}
 {{- range $env, $key := dict "PGHOST" "host" "PGPORT" "port" "PGUSER" "username" "PGDATABASE" "dbname" "PGPASSWORD" "password" }}
 - name: {{ $env }}
   valueFrom:
     secretKeyRef:
       name: {{ include "cvvfcm.database.name" $ }}-app
       key: {{ $key }}
-{{- end }}
 {{- end }}
 {{- end }}
